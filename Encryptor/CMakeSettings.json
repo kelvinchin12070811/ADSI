@@ -13,7 +13,7 @@
             "variables": [
                 {
                     "name": "Qt5_DIR",
-                    "value": "C:/Qt/Qt5.12.8/5.12.8/msvc2017",
+                    "value": "C:/Qt/Qt5.12.8/5.12.8/msvc2017/lib/cmake",
                     "type": "PATH"
                 }
             ]
