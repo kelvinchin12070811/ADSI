@@ -5,17 +5,16 @@
  *********************************************************************************************************************/
 #include <memory>
 
-#include <QApplication>
-#include <QLabel>
+#include <QGuiApplication>
+#include <QQmlApplicationEngine>
 
-#include "window/mainwindow/MainWindow.hpp"
-
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
-    QApplication app{ argc, argv };
+    QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    auto app = std::make_unique<QGuiApplication>(argc, argv);
+    
+    QQmlApplicationEngine uiEngine;
+    uiEngine.load(QStringLiteral("qrc:/src/window/mainwindow/MainWindow.qml"));
 
-    auto window = std::make_unique<window::MainWindow>();
-    window->show();
-
-    return app.exec();
+    return app->exec();
 }
