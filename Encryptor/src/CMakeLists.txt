@@ -29,7 +29,7 @@ set(PROJECT_HEADER_FILES
 )
 
 if (WIN32)
-    add_executable(${PROJECT_NAME} WIN32
+    add_executable(${PROJECT_NAME}
          ${PROJECT_SOURCE_FILES}
          ${PROJECT_HEADER_FILES}
          ${PROJECT_UI_FILES}
