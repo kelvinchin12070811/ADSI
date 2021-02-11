@@ -3,8 +3,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *********************************************************************************************************************/
+#include <boost/range/irange.hpp>
 #include <memory>
-
+#include <vector>
+#include <QDebug>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 
@@ -12,6 +14,32 @@
 
 int main(int argc, char **argv)
 {
+    std::vector<std::vector<float>> data{{
+        { 52.0f, 55.0f, 61.0f, 66.0f, 70.0f, 61.0f, 64.0f, 73.0f },
+        { 63.0f, 59.0f, 55.0f, 90.0f, 109.0f, 85.0f, 69.0f, 72.0f },
+        { 62.0f, 59.0f, 68.0f, 113.0f, 144.0f, 104.0f, 66.0f, 73.0f },
+        { 63.0f, 58.0f, 71.0f, 122.0f, 154.0f, 106.0f, 70.0f, 69.0f },
+        { 67.0f, 61.0f, 68.0f, 104.0f, 126.0f, 88.0f, 68.0f, 70.0f },
+        { 79.0f, 65.0f, 60.0f, 70.0f, 77.0f, 68.0f, 58.0f, 75.0f },
+        { 85.0f, 71.0f, 64.0f, 59.0f, 55.0f, 61.0f, 65.0f, 83.0f },
+        { 87.0f, 79.0f, 69.0f, 68.0f, 65.0f, 76.0f, 78.0f, 94.0f }
+    }};
+
+    std::vector<std::vector<float>> result{ 8 };
+    for (auto &row : result)
+        row = std::vector<float>{ 8 };
+
+    utils::DCT::transfrom<decltype(result)>(data.begin(), data.end(), result.begin());
+
+    for (auto &row : result)
+    {
+        for (auto& col : row)
+            qDebug() << col << ", ";
+
+        qDebug() << "\n";
+    }
+
+
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     auto app = std::make_unique<QGuiApplication>(argc, argv);
     

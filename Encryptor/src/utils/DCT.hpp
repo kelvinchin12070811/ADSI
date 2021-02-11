@@ -55,8 +55,8 @@ namespace utils
                             return nwValue;
                         }
                     );
+                    return nwRow;
                 }
-                return nwRow;
             );
         }
     };
