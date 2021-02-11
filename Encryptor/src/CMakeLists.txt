@@ -22,6 +22,7 @@ set(PROJECT_UI_FILES
 
 set(PROJECT_SOURCE_FILES
     "Main.cpp"
+    "utils/DCT.cpp"
 )
 
 set(PROJECT_HEADER_FILES
