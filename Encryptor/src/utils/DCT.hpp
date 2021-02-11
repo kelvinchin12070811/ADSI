@@ -9,7 +9,7 @@ namespace utils
     {
     public:
         template <typename Container, typename Iterator>
-        void transfrom(Iterator inputBegin, Iterator inputEnd, Iterator outputBegin)
+        static void transfrom(Iterator inputBegin, Iterator inputEnd, Iterator outputBegin)
         {
             namespace boost_const = boost::math::float_constants;
             constexpr float quarter = 1.f / 4.f;
