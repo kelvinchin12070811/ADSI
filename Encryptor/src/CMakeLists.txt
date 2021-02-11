@@ -10,9 +10,12 @@ find_package(Qt5 COMPONENTS
     Qml
     Quick
 REQUIRED)
+find_package(Boost 1.70.0)
 get_target_property(QMAKE_BIN Qt5::qmake IMPORTED_LOCATION)
 get_filename_component(QMAKE_BIN_DIR "${QMAKE_BIN}" DIRECTORY)
 find_program(DEPLOYQT_BIN NAMES windeployqt HINTS "${QMAKE_BIN_DIR}")
+
+include_directories(${Boost_INCLUDE_DIR})
 
 set(PROJECT_UI_FILES
 )
@@ -22,8 +25,8 @@ set(PROJECT_SOURCE_FILES
 )
 
 set(PROJECT_HEADER_FILES
+    "utils/DCT.hpp"
 )
-
 
 if (WIN32)
     add_executable(${PROJECT_NAME} WIN32
@@ -31,7 +34,7 @@ if (WIN32)
          ${PROJECT_HEADER_FILES}
          ${PROJECT_UI_FILES}
          "../Resource.qrc"
-    )
+     )
 
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND
         ${DEPLOYQT_BIN} "$<TARGET_FILE:${PROJECT_NAME}>" --qmldir "${CMAKE_SOURCE_DIR}" --no-translations

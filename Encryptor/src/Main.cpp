@@ -8,6 +8,8 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 
+#include "utils/DCT.hpp"
+
 int main(int argc, char **argv)
 {
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
