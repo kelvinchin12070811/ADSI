@@ -7,4 +7,12 @@ ApplicationWindow {
     height: 480
     title: qsTr("ADSI Encryptor")
     visible: true
+
+    Rectangle {
+        id: mainWindowCanvas
+        anchors.fill: parent
+        color: "#00ffffff"
+
+
+    }
 }
