@@ -7,7 +7,6 @@
 #include <boost/math/constants/constants.hpp>
 #include <iterator>
 #include <numeric>
-#include <QDebug>
 
 #include "DCT.hpp"
 
@@ -17,11 +16,19 @@ namespace utils
     {
         std::vector<std::vector<float>> rsltTransform;
         rsltTransform.reserve(input.size());
-        transromVector(input, rsltTransform);
+        transfromVector(input, rsltTransform);
+        return rsltTransform;
+    }
+
+    std::vector<std::vector<float>> DCT::itransform(const std::vector<std::vector<float>> &input)
+    {
+        std::vector<std::vector<float>> rsltTransform;
+        rsltTransform.reserve(input.size());
+        itransfromVector(input, rsltTransform);
         return rsltTransform;
     }
     
-    void DCT::transromVector(const std::vector<std::vector<float>> &input, std::vector<std::vector<float>> &rslt)
+    void DCT::transfromVector(const std::vector<std::vector<float>> &input, std::vector<std::vector<float>> &rslt)
     {
         namespace boost_const = boost::math::float_constants;
         auto u = static_cast<std::size_t>(-1);
@@ -54,6 +61,37 @@ namespace utils
             }
         );
     }
+
+    void DCT::itransfromVector(const std::vector<std::vector<float>> &input, std::vector<std::vector<float>> &rslt)
+    {
+        constexpr float quarter = 1.f / 4.f;
+        auto x = static_cast<std::size_t>(-1);
+        auto y = static_cast<std::size_t>(-1);
+
+        std::transform(
+            input.begin(),
+            input.end(),
+            std::back_inserter(rslt),
+            [&](const auto &row) {
+                x >= input.size() ? x = 0 : x++;
+                std::vector<float> rsltRow;
+                rsltRow.reserve(row.size());
+
+                std::transform(
+                    row.begin(),
+                    row.end(),
+                    std::back_inserter(rsltRow),
+                    [&](const auto &) {
+                        y >= row.size() ? y = 0 : y++;
+                        float nwValue{ idctAdder(input, x, y) };
+                        return (nwValue * quarter) + 128.f;
+                    }
+                );
+                
+                return rsltRow;
+            }
+        );
+    }
     
     float DCT::dctAdder(const std::vector<std::vector<float>> &input, int u, int v)
     {
@@ -77,9 +115,42 @@ namespace utils
                         return prevSum + (
                             (curVal - 128.f) *
                             std::cos((((2.f * static_cast<float>(x)) + 1.f) *
-                            static_cast<float>(u) * boost_const::pi) / 16.f) *
+                                static_cast<float>(u) * boost_const::pi) / 16.f) *
                             std::cos((((2.f * static_cast<float>(y)) + 1.f) *
-                            static_cast<float>(v) * boost_const::pi) / 16.f)
+                                static_cast<float>(v) * boost_const::pi) / 16.f)
+                        );
+                    }
+                );
+            }
+        );
+    }
+    
+    float DCT::idctAdder(const std::vector<std::vector<float>> &input, int x, int y)
+    {
+        namespace boost_const = boost::math::float_constants;
+        auto u = static_cast<std::size_t>(-1);
+        auto v = static_cast<std::size_t>(-1);
+        return std::accumulate(
+            input.begin(),
+            input.end(),
+            0.f,
+            [&](const auto &prevRowSum, const auto &curRow) {
+                u >= input.size() - 1 ? u = 0 : u++;
+                return std::accumulate(
+                    curRow.begin(),
+                    curRow.end(),
+                    prevRowSum,
+                    [&](const auto &prevSum, const auto &curVal) {
+                        v >= curRow.size() - 1 ? v = 0 : v++;
+                        const float aU{ u == 0 ? boost_const::one_div_root_two : 1.f };
+                        const float aV{ v == 0 ? boost_const::one_div_root_two : 1.f };
+
+                        return prevSum + (
+                            aU * aV * curVal *
+                            std::cos((((2.f * static_cast<float>(x)) + 1.f) *
+                                static_cast<float>(u) * boost_const::pi) / 16.f) *
+                            std::cos((((2.f * static_cast<float>(y)) + 1.f) *
+                                static_cast<float>(v) * boost_const::pi) / 16.f)
                         );
                     }
                 );

@@ -25,6 +25,16 @@ int main(int argc, char **argv)
         { 87.0f, 79.0f, 69.0f, 68.0f, 65.0f, 76.0f, 78.0f, 94.0f }
     }};
 
+    qDebug() << QStringLiteral("Original Data");
+    for (auto &row : data)
+    {
+        QString output;
+        for (auto &col : row)
+            output += QString::number(col) + QStringLiteral(", ");
+
+        qDebug() << output;
+    }
+
     utils::DCT dctTransform;
 
     std::vector<std::vector<float>> result{ dctTransform.transfrom(data) };
@@ -39,6 +49,20 @@ int main(int argc, char **argv)
         qDebug() << output;
     }
 
+    qDebug() << "Inverse DCT Encode Test";
+    auto iresult = dctTransform.itransform(result);
+    for (auto &row : iresult)
+    {
+        QString output;
+        for (auto &col : row)
+            output += QString::number(col) + QStringLiteral(", ");
+
+        qDebug() << output;
+    }
+
+    qDebug() << QStringLiteral("Data matched: ") +
+        (std::mismatch(data.begin(), data.end(), iresult.begin(), iresult.end())
+            .first != data.begin() ? QStringLiteral("passed") : QStringLiteral("failed"));
 
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     auto app = std::make_unique<QGuiApplication>(argc, argv);
