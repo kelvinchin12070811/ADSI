@@ -60,9 +60,10 @@ int main(int argc, char **argv)
         qDebug() << output;
     }
 
+    auto rsltMatch = std::mismatch(data.begin(), data.end(), iresult.begin(), iresult.end());
+
     qDebug() << QStringLiteral("Data matched: ") +
-        (std::mismatch(data.begin(), data.end(), iresult.begin(), iresult.end())
-            .first != data.begin() ? QStringLiteral("passed") : QStringLiteral("failed"));
+        (rsltMatch.first != data.end() ? QStringLiteral("passed") : QStringLiteral("failed"));
 
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     auto app = std::make_unique<QGuiApplication>(argc, argv);

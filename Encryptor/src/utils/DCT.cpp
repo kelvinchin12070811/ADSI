@@ -8,6 +8,8 @@
 #include <iterator>
 #include <numeric>
 
+#include <QDebug>
+
 #include "DCT.hpp"
 
 namespace utils
@@ -73,7 +75,7 @@ namespace utils
             input.end(),
             std::back_inserter(rslt),
             [&](const auto &row) {
-                x >= input.size() ? x = 0 : x++;
+                x >= input.size() - 1 ? x = 0 : x++;
                 std::vector<float> rsltRow;
                 rsltRow.reserve(row.size());
 
@@ -82,7 +84,7 @@ namespace utils
                     row.end(),
                     std::back_inserter(rsltRow),
                     [&](const auto &) {
-                        y >= row.size() ? y = 0 : y++;
+                        y >= row.size() - 1 ? y = 0 : y++;
                         float nwValue{ idctAdder(input, x, y) };
                         return (nwValue * quarter) + 128.f;
                     }
@@ -144,6 +146,8 @@ namespace utils
                         v >= curRow.size() - 1 ? v = 0 : v++;
                         const float aU{ u == 0 ? boost_const::one_div_root_two : 1.f };
                         const float aV{ v == 0 ? boost_const::one_div_root_two : 1.f };
+
+                        //qDebug() << QString{ "%1 %2 %3 %4" }.arg(x).arg(y).arg(u).arg(v);
 
                         return prevSum + (
                             aU * aV * curVal *
