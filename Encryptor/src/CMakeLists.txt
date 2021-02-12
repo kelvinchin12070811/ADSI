@@ -4,6 +4,9 @@ project(${PROJECT_NAME})
 set(CMAKE_AUTOMOC  on)
 set(CMAKE_AUTORCC on)
 set(CMAKE_AUTOUIC on)
+set(CMAKE_INCLUDE_CURRENT_DIR on)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
 
 find_package(Qt5 COMPONENTS
     Gui
@@ -23,10 +26,12 @@ set(PROJECT_UI_FILES
 set(PROJECT_SOURCE_FILES
     "Main.cpp"
     "utils/DCT.cpp"
+    
 )
 
 set(PROJECT_HEADER_FILES
     "utils/DCT.hpp"
+    "codec/ICodec.hpp"
 )
 
 if (WIN32)
@@ -35,7 +40,7 @@ if (WIN32)
          ${PROJECT_HEADER_FILES}
          ${PROJECT_UI_FILES}
          "../Resource.qrc"
-     )
+      )
 
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND
         ${DEPLOYQT_BIN} "$<TARGET_FILE:${PROJECT_NAME}>" --qmldir "${CMAKE_SOURCE_DIR}" --no-translations
