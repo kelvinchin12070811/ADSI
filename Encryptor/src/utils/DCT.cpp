@@ -7,8 +7,7 @@
 #include <boost/math/constants/constants.hpp>
 #include <iterator>
 #include <numeric>
-
-#include <QDebug>
+#include <type_traits>
 
 #include "DCT.hpp"
 
@@ -41,9 +40,9 @@ namespace utils
             input.begin(),
             input.end(),
             std::back_inserter(rslt),
-            [&](const auto &row) {
+            [&, rslt](const auto &row) {
                 u >= input.size() - 1 ? u = 0 : u++;
-                std::vector<float> rsltRow;
+                std::remove_reference<decltype(rslt)>::type::value_type rsltRow;
                 rsltRow.reserve(8);
                 std::transform(
                     row.begin(),
@@ -74,9 +73,9 @@ namespace utils
             input.begin(),
             input.end(),
             std::back_inserter(rslt),
-            [&](const auto &row) {
+            [&, rslt](const auto &row) {
                 x >= input.size() - 1 ? x = 0 : x++;
-                std::vector<float> rsltRow;
+                std::remove_reference<decltype(rslt)>::type::value_type rsltRow;
                 rsltRow.reserve(row.size());
 
                 std::transform(
@@ -146,8 +145,6 @@ namespace utils
                         v >= curRow.size() - 1 ? v = 0 : v++;
                         const float aU{ u == 0 ? boost_const::one_div_root_two : 1.f };
                         const float aV{ v == 0 ? boost_const::one_div_root_two : 1.f };
-
-                        //qDebug() << QString{ "%1 %2 %3 %4" }.arg(x).arg(y).arg(u).arg(v);
 
                         return prevSum + (
                             aU * aV * curVal *
