@@ -25,18 +25,18 @@ int main(int argc, char **argv)
         { 87.0f, 79.0f, 69.0f, 68.0f, 65.0f, 76.0f, 78.0f, 94.0f }
     }};
 
-    std::vector<std::vector<float>> result{ 8 };
-    for (auto &row : result)
-        row = std::vector<float>{ 8 };
+    utils::DCT dctTransform;
 
-    utils::DCT::transfrom<decltype(result)>(data.begin(), data.end(), result.begin());
+    std::vector<std::vector<float>> result{ dctTransform.transfrom(data) };
 
+    qDebug() << "DCT Encode Test";
     for (auto &row : result)
     {
-        for (auto& col : row)
-            qDebug() << col << ", ";
+        QString output;
+        for (auto &col : row)
+            output += QString::number(col) + QStringLiteral(", ");
 
-        qDebug() << "\n";
+        qDebug() << output;
     }
 
 
