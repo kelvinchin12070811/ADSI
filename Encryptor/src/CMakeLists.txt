@@ -25,13 +25,14 @@ set(PROJECT_UI_FILES
 
 set(PROJECT_SOURCE_FILES
     "Main.cpp"
+    "TestSubject.cpp"
     "utils/DCT.cpp"
-    
 )
 
 set(PROJECT_HEADER_FILES
-    "utils/DCT.hpp"
     "codec/ICodec.hpp"
+    "TestSubject.hpp"
+    "utils/DCT.hpp"
 )
 
 if (WIN32)
