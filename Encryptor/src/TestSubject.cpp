@@ -62,7 +62,7 @@ namespace TestSubject
         else
         {
             qDebug() << QString{ outputTemplate.data() }.arg(unitTestName.data())
-                .arg("[DCT transform test] Data matched: passed");
+                .arg("Data matched: passed");
         }
     }
 }
