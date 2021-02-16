@@ -9,13 +9,16 @@
 #include <QString>
 #include <vector>
 
+#include "generator/AESCryptoKeyGenerator.hpp"
 #include "TestSubject.hpp"
+#include "utils/DCT.hpp"
 
 namespace TestSubject
 {
     void unitTests()
     {
         DCTAlgoTest();
+        AESKeyGenTest();
     }
     
     void DCTAlgoTest()
@@ -64,5 +67,17 @@ namespace TestSubject
             qDebug() << QString{ outputTemplate.data() }.arg(unitTestName.data())
                 .arg("Data matched: passed");
         }
+    }
+    
+    void AESKeyGenTest()
+    {
+        constexpr std::string_view testName{ "AES Key Test" };
+        constexpr std::string_view password{ "test" };
+
+        qDebug() << QString{ outputTemplate.data() }.arg(testName.data())
+            .arg(QString{ "Test password: %1" }.arg(password.data()));
+
+        key_generator::AESCryptoKeyGenerator generator{ password.data() };
+        generator.generate();
     }
 }

@@ -5,13 +5,11 @@
  *********************************************************************************************************************/
 #include <string_view>
 
-#include "utils/DCT.hpp"
-
 namespace TestSubject
 {
     constexpr std::string_view outputTemplate{ "[%1]: %2" };
 
     void unitTests();
-
     void DCTAlgoTest();
+    void AESKeyGenTest();
 }
