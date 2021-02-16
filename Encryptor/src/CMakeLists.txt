@@ -24,6 +24,7 @@ set(PROJECT_UI_FILES
 )
 
 set(PROJECT_SOURCE_FILES
+    "generator/AESCryptoKeyGenerator.cpp"
     "Main.cpp"
     "TestSubject.cpp"
     "utils/DCT.cpp"
@@ -31,6 +32,8 @@ set(PROJECT_SOURCE_FILES
 
 set(PROJECT_HEADER_FILES
     "codec/ICodec.hpp"
+    "generator/AESCryptoKeyGenerator.hpp"
+    "generator/ICryptoKeyGenerator.hpp"
     "TestSubject.hpp"
     "utils/DCT.hpp"
 )
