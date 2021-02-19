@@ -4,6 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *********************************************************************************************************************/
 #include <boost/assert.hpp>
+
 #include "AESCryptoKeyGenerator.hpp"
 
 namespace key_generator

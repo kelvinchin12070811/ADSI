@@ -10,10 +10,24 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 
+#if defined(WIN32) && defined(DEBUG)
+#define WIN32_DEBUG
+#include <Windows.h>
+#endif
+
 #include "TestSubject.hpp"
 
 int main(int argc, char **argv)
 {
+#ifdef WIN32_DEBUG
+    if (AllocConsole())
+    {
+        freopen("CONOUT$", "w", stdout);
+        freopen("CONOUT$", "w", stderr);
+    }
+    system("title ADSI Encryptor Debug Console");
+#endif
+
     TestSubject::unitTests();
 
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);

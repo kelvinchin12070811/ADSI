@@ -3,10 +3,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *********************************************************************************************************************/
+#include <aes.h>
 #include <algorithm>
 #include <cassert>
+#include <hex.h>
+#include <memory>
+#include <osrng.h>
 #include <QDebug>
 #include <QString>
+#include <sha3.h>
 #include <vector>
 
 #include "generator/AESCryptoKeyGenerator.hpp"
@@ -71,11 +76,32 @@ namespace TestSubject
     
     void AESKeyGenTest()
     {
-        constexpr std::string_view testName{ "AES Key Test" };
         constexpr std::string_view password{ "test" };
+        const auto testName = QString{ outputTemplate.data() }.arg("AES Key Test");
 
-        qDebug() << QString{ outputTemplate.data() }.arg(testName.data())
-            .arg(QString{ "Test password: %1" }.arg(password.data()));
+        std::size_t szKey = CryptoPP::AES::MAX_KEYLENGTH;
+        qDebug() << testName.arg(QStringLiteral("Size of AES Key: %1")).arg(szKey);
+        qDebug() << testName.arg(QStringLiteral("Size of AES Key (bit): %1")).arg(szKey * 8);
+
+        CryptoPP::SHA3_256 shaHasher;
+        std::vector<CryptoPP::byte> pwHash;
+        std::make_unique<CryptoPP::StringSource>(
+            password,
+            true,
+            new CryptoPP::HashFilter(
+                shaHasher,
+                new CryptoPP::VectorSink(pwHash)
+            )
+        );
+
+        std::string hexHash;
+        std::make_unique<CryptoPP::VectorSource>(
+            pwHash,
+            true,
+            new CryptoPP::HexEncoder
+        );
+
+        qDebug() << testName.arg(QString{ "Test password: %1" }.arg(password.data()));
 
         key_generator::AESCryptoKeyGenerator generator{ password.data() };
         generator.generate();

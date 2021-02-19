@@ -8,6 +8,9 @@ set(CMAKE_INCLUDE_CURRENT_DIR on)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
 
+set(CRYPTOPP_INCLUDE_DIR "" CACHE PATH "Crypto++ include directory")
+set(CRYPTOPP_LIB_DIR "" CACHE FILEPATH "Crypto++ library file")
+
 find_package(Qt5 COMPONENTS
     Gui
     Qml
@@ -19,6 +22,7 @@ get_filename_component(QMAKE_BIN_DIR "${QMAKE_BIN}" DIRECTORY)
 find_program(DEPLOYQT_BIN NAMES windeployqt HINTS "${QMAKE_BIN_DIR}")
 
 include_directories(${Boost_INCLUDE_DIR})
+include_directories(${CRYPTOPP_INCLUDE_DIR})
 
 set(PROJECT_UI_FILES
 )
@@ -39,7 +43,7 @@ set(PROJECT_HEADER_FILES
 )
 
 if (WIN32)
-    add_executable(${PROJECT_NAME}
+    add_executable(${PROJECT_NAME} WIN32
          ${PROJECT_SOURCE_FILES}
          ${PROJECT_HEADER_FILES}
          ${PROJECT_UI_FILES}
@@ -53,6 +57,7 @@ endif ()
 
 target_link_libraries(
      ${PROJECT_NAME}
+     ${CRYPTOPP_LIB_DIR}
      Qt5::Gui
      Qt5::Qml
      Qt5::Quick
