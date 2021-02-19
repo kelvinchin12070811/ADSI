@@ -77,13 +77,30 @@ namespace TestSubject
     void AESKeyGenTest()
     {
         constexpr std::string_view password{ "test" };
+        constexpr std::string_view preCalHash{ "3BFDF0A136BFA6E5C4883DCAD52213E3888F7098150664A06B244DC601A6F48A" };
         const auto testName = QString{ outputTemplate.data() }.arg("AES Key Test");
-
-        std::size_t szKey = CryptoPP::AES::MAX_KEYLENGTH;
-        qDebug() << testName.arg(QStringLiteral("Size of AES Key: %1")).arg(szKey);
-        qDebug() << testName.arg(QStringLiteral("Size of AES Key (bit): %1")).arg(szKey * 8);
 
         key_generator::AESCryptoKeyGenerator generator{ password.data() };
         generator.generate();
+        auto key = generator.getGeneratedKey();
+
+        CryptoPP::SHA3_256 sha3_256Digester;
+        std::string pwHash;
+        std::make_unique<CryptoPP::ArraySource>(
+            reinterpret_cast<CryptoPP::byte*>(key.data()),
+            key.size(),
+            true,
+            new CryptoPP::HashFilter{
+                sha3_256Digester,
+                new CryptoPP::HexEncoder{
+                    new CryptoPP::StringSink{ pwHash }
+                }
+            }
+        );
+
+        bool passed = pwHash == preCalHash;
+        qDebug() << testName.arg(QStringLiteral("Key matched: %1").arg(passed ?
+            QStringLiteral("passed") : QStringLiteral("failed")));
+        assert(passed);
     }
 }
