@@ -83,26 +83,6 @@ namespace TestSubject
         qDebug() << testName.arg(QStringLiteral("Size of AES Key: %1")).arg(szKey);
         qDebug() << testName.arg(QStringLiteral("Size of AES Key (bit): %1")).arg(szKey * 8);
 
-        CryptoPP::SHA3_256 shaHasher;
-        std::vector<CryptoPP::byte> pwHash;
-        std::make_unique<CryptoPP::StringSource>(
-            password,
-            true,
-            new CryptoPP::HashFilter(
-                shaHasher,
-                new CryptoPP::VectorSink(pwHash)
-            )
-        );
-
-        std::string hexHash;
-        std::make_unique<CryptoPP::VectorSource>(
-            pwHash,
-            true,
-            new CryptoPP::HexEncoder
-        );
-
-        qDebug() << testName.arg(QString{ "Test password: %1" }.arg(password.data()));
-
         key_generator::AESCryptoKeyGenerator generator{ password.data() };
         generator.generate();
     }

@@ -3,7 +3,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *********************************************************************************************************************/
+#include <aes.h>
+#include <algorithm>
+#include <array>
 #include <boost/assert.hpp>
+#include <boost/range/irange.hpp>
+#include <memory>
+#include <modes.h>
+#include <osrng.h>
+#include <sha3.h>
 
 #include "AESCryptoKeyGenerator.hpp"
 
@@ -21,7 +29,26 @@ namespace key_generator
 
     void AESCryptoKeyGenerator::generate()
     {
-        BOOST_ASSERT_MSG(false, "unimplemented");
+        std::array<CryptoPP::byte, CryptoPP::SHA3_256::DIGESTSIZE> pwHash{};
+        std::array<CryptoPP::byte, CryptoPP::AES::BLOCKSIZE> iv{};
+        CryptoPP::SHA3_256 sha3_256Digester;
+        CryptoPP::OFB_Mode<CryptoPP::AES>::Encryption psuedoRndEngine;
+
+        for (const auto &idx : boost::irange(iv.size()))
+            iv[idx] = pwHash[idx];
+
+        std::make_unique<CryptoPP::StringSource>(
+            _password,
+            true,
+            new CryptoPP::HashFilter{
+                sha3_256Digester,
+                new CryptoPP::ArraySink{ pwHash.data(), pwHash.size() }
+            }
+        );
+
+        key.resize(CryptoPP::AES::MAX_KEYLENGTH);
+        psuedoRndEngine.SetKeyWithIV(pwHash.data(), pwHash.size(), pwHash.data());
+        psuedoRndEngine.GenerateBlock(reinterpret_cast<CryptoPP::byte*>(key.data()), key.size());
     }
 
     std::string_view AESCryptoKeyGenerator::password() const
