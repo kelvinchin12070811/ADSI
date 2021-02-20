@@ -12,23 +12,24 @@ namespace codec
 {
     /**
      * @brief Base class for all Codec classes.
-    */
+     */
     struct ICodec
     {
         /**
-         * Get result of transcoded bytestream.
+         * @brief Get result of transcoded bytestream.
          * @return Array of bytes.
-        */
+         */
         virtual std::vector<std::byte> getCodecResult() = 0 {}
         /**
          * @brief Set data for codec to transcode.
          * @param data Input data.
-        */
-        virtual void setCodecData(const std::vector<std::byte> &data) = 0 {}
+         */
+        virtual void setCodecData(std::vector<std::byte> data) = 0 {}
         /**
-         * Get error message which describe the last error.
-         * @return Errror message about last error.
-        */
-        virtual std::string getError() = 0 {}
+         * @brief Run codec.
+         * 
+         * Start codec to process the data.
+         */
+        virtual void execute() = 0 {}
     };
 }

@@ -28,6 +28,7 @@ set(PROJECT_UI_FILES
 )
 
 set(PROJECT_SOURCE_FILES
+    "codec/SHA3EncoderCodec.cpp"
     "generator/AESCryptoKeyGenerator.cpp"
     "Main.cpp"
     "TestSubject.cpp"
@@ -36,6 +37,7 @@ set(PROJECT_SOURCE_FILES
 
 set(PROJECT_HEADER_FILES
     "codec/ICodec.hpp"
+    "codec/SHA3EncoderCodec.hpp"
     "generator/AESCryptoKeyGenerator.hpp"
     "generator/ICryptoKeyGenerator.hpp"
     "TestSubject.hpp"

@@ -14,6 +14,7 @@
 #include <sha3.h>
 #include <vector>
 
+#include "codec/SHA3EncoderCodec.hpp"
 #include "generator/AESCryptoKeyGenerator.hpp"
 #include "TestSubject.hpp"
 #include "utils/DCT.hpp"
@@ -23,6 +24,7 @@ namespace TestSubject
     void unitTests()
     {
         DCTAlgoTest();
+        SHA3HasherTest();
         AESKeyGenTest();
     }
     
@@ -72,6 +74,45 @@ namespace TestSubject
             qDebug() << QString{ outputTemplate.data() }.arg(unitTestName.data())
                 .arg("Data matched: passed");
         }
+    }
+
+    void SHA3HasherTest()
+    {
+        const auto testName = QString{ outputTemplate.data() }.arg("SHA3 Encoder Test");
+
+        std::string text{ "A quick brown fox jumps over the lazy dog" };
+        std::string encCryptoPP;
+        std::string encCodec;
+        CryptoPP::SHA3_256 encSHA3_256;
+        std::make_unique<CryptoPP::StringSource>(
+            text,
+            true,
+            new CryptoPP::HashFilter{
+                encSHA3_256,
+                new CryptoPP::HexEncoder{
+                    new CryptoPP::StringSink{ encCryptoPP }
+                }
+            }
+        );
+
+        codec::SHA3EncoderCodec encSHA3_256_2{ text };
+        encSHA3_256_2.execute();
+        auto data = encSHA3_256_2.getCodecResult();
+        std::make_unique<CryptoPP::ArraySource>(
+            reinterpret_cast<CryptoPP::byte*>(data.data()),
+            data.size(),
+            true,
+            new CryptoPP::HexEncoder{
+                new CryptoPP::StringSink{ encCodec }
+            }
+        );
+
+        bool matched = encCryptoPP == encCodec;
+        qDebug() << testName.arg(
+            QStringLiteral("SHA3 product match: %1")
+                .arg(matched ? QStringLiteral("passed") : QStringLiteral("failed"))
+        );
+        assert(matched);
     }
     
     void AESKeyGenTest()
