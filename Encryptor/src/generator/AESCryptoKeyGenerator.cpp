@@ -34,7 +34,7 @@ namespace key_generator
         CryptoPP::SHA3_256 sha3_256Digester;
         CryptoPP::OFB_Mode<CryptoPP::AES>::Encryption psuedoRndEngine;
 
-        std::copy(pwHash.begin(), pwHash.begin() + iv.size(), iv.begin());
+        std::copy(pwHash.crbegin(), pwHash.crbegin() + iv.size(), iv.begin());
         std::make_unique<CryptoPP::StringSource>(
             _password,
             true,

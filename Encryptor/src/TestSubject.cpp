@@ -99,7 +99,7 @@ namespace TestSubject
         );
 
         bool passed = pwHash == preCalHash;
-        qDebug() << testName.arg(QStringLiteral("Key matched: %1").arg(passed ?
+        qDebug() << testName.arg(QStringLiteral("Regen random key matched: %1").arg(passed ?
             QStringLiteral("passed") : QStringLiteral("failed")));
         assert(passed);
     }
