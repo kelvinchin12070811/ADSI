@@ -13,7 +13,8 @@
 #include <osrng.h>
 #include <sha3.h>
 
-#include "AESCryptoKeyGenerator.hpp"
+#include "codec/SHA3EncoderCodec.hpp"
+#include "generator/AESCryptoKeyGenerator.hpp"
 
 namespace key_generator
 {
@@ -29,23 +30,28 @@ namespace key_generator
 
     void AESCryptoKeyGenerator::generate()
     {
-        std::array<CryptoPP::byte, CryptoPP::SHA3_256::DIGESTSIZE> pwHash{};
+        std::vector<std::byte> pwHash{};
         std::array<CryptoPP::byte, CryptoPP::AES::BLOCKSIZE> iv{};
         CryptoPP::SHA3_256 sha3_256Digester;
         CryptoPP::OFB_Mode<CryptoPP::AES>::Encryption psuedoRndEngine;
 
-        std::copy(pwHash.crbegin(), pwHash.crbegin() + iv.size(), iv.begin());
-        std::make_unique<CryptoPP::StringSource>(
-            _password,
-            true,
-            new CryptoPP::HashFilter{
-                sha3_256Digester,
-                new CryptoPP::ArraySink{ pwHash.data(), pwHash.size() }
-            }
+        auto encSHA = std::make_unique<codec::SHA3EncoderCodec>(_password);
+        encSHA->execute();
+        pwHash = encSHA->getCodecResult();
+
+        std::transform(
+            pwHash.crbegin(),
+            pwHash.crbegin() + iv.size(),
+            iv.begin(),
+            [](const auto &curItem) { return static_cast<CryptoPP::byte>(curItem); }
         );
 
         key.resize(CryptoPP::AES::MAX_KEYLENGTH);
-        psuedoRndEngine.SetKeyWithIV(pwHash.data(), pwHash.size(), pwHash.data());
+        psuedoRndEngine.SetKeyWithIV(
+            reinterpret_cast<CryptoPP::byte*>(pwHash.data()),
+            pwHash.size(),
+            iv.data()
+        );
         psuedoRndEngine.GenerateBlock(reinterpret_cast<CryptoPP::byte*>(key.data()), key.size());
     }
 

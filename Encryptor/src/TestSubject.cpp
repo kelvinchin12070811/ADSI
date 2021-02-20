@@ -118,7 +118,7 @@ namespace TestSubject
     void AESKeyGenTest()
     {
         constexpr std::string_view password{ "test" };
-        constexpr std::string_view preCalHash{ "3BFDF0A136BFA6E5C4883DCAD52213E3888F7098150664A06B244DC601A6F48A" };
+        constexpr std::string_view preCalHash{ "F220CF02E8E0BF291A08D1BFE53E989DAE21F2BF20D919CF8A80BBC866C98C62" };
         const auto testName = QString{ outputTemplate.data() }.arg("AES Key Test");
 
         key_generator::AESCryptoKeyGenerator generator{ password.data() };
