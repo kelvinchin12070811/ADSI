@@ -14,6 +14,7 @@
 #include <sha3.h>
 #include <vector>
 
+#include "codec/AESEncoderCodec.hpp"
 #include "codec/SHA3EncoderCodec.hpp"
 #include "generator/AESCryptoKeyGenerator.hpp"
 #include "TestSubject.hpp"
@@ -26,6 +27,7 @@ namespace TestSubject
         DCTAlgoTest();
         SHA3HasherTest();
         AESKeyGenTest();
+        AESCodecTest();
     }
     
     void DCTAlgoTest()
@@ -143,5 +145,37 @@ namespace TestSubject
         qDebug() << testName.arg(QStringLiteral("Regen random key matched: %1").arg(passed ?
             QStringLiteral("passed") : QStringLiteral("failed")));
         assert(passed);
+    }
+    
+    void AESCodecTest()
+    {
+        const auto testName = QString{ outputTemplate.data() }.arg("AES Codec Test");
+        constexpr std::string_view data{ "A quick brown fox jumps over the lazy dog." };
+        constexpr std::string_view password{ "ADamnSuperStrongPassword" };
+        std::vector<std::byte> AESKey;
+
+        key_generator::AESCryptoKeyGenerator genAESKey{ password.data() };
+        genAESKey.generate();
+        AESKey = genAESKey.getGeneratedKey();
+
+        codec::AESEncoderCodec encoder{ reinterpret_cast<const std::byte*>(data.data()), data.size(), AESKey };
+        encoder.execute();
+        auto encodedAES = encoder.getCodecResult();
+
+        codec::SHA3EncoderCodec codSHA3_256{ encodedAES };
+        codSHA3_256.execute();
+
+        std::string aesEncodedDataHex;
+        auto aesEncodedData = codSHA3_256.getCodecResult();
+        const CryptoPP::ArraySource aesEncodedDataHexProc{
+            reinterpret_cast<CryptoPP::byte*>(aesEncodedData.data()),
+            aesEncodedData.size(),
+            true,
+            new CryptoPP::HexEncoder{
+                new CryptoPP::StringSink{ aesEncodedDataHex }
+            }
+        };
+
+        qDebug() << testName.arg(QStringLiteral("AES Encoded hash: %1").arg(QString::fromStdString(aesEncodedDataHex)));
     }
 }

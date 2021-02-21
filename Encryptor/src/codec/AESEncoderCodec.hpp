@@ -21,7 +21,7 @@ namespace codec
          * @param key AES key for encryption, must not be empty.
          * 
          * @sa AESEncoderCodec(std::vector<std::byte>)
-         * @sa AESEncoderCodec(std::byte*, std::size_t)
+         * @sa AESEncoderCodec(const std::byte*, std::size_t)
          * 
          * @throw std::invalid_argument if @p key is empty.
          */
@@ -33,7 +33,7 @@ namespace codec
          * @param key AES key for encryption, must not be empty.
          * 
          * @sa AESEncoderCodec()
-         * @sa AESEncoderCodec(std::byte*, std::size_t)
+         * @sa AESEncoderCodec(const std::byte*, std::size_t)
          * 
          * @throw std::invalid_argument if @p key is empty.
          */
@@ -53,7 +53,7 @@ namespace codec
          * 
          * @note This constructor will not take ownership of @p data.
          */
-        AESEncoderCodec(std::byte *data, std::size_t size, std::vector<std::byte> key);
+        AESEncoderCodec(const std::byte *data, std::size_t size, std::vector<std::byte> key);
 
         std::vector<std::byte> getCodecResult() override;
         void setCodecData(std::vector<std::byte> data) override;

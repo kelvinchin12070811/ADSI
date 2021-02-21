@@ -13,4 +13,5 @@ namespace TestSubject
     void DCTAlgoTest();
     void SHA3HasherTest();
     void AESKeyGenTest();
+    void AESCodecTest();
 }

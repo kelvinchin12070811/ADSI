@@ -19,13 +19,13 @@ namespace codec
     }
     
     AESEncoderCodec::AESEncoderCodec(std::vector<std::byte> data, std::vector<std::byte> key):
-        buffer{ std::move(data) }, key{ std::move(key)}
+        buffer{ std::move(data) }, key{ std::move(key) }
     {
-        if (key.empty())
+        if (this->key.empty())
             throw std::invalid_argument("AES key must not be empty.");
     }
     
-    AESEncoderCodec::AESEncoderCodec(std::byte *data, std::size_t size, std::vector<std::byte> key):
+    AESEncoderCodec::AESEncoderCodec(const std::byte *data, std::size_t size, std::vector<std::byte> key):
         AESEncoderCodec(std::move(key))
     {
         if (data == nullptr)
@@ -50,23 +50,40 @@ namespace codec
         CryptoPP::CBC_Mode<CryptoPP::AES>::Encryption encAes;
         CryptoPP::SecByteBlock iv{ CryptoPP::AES::BLOCKSIZE };
         CryptoPP::SecByteBlock encKey{ key.size() };
+        CryptoPP::SecByteBlock prndPoolIV{ CryptoPP::AES::Encryption::BLOCKSIZE };
 
-        prndPool.SetKey(reinterpret_cast<CryptoPP::byte*>(key.data()), key.size());
+        std::transform(
+            key.crbegin(),
+            key.crbegin() + prndPoolIV.size(),
+            prndPoolIV.begin(),
+            [](const auto &itr) { return static_cast<CryptoPP::byte>(itr); }
+        );
+
+        prndPool.SetKeyWithIV(reinterpret_cast<CryptoPP::byte*>(key.data()), key.size(), prndPoolIV);
         prndPool.GenerateBlock(iv, iv.size());
         prndPool.GenerateBlock(encKey, encKey.size());
 
         encAes.SetKeyWithIV(encKey, encKey.size(), iv);
 
+        std::vector<CryptoPP::byte> result;
         CryptoPP::ArraySource encPrc1{
             reinterpret_cast<CryptoPP::byte*>(buffer.data()),
             buffer.size(),
             true,
             new CryptoPP::StreamTransformationFilter{
                 encAes,
-                new CryptoPP::ArraySink{
-                    // TO-DO
-                }
+                new CryptoPP::VectorSink{ result }
             }
         };
+
+        encoded.clear();
+        encoded.shrink_to_fit();
+        encoded.reserve(result.size());
+        std::transform(
+            result.begin(),
+            result.end(),
+            std::back_inserter(encoded),
+            [](const auto &itr) { return static_cast<std::byte>(itr); }
+        );
     }
 }

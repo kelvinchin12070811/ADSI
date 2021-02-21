@@ -17,7 +17,8 @@ namespace codec
     }
 
     SHA3EncoderCodec::SHA3EncoderCodec(std::vector<std::byte> data, std::unique_ptr<CryptoPP::SHA3> hasher):
-        buffer(std::move(data)), _hasher(std::move(hasher))
+        buffer{ std::move(data) },
+        _hasher{ hasher == nullptr ? std::make_unique<CryptoPP::SHA3_256>() : std::move(hasher) }
     {
     }
 
