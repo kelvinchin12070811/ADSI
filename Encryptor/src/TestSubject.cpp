@@ -3,15 +3,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *********************************************************************************************************************/
-#include <aes.h>
 #include <algorithm>
 #include <cassert>
-#include <hex.h>
+#include <cryptopp/aes.h>
+#include <cryptopp/hex.h>
+#include <cryptopp/osrng.h>
+#include <cryptopp/sha3.h>
 #include <memory>
-#include <osrng.h>
 #include <QDebug>
 #include <QString>
-#include <sha3.h>
 #include <vector>
 
 #include "codec/AESEncoderCodec.hpp"

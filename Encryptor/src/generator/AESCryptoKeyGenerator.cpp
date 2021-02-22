@@ -3,15 +3,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *********************************************************************************************************************/
-#include <aes.h>
 #include <algorithm>
 #include <array>
 #include <boost/assert.hpp>
 #include <boost/range/irange.hpp>
+#include <cryptopp/aes.h>
+#include <cryptopp/modes.h>
+#include <cryptopp/osrng.h>
+#include <cryptopp/sha3.h>
 #include <memory>
-#include <modes.h>
-#include <osrng.h>
-#include <sha3.h>
 
 #include "codec/SHA3EncoderCodec.hpp"
 #include "generator/AESCryptoKeyGenerator.hpp"

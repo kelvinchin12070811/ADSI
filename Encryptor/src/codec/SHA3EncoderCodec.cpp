@@ -4,8 +4,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *********************************************************************************************************************/
 #include <boost/range/irange.hpp>
-#include <osrng.h>
-#include <sha3.h>
+#include <cryptopp/osrng.h>
+#include <cryptopp/sha3.h>
 
 #include "codec/SHA3EncoderCodec.hpp"
 
