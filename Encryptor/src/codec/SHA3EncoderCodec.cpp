@@ -36,6 +36,8 @@ namespace codec
     SHA3EncoderCodec::SHA3EncoderCodec(std::byte *data, std::size_t size, std::unique_ptr<CryptoPP::SHA3> hasher):
         SHA3EncoderCodec(std::move(hasher))
     {
+        if (data == nullptr) throw std::invalid_argument{ "Parameter data must not be nullptr but it seems to be" };
+
         _buffer.clear();
         _buffer.shrink_to_fit();
         _buffer.reserve(size);
@@ -44,7 +46,7 @@ namespace codec
             _buffer.push_back(data[idx]);
     }
 
-    std::vector<std::byte> SHA3EncoderCodec::getCodecResult()
+    std::vector<std::byte> SHA3EncoderCodec::getCodecResult() const
     {
         return _encodedData;
     }

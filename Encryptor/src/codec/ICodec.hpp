@@ -19,7 +19,7 @@ namespace codec
          * @brief Get result of transcoded bytestream.
          * @return Array of bytes.
          */
-        virtual std::vector<std::byte> getCodecResult() = 0 {}
+        virtual std::vector<std::byte> getCodecResult() const = 0 {}
         /**
          * @brief Set data for codec to transcode.
          * @param data Input data.

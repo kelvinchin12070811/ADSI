@@ -54,9 +54,14 @@ namespace codec
          * @note This constructor will not take ownership of @p data.
          */
         AESEncoderCodec(const std::byte *data, std::size_t size, std::vector<std::byte> key);
+        /**
+         * @brief Construct AESEncoder with data from string
+         * @param data String to encode.
+         * @param key AES key for encryption.
+         */
         AESEncoderCodec(std::string_view data, std::vector<std::byte> key);
 
-        std::vector<std::byte> getCodecResult() override;
+        std::vector<std::byte> getCodecResult() const override;
         void setCodecData(std::vector<std::byte> data) override;
         void execute() override;
 
