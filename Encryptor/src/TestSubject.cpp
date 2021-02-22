@@ -86,7 +86,7 @@ namespace TestSubject
         std::string encCryptoPP;
         std::string encCodec;
         CryptoPP::SHA3_256 encSHA3_256;
-        std::make_unique<CryptoPP::StringSource>(
+        static_cast<void>(CryptoPP::StringSource{
             text,
             true,
             new CryptoPP::HashFilter{
@@ -95,19 +95,19 @@ namespace TestSubject
                     new CryptoPP::StringSink{ encCryptoPP }
                 }
             }
-        );
+        });
 
         codec::SHA3EncoderCodec encSHA3_256_2{ text };
         encSHA3_256_2.execute();
         auto data = encSHA3_256_2.getCodecResult();
-        std::make_unique<CryptoPP::ArraySource>(
+        static_cast<void>(CryptoPP::ArraySource{
             reinterpret_cast<CryptoPP::byte*>(data.data()),
             data.size(),
             true,
             new CryptoPP::HexEncoder{
                 new CryptoPP::StringSink{ encCodec }
             }
-        );
+        });
 
         bool matched = encCryptoPP == encCodec;
         qDebug() << testName.arg(
@@ -129,7 +129,7 @@ namespace TestSubject
 
         CryptoPP::SHA3_256 sha3_256Digester;
         std::string pwHash;
-        std::make_unique<CryptoPP::ArraySource>(
+        static_cast<void>(CryptoPP::ArraySource{
             reinterpret_cast<CryptoPP::byte*>(key.data()),
             key.size(),
             true,
@@ -139,7 +139,7 @@ namespace TestSubject
                     new CryptoPP::StringSink{ pwHash }
                 }
             }
-        );
+        });
 
         bool passed = pwHash == preCalHash;
         qDebug() << testName.arg(QStringLiteral("Regen random key matched: %1").arg(passed ?
@@ -167,14 +167,14 @@ namespace TestSubject
 
         std::string aesEncodedDataHex;
         auto aesEncodedData = codSHA3_256.getCodecResult();
-        const CryptoPP::ArraySource aesEncodedDataHexProc{
+        static_cast<void>(CryptoPP::ArraySource{
             reinterpret_cast<CryptoPP::byte*>(aesEncodedData.data()),
             aesEncodedData.size(),
             true,
             new CryptoPP::HexEncoder{
                 new CryptoPP::StringSink{ aesEncodedDataHex }
             }
-        };
+        });
 
         qDebug() << testName.arg(QStringLiteral("AES Encoded hash: %1").arg(QString::fromStdString(aesEncodedDataHex)));
     }

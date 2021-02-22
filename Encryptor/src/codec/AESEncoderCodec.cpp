@@ -33,6 +33,18 @@ namespace codec
 
         buffer = decltype(buffer){ data, data + size };
     }
+
+    AESEncoderCodec::AESEncoderCodec(std::string_view data, std::vector<std::byte> key):
+        AESEncoderCodec(key)
+    {
+        buffer.reserve(data.size());
+        std::transform(
+            data.cbegin(),
+            data.cend(),
+            std::back_inserter(buffer),
+            [](const auto &itr) { return static_cast<std::byte>(itr); }
+        );
+    }
     
     std::vector<std::byte> AESEncoderCodec::getCodecResult()
     {
@@ -66,7 +78,7 @@ namespace codec
         encAes.SetKeyWithIV(encKey, encKey.size(), iv);
 
         std::vector<CryptoPP::byte> result;
-        CryptoPP::ArraySource encPrc1{
+        static_cast<void>(CryptoPP::ArraySource{
             reinterpret_cast<CryptoPP::byte*>(buffer.data()),
             buffer.size(),
             true,
@@ -74,7 +86,7 @@ namespace codec
                 encAes,
                 new CryptoPP::VectorSink{ result }
             }
-        };
+        });
 
         encoded.clear();
         encoded.shrink_to_fit();
@@ -83,6 +95,37 @@ namespace codec
             result.begin(),
             result.end(),
             std::back_inserter(encoded),
+            [](const auto &itr) { return static_cast<std::byte>(itr); }
+        );
+    }
+    
+    void AESEncoderCodec::setKey(std::vector<std::byte> key)
+    {
+        key = std::move(key);
+    }
+
+    void AESEncoderCodec::setBuffer(std::vector<std::byte> data)
+    {
+        buffer = std::move(data);
+    }
+
+    void AESEncoderCodec::setBuffer(const std::byte *data, std::size_t size)
+    {
+        buffer.clear();
+        buffer.shrink_to_fit();
+        buffer.reserve(size);
+        std::copy(data, data + size, std::back_inserter(buffer));
+    }
+    
+    void AESEncoderCodec::setBuffer(std::string_view data)
+    {
+        buffer.clear();
+        buffer.shrink_to_fit();
+        buffer.reserve(data.size());
+        std::transform(
+            data.cbegin(),
+            data.cend(),
+            std::back_inserter(buffer),
             [](const auto &itr) { return static_cast<std::byte>(itr); }
         );
     }

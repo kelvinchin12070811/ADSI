@@ -80,9 +80,43 @@ namespace codec
         /**
          * @brief Get SHA3 hasher instance used in Encoder.
          * @return Observer pointer to SHA3 hasher instance used internally.
-        */
+         */
         const CryptoPP::SHA3 *hasher() const;
 
+        /** @} */
+
+    public: // mutators
+        /**
+         * @name Mutators
+         * @{
+         */
+        /**
+         * @brief Set data buffer with array of bytes.
+         * @param data Byte array to assign to buffer.
+         */
+        void setBuffer(std::vector<std::byte> data);
+        /**
+         * @brief Set data buffer with string data.
+         * 
+         * This function assign a string to data buffer.
+         * 
+         * @param data String to encode
+        */
+        void setBuffer(std::string_view data);
+        /**
+         * @brief Assign data buffer with any array container.
+         * @param data Observer pointer to array of data to assign.
+         * @param size Amount of data to assign.
+         */
+        void setBuffer(const std::byte *data, std::size_t size);
+        /**
+         * @brief Set SHA3 implementation used by the encoder.
+         * 
+         * Set the instance of SHA3 implementation used by teh encoder, nullptr for default.
+         * 
+         * @param hasher SHA3 instance to use.
+         */
+        void setHasher(std::unique_ptr<CryptoPP::SHA3> hasher = nullptr);
         /** @} */
     private:
         /**
@@ -90,11 +124,19 @@ namespace codec
          * 
          * The CryptoPP SHA3 hasher instance used in hashing data.
          * 
-         * See also:
          * @sa hasher()
-        */
+         */
         std::unique_ptr<CryptoPP::SHA3> _hasher{ nullptr };
         std::vector<std::byte> encodedData{};
+        /**
+         * @brief Data buffer for encoder to encode.
+         * 
+         * The buffer of data used by the encoder to encode data.
+         * 
+         * @sa setBuffer(std::vector<std::byte>)
+         * @sa setBuffer(std::string_view)
+         * @sa setBuffer(const std::byte*, std::size_t)
+         */
         std::vector<std::byte> buffer{};
     };
 }

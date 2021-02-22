@@ -54,11 +54,36 @@ namespace codec
          * @note This constructor will not take ownership of @p data.
          */
         AESEncoderCodec(const std::byte *data, std::size_t size, std::vector<std::byte> key);
+        AESEncoderCodec(std::string_view data, std::vector<std::byte> key);
 
         std::vector<std::byte> getCodecResult() override;
         void setCodecData(std::vector<std::byte> data) override;
         void execute() override;
+
+    public: // mutators
+        /**
+         * @name Mutators
+         * @{
+         */
+        /**
+         * @brief Set AES Key use for encryption.
+         * 
+         * Set AES Key use for encryption process, must not be empty.
+         * 
+         * @param key AES key.
+         * @throw std::invalid_argument if @p key is empty.
+         */
+        void setKey(std::vector<std::byte> key);
+        void setBuffer(std::vector<std::byte> data);
+        void setBuffer(const std::byte *data, std::size_t size);
+        void setBuffer(std::string_view data);
+        /** @} */
     private:
+        /**
+         * @brief AES Key used in encryption process
+         * 
+         * @sa setKey(std::vector<std::byte>)
+         */
         std::vector<std::byte> key;
         std::vector<std::byte> buffer;
         std::vector<std::byte> encoded;
