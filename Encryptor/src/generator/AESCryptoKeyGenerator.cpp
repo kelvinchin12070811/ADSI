@@ -25,7 +25,7 @@ namespace key_generator
 
     std::vector<std::byte> AESCryptoKeyGenerator::getGeneratedKey()
     {
-        return key;
+        return _key;
     }
 
     void AESCryptoKeyGenerator::generate()
@@ -46,13 +46,13 @@ namespace key_generator
             [](const auto &curItem) { return static_cast<CryptoPP::byte>(curItem); }
         );
 
-        key.resize(CryptoPP::AES::MAX_KEYLENGTH);
+        _key.resize(CryptoPP::AES::MAX_KEYLENGTH);
         psuedoRndEngine.SetKeyWithIV(
             reinterpret_cast<CryptoPP::byte*>(pwHash.data()),
             pwHash.size(),
             iv.data()
         );
-        psuedoRndEngine.GenerateBlock(reinterpret_cast<CryptoPP::byte*>(key.data()), key.size());
+        psuedoRndEngine.GenerateBlock(reinterpret_cast<CryptoPP::byte*>(_key.data()), _key.size());
     }
 
     std::string_view AESCryptoKeyGenerator::password() const

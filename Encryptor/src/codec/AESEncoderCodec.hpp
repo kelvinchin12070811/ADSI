@@ -74,8 +74,36 @@ namespace codec
          * @throw std::invalid_argument if @p key is empty.
          */
         void setKey(std::vector<std::byte> key);
+        /**
+         * @brief Set buffer with array of data.
+         * @param data bytes to assign.
+         * 
+         * @sa void setBuffer(const std::byte *, std::size_t)
+         * @sa void setBuffer(std::string_view)
+         */
         void setBuffer(std::vector<std::byte> data);
+        /**
+         * @brief Assign raw array of data to buffer.
+         * @param data Bytes to assign. Must not be nullptr.
+         * @param size Size of data.
+         * 
+         * @throw std::invalid_argument if @p data is nullptr.
+         * 
+         * @sa void setBuffer(std::vector<std::byte>)
+         * @sa void setBuffer(std::string_view)
+         * 
+         * @note This function will not request ownership for @p data.
+         */
         void setBuffer(const std::byte *data, std::size_t size);
+        /**
+         * @brief Assign string to buffer.
+         * @param data String to assign.
+         * 
+         * @sa void setBuffer(std::vector<std::byte>)
+         * @sa void setBuffer(const std::byte *, std::size_t)
+         * 
+         * @note This function will not request ownership for @p data
+         */
         void setBuffer(std::string_view data);
         /** @} */
     private:
@@ -84,8 +112,18 @@ namespace codec
          * 
          * @sa setKey(std::vector<std::byte>)
          */
-        std::vector<std::byte> key;
-        std::vector<std::byte> buffer;
-        std::vector<std::byte> encoded;
+        std::vector<std::byte> _key;
+        /**
+         * @brief Data buffer used to encode data.
+         * 
+         * @sa void setBuffer(std::vector<std::byte>)
+         * @sa void setBuffer(const std::byte *, std::size_t)
+         * @sa void setBuffer(std::string_view)
+         */
+        std::vector<std::byte> _buffer;
+        /**
+         * @brief Encoded data produced by the encoder.
+         */
+        std::vector<std::byte> _encoded;
     };
 }

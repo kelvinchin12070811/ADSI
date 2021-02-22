@@ -14,14 +14,14 @@
 namespace codec
 {
     AESEncoderCodec::AESEncoderCodec(std::vector<std::byte> key):
-        AESEncoderCodec(decltype(buffer){}, std::move(key))
+        AESEncoderCodec(decltype(_buffer){}, std::move(key))
     {
     }
     
     AESEncoderCodec::AESEncoderCodec(std::vector<std::byte> data, std::vector<std::byte> key):
-        buffer{ std::move(data) }, key{ std::move(key) }
+        _buffer{ std::move(data) }, _key{ std::move(key) }
     {
-        if (this->key.empty())
+        if (this->_key.empty())
             throw std::invalid_argument("AES key must not be empty.");
     }
     
@@ -31,29 +31,29 @@ namespace codec
         if (data == nullptr)
             throw std::invalid_argument{ "Data must not be nullptr but seems to receive it." };
 
-        buffer = decltype(buffer){ data, data + size };
+        _buffer = decltype(_buffer){ data, data + size };
     }
 
     AESEncoderCodec::AESEncoderCodec(std::string_view data, std::vector<std::byte> key):
         AESEncoderCodec(key)
     {
-        buffer.reserve(data.size());
+        _buffer.reserve(data.size());
         std::transform(
             data.cbegin(),
             data.cend(),
-            std::back_inserter(buffer),
+            std::back_inserter(_buffer),
             [](const auto &itr) { return static_cast<std::byte>(itr); }
         );
     }
     
     std::vector<std::byte> AESEncoderCodec::getCodecResult()
     {
-        return encoded;
+        return _encoded;
     }
     
     void AESEncoderCodec::setCodecData(std::vector<std::byte> data)
     {
-        buffer = std::move(data);
+        _buffer = std::move(data);
     }
     
     void AESEncoderCodec::execute()
@@ -61,17 +61,17 @@ namespace codec
         CryptoPP::OFB_Mode<CryptoPP::AES>::Encryption prndPool;
         CryptoPP::CBC_Mode<CryptoPP::AES>::Encryption encAes;
         CryptoPP::SecByteBlock iv{ CryptoPP::AES::BLOCKSIZE };
-        CryptoPP::SecByteBlock encKey{ key.size() };
+        CryptoPP::SecByteBlock encKey{ _key.size() };
         CryptoPP::SecByteBlock prndPoolIV{ CryptoPP::AES::Encryption::BLOCKSIZE };
 
         std::transform(
-            key.crbegin(),
-            key.crbegin() + prndPoolIV.size(),
+            _key.crbegin(),
+            _key.crbegin() + prndPoolIV.size(),
             prndPoolIV.begin(),
             [](const auto &itr) { return static_cast<CryptoPP::byte>(itr); }
         );
 
-        prndPool.SetKeyWithIV(reinterpret_cast<CryptoPP::byte*>(key.data()), key.size(), prndPoolIV);
+        prndPool.SetKeyWithIV(reinterpret_cast<CryptoPP::byte*>(_key.data()), _key.size(), prndPoolIV);
         prndPool.GenerateBlock(iv, iv.size());
         prndPool.GenerateBlock(encKey, encKey.size());
 
@@ -79,8 +79,8 @@ namespace codec
 
         std::vector<CryptoPP::byte> result;
         static_cast<void>(CryptoPP::ArraySource{
-            reinterpret_cast<CryptoPP::byte*>(buffer.data()),
-            buffer.size(),
+            reinterpret_cast<CryptoPP::byte*>(_buffer.data()),
+            _buffer.size(),
             true,
             new CryptoPP::StreamTransformationFilter{
                 encAes,
@@ -88,13 +88,13 @@ namespace codec
             }
         });
 
-        encoded.clear();
-        encoded.shrink_to_fit();
-        encoded.reserve(result.size());
+        _encoded.clear();
+        _encoded.shrink_to_fit();
+        _encoded.reserve(result.size());
         std::transform(
             result.begin(),
             result.end(),
-            std::back_inserter(encoded),
+            std::back_inserter(_encoded),
             [](const auto &itr) { return static_cast<std::byte>(itr); }
         );
     }
@@ -106,26 +106,26 @@ namespace codec
 
     void AESEncoderCodec::setBuffer(std::vector<std::byte> data)
     {
-        buffer = std::move(data);
+        _buffer = std::move(data);
     }
 
     void AESEncoderCodec::setBuffer(const std::byte *data, std::size_t size)
     {
-        buffer.clear();
-        buffer.shrink_to_fit();
-        buffer.reserve(size);
-        std::copy(data, data + size, std::back_inserter(buffer));
+        _buffer.clear();
+        _buffer.shrink_to_fit();
+        _buffer.reserve(size);
+        std::copy(data, data + size, std::back_inserter(_buffer));
     }
     
     void AESEncoderCodec::setBuffer(std::string_view data)
     {
-        buffer.clear();
-        buffer.shrink_to_fit();
-        buffer.reserve(data.size());
+        _buffer.clear();
+        _buffer.shrink_to_fit();
+        _buffer.reserve(data.size());
         std::transform(
             data.cbegin(),
             data.cend(),
-            std::back_inserter(buffer),
+            std::back_inserter(_buffer),
             [](const auto &itr) { return static_cast<std::byte>(itr); }
         );
     }
