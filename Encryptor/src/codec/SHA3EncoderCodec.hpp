@@ -28,7 +28,7 @@ namespace codec
          * @sa SHA3EncoderCodec(std::string_view, std::unique_ptr<CryptoPP::SHA3>)
          * @sa SHA3EncoderCodec(std::byte*, std::size_t, std::unique_ptr<CryptoPP::SHA3> hasher)
          */
-        explicit SHA3EncoderCodec(std::unique_ptr<CryptoPP::SHA3> hasher);
+        explicit SHA3EncoderCodec(std::unique_ptr<CryptoPP::SHA3> hasher = nullptr);
         /**
          * @brief Construct a new encoder with raw bytes.
          * @param data Data to encode.

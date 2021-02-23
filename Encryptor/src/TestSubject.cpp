@@ -14,6 +14,7 @@
 #include <QString>
 #include <vector>
 
+#include "codec/AESDecoderCodec.hpp"
 #include "codec/AESEncoderCodec.hpp"
 #include "codec/SHA3EncoderCodec.hpp"
 #include "generator/AESCryptoKeyGenerator.hpp"
@@ -154,28 +155,59 @@ namespace TestSubject
         constexpr std::string_view password{ "ADamnSuperStrongPassword" };
         std::vector<std::byte> AESKey;
 
-        key_generator::AESCryptoKeyGenerator genAESKey{ password.data() };
-        genAESKey.generate();
-        AESKey = genAESKey.getGeneratedKey();
+        try
+        {
+            key_generator::AESCryptoKeyGenerator genAESKey{ password.data() };
+            genAESKey.generate();
+            AESKey = genAESKey.getGeneratedKey();
 
-        codec::AESEncoderCodec encoder{ reinterpret_cast<const std::byte*>(data.data()), data.size(), AESKey };
-        encoder.execute();
-        auto encodedAES = encoder.getCodecResult();
+            codec::AESEncoderCodec encoder{ data, AESKey };
+            encoder.execute();
+            auto encodedAES = encoder.getCodecResult();
 
-        codec::SHA3EncoderCodec codSHA3_256{ encodedAES };
-        codSHA3_256.execute();
+            codec::AESDecoderCodec decAes{ encodedAES, AESKey };
+            decAes.execute();
+            auto decodedAES = decAes.getCodecResult();
 
-        std::string aesEncodedDataHex;
-        auto aesEncodedData = codSHA3_256.getCodecResult();
-        static_cast<void>(CryptoPP::ArraySource{
-            reinterpret_cast<CryptoPP::byte*>(aesEncodedData.data()),
-            aesEncodedData.size(),
-            true,
-            new CryptoPP::HexEncoder{
-                new CryptoPP::StringSink{ aesEncodedDataHex }
-            }
-        });
+            codec::SHA3EncoderCodec encSha;
+            encSha.setCodecData(data);
+            encSha.execute();
 
-        qDebug() << testName.arg(QStringLiteral("AES Encoded hash: %1").arg(QString::fromStdString(aesEncodedDataHex)));
+            auto hashData = encSha.getCodecResult();
+            std::string hexHashData;
+            static_cast<void>(CryptoPP::ArraySource{
+                reinterpret_cast<CryptoPP::byte *>(hashData.data()),
+                hashData.size(),
+                true,
+                new CryptoPP::HexEncoder{
+                    new CryptoPP::StringSink{ hexHashData }
+                }
+                });
+
+            encSha.setCodecData(decodedAES);
+            encSha.execute();
+
+            auto hashDecData = encSha.getCodecResult();
+            std::string hexHashDecData;
+            static_cast<void>(CryptoPP::ArraySource{
+                reinterpret_cast<CryptoPP::byte *>(hashData.data()),
+                hashDecData.size(),
+                true,
+                new CryptoPP::HexEncoder{
+                    new CryptoPP::StringSink{ hexHashDecData }
+                }
+                });
+
+            bool passed{ hexHashData == hexHashDecData };
+            qDebug() <<
+                testName.arg(QStringLiteral("Compare with original: %1")
+                    .arg(passed ? QStringLiteral("passed") : QStringLiteral("failed"))
+                );
+            assert(passed);
+        }
+        catch (const std::exception &e)
+        {
+            qDebug() << testName.arg(QStringLiteral("Exception occurred: %1").arg(e.what()));
+        }
     }
 }

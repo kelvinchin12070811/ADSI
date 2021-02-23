@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <boost/assert.hpp>
 #include <cryptopp/aes.h>
+#include <cryptopp/modes.h>
+#include <cryptopp/osrng.h>
 
 #include "codec/AESDecoderCodec.hpp"
 
@@ -64,7 +66,45 @@ namespace codec
     
     void AESDecoderCodec::execute()
     {
-        BOOST_ASSERT_MSG(false, "unimplemented");
+        CryptoPP::OFB_Mode<CryptoPP::AES>::Encryption prndPool;
+        CryptoPP::CBC_Mode<CryptoPP::AES>::Decryption decAes;
+        CryptoPP::SecByteBlock iv{ CryptoPP::AES::BLOCKSIZE };
+        CryptoPP::SecByteBlock decKey{ _key.size() };
+        CryptoPP::SecByteBlock prndPoolIV{ CryptoPP::AES::BLOCKSIZE };
+
+        std::transform(
+            _key.crbegin(),
+            _key.crbegin() + prndPoolIV.size(),
+            prndPoolIV.begin(),
+            [](const auto &itr) { return static_cast<CryptoPP::byte>(itr); }
+        );
+
+        prndPool.SetKeyWithIV(reinterpret_cast<CryptoPP::byte *>(_key.data()), _key.size(), prndPoolIV);
+        prndPool.GenerateBlock(iv, iv.size());
+        prndPool.GenerateBlock(decKey, decKey.size());
+
+        decAes.SetKeyWithIV(decKey, decKey.size(), iv);
+        
+        std::vector<CryptoPP::byte> result;
+        static_cast<void>(CryptoPP::ArraySource{
+            reinterpret_cast<CryptoPP::byte *>(_buffer.data()),
+            _buffer.size(),
+            true,
+            new CryptoPP::StreamTransformationFilter{
+                decAes,
+                new CryptoPP::VectorSink{ result }
+            }
+        });
+
+        _encoded.clear();
+        _encoded.shrink_to_fit();
+        _encoded.reserve(result.size());
+        std::transform(
+            result.cbegin(),
+            result.cend(),
+            std::back_inserter(_encoded),
+            [](const auto &itr) { return static_cast<std::byte>(itr); }
+        );
     }
     
     void AESDecoderCodec::setKey(std::vector<std::byte> key)
