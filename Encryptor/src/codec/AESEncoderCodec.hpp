@@ -50,8 +50,6 @@ namespace codec
          * 
          * @throw std::invalid_argument if @p data is nullptr.
          * @throw std::invalid_argument if @p key is empty.
-         * 
-         * @note This constructor will not take ownership of @p data.
          */
         AESEncoderCodec(const std::byte *data, std::size_t size, std::vector<std::byte> key);
         /**
@@ -63,6 +61,8 @@ namespace codec
 
         std::vector<std::byte> getCodecResult() const override;
         void setCodecData(std::vector<std::byte> data) override;
+        void setCodecData(const std::byte *data, std::size_t size) override;
+        void setCodecData(std::string_view data) override;
         void execute() override;
 
     public: // mutators
@@ -79,37 +79,6 @@ namespace codec
          * @throw std::invalid_argument if @p key is empty.
          */
         void setKey(std::vector<std::byte> key);
-        /**
-         * @brief Set buffer with array of data.
-         * @param data bytes to assign.
-         * 
-         * @sa void setBuffer(const std::byte *, std::size_t)
-         * @sa void setBuffer(std::string_view)
-         */
-        void setBuffer(std::vector<std::byte> data);
-        /**
-         * @brief Assign raw array of data to buffer.
-         * @param data Bytes to assign. Must not be nullptr.
-         * @param size Size of data.
-         * 
-         * @throw std::invalid_argument if @p data is nullptr.
-         * 
-         * @sa void setBuffer(std::vector<std::byte>)
-         * @sa void setBuffer(std::string_view)
-         * 
-         * @note This function will not request ownership for @p data.
-         */
-        void setBuffer(const std::byte *data, std::size_t size);
-        /**
-         * @brief Assign string to buffer.
-         * @param data String to assign.
-         * 
-         * @sa void setBuffer(std::vector<std::byte>)
-         * @sa void setBuffer(const std::byte *, std::size_t)
-         * 
-         * @note This function will not request ownership for @p data
-         */
-        void setBuffer(std::string_view data);
         /** @} */
     private:
         /**

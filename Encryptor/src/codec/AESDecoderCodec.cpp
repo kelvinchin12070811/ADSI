@@ -43,7 +43,23 @@ namespace codec
     
     void AESDecoderCodec::setCodecData(std::vector<std::byte> data)
     {
-        BOOST_ASSERT_MSG(false, "unimplemented");
+        _buffer = std::move(data);
+    }
+
+    void AESDecoderCodec::setCodecData(const std::byte *data, std::size_t size)
+    {
+        if (data == nullptr)
+            throw std::invalid_argument{ "Parameter data must not be nullptr but seems to be." };
+
+        _buffer.clear();
+        _buffer.shrink_to_fit();
+        _buffer.reserve(size);
+        std::copy(data, data + size, std::back_inserter(_buffer));
+    }
+
+    void AESDecoderCodec::setCodecData(std::string_view data)
+    {
+        setCodecData(reinterpret_cast<const std::byte *>(data.data()), data.size());
     }
     
     void AESDecoderCodec::execute()
@@ -57,23 +73,5 @@ namespace codec
             throw std::invalid_argument{ "Parameter key must not be empty but seems to be" };
 
         _key = std::move(key);
-    }
-
-    void AESDecoderCodec::setBuffer(std::vector<std::byte> data)
-    {
-        _buffer = std::move(data);
-    }
-
-    void AESDecoderCodec::setBuffer(std::string_view data)
-    {
-        setBuffer(reinterpret_cast<const std::byte *>(data.data()), data.size());
-    }
-    
-    void AESDecoderCodec::setBuffer(const std::byte * data, std::size_t size)
-    {
-        _buffer.clear();
-        _buffer.shrink_to_fit();
-        _buffer.reserve(size);
-        std::copy(data, data + size, std::back_inserter(_buffer));
     }
 }

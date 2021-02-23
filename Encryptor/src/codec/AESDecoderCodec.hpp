@@ -68,13 +68,13 @@ namespace codec
          * @sa AESDecoderCodec(std::vector<std::byte>)
          * @sa AESDecoderCodec(std::vector<std::byte>, std::vector<std::byte>)
          * @sa AESDecoderCodec(std::string_view, std::vector<std::byte>)
-         * 
-         * @note This function does not require ownership of @p data as it make a copy of it.
          */
         AESDecoderCodec(const std::byte *data, std::size_t size, std::vector<std::byte> key);
 
         std::vector<std::byte> getCodecResult() const override;
         void setCodecData(std::vector<std::byte> data) override;
+        void setCodecData(const std::byte *data, std::size_t size) override;
+        void setCodecData(std::string_view data) override;
         void execute() override;
 
     public:// Mutators
@@ -89,22 +89,6 @@ namespace codec
          * @throw std::invalid_argument if @param key is empty.
          */
         void setKey(std::vector<std::byte> key);
-        /**
-         * @brief Assign array of bytes to buffer.
-         * @param data Bytes to assign.
-         */
-        void setBuffer(std::vector<std::byte> data);
-        /**
-         * @brief Assign string to buffer.
-         * @param data String to assign.
-         */
-        void setBuffer(std::string_view data);
-        /**
-         * @brief Assign array of data from any array container to buffer.
-         * @param data Bytes to assign
-         * @param size Amount of bytes to assign.
-         */
-        void setBuffer(const std::byte * data, std::size_t size);
         /** @} */
     private:
         /**
