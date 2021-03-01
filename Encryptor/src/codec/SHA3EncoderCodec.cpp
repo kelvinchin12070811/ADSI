@@ -74,6 +74,8 @@ namespace codec
 
     void SHA3EncoderCodec::execute()
     {
+        _encodedData.clear();
+        _encodedData.shrink_to_fit();
         _encodedData.resize(_hasher->DigestSize());
         static_cast<void>(CryptoPP::ArraySource{
             reinterpret_cast<CryptoPP::byte *>(_buffer.data()),

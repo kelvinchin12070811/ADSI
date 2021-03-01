@@ -40,7 +40,7 @@ namespace codec
     
     std::vector<std::byte> AESDecoderCodec::getCodecResult() const
     {
-        return _buffer;
+        return _encoded;
     }
     
     void AESDecoderCodec::setCodecData(std::vector<std::byte> data)
