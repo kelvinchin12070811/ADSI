@@ -2,7 +2,12 @@
 #include <boost/test/unit_test.hpp>
 
 #include <algorithm>
+#include <boost/algorithm/string.hpp>
+#include <cryptopp/hex.h>
+#include <cryptopp/osrng.h>
+#include <memory>
 
+#include "codec/SHA3EncoderCodec.hpp"
 #include "utils/DCT.hpp"
 
 BOOST_AUTO_TEST_CASE(dct_algo_test)
@@ -37,4 +42,29 @@ BOOST_AUTO_TEST_CASE(dct_algo_test)
         }
     );
     BOOST_REQUIRE((firstResult == iresult.end()) && (secondResult == data.end()));
+}
+
+BOOST_AUTO_TEST_CASE(sha3_hasher_test)
+{
+    { //< Prevent false memory leak detection from boost::test
+        std::string_view text{ "A quick brown fox jumps over the lazy dog." };
+        std::string_view preCalHash{ "16f043d383269059753569d7ebff1a1d88f4d7a8a508d3814ef2e20891cfbd08" };
+        auto encoder = std::make_unique<codec::SHA3EncoderCodec>(text);
+
+
+        encoder->execute();
+        auto result = encoder->getCodecResult();
+        std::string hashText;
+        static_cast<void>(CryptoPP::ArraySource{
+            reinterpret_cast<CryptoPP::byte *>(result.data()),
+            result.size(),
+            true,
+            new CryptoPP::HexEncoder{
+                new CryptoPP::StringSink{ hashText }
+            }
+            });
+        boost::algorithm::to_lower(hashText);
+        encoder = nullptr;
+        BOOST_REQUIRE(hashText == preCalHash);
+    }
 }

@@ -12,10 +12,12 @@ find_package(cryptopp CONFIG REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 
 set(PROJECT_SOURCE_FILES
+    ../../Encryptor/src/codec/SHA3EncoderCodec.cpp
     ../../Encryptor/src/utils/DCT.cpp
 )
 
 set(PROJECT_HEADER_FILES
+    ../../Encryptor/src/codec/SHA3EncoderCodec.hpp
     ../../Encryptor/src/utils/DCT.hpp
 )
 
