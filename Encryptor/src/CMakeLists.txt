@@ -14,7 +14,10 @@ find_package(Qt5 COMPONENTS
     Quick
 REQUIRED)
 
+find_package(Boost COMPONENTS REQUIRED)
 find_package(cryptopp CONFIG REQUIRED)
+
+include_directories(${Boost_INCLUDE_DIR})
 
 get_target_property(QMAKE_BIN Qt5::qmake IMPORTED_LOCATION)
 get_filename_component(QMAKE_BIN_DIR "${QMAKE_BIN}" DIRECTORY)
