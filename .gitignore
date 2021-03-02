@@ -2,3 +2,4 @@
 out/*
 docs/*
 CMakeSettings.json
+*.user

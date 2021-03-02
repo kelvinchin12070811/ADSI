@@ -7,11 +7,12 @@ set(CMAKE_AUTOUIC on)
 set(CMAKE_INCLUDE_CURRENT_DIR on)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_CRT_SECURE_NO_WARNINGS")
 
 find_package(Qt5 COMPONENTS
+    Core
     Gui
-    Qml
-    Quick
+    Widgets
 REQUIRED)
 
 find_package(Boost COMPONENTS REQUIRED)
@@ -24,6 +25,7 @@ get_filename_component(QMAKE_BIN_DIR "${QMAKE_BIN}" DIRECTORY)
 find_program(DEPLOYQT_BIN NAMES windeployqt HINTS "${QMAKE_BIN_DIR}")
 
 set(PROJECT_UI_FILES
+    "window/mainwindow/MainWindow.ui"
 )
 
 set(PROJECT_SOURCE_FILES
@@ -34,6 +36,7 @@ set(PROJECT_SOURCE_FILES
     "Main.cpp"
     "TestSubject.cpp"
     "utils/DCT.cpp"
+    "window/mainwindow/MainWindow.cpp"
 )
 
 set(PROJECT_HEADER_FILES
@@ -45,6 +48,7 @@ set(PROJECT_HEADER_FILES
     "generator/ICryptoKeyGenerator.hpp"
     "TestSubject.hpp"
     "utils/DCT.hpp"
+    "window/mainwindow/MainWindow.hpp"
 )
 
 if (WIN32)
@@ -63,7 +67,7 @@ endif ()
 target_link_libraries(
      ${PROJECT_NAME}
      cryptopp-static
+     Qt5::Core
      Qt5::Gui
-     Qt5::Qml
-     Qt5::Quick
+     Qt5::Widgets
 )
