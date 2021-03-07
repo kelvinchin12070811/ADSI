@@ -7,6 +7,7 @@
 #include <vector>
 #include <QApplication>
 
+#include "utils/ConfigManager.hpp"
 #include "window/mainwindow/MainWindow.hpp"
 
 #if defined(WIN32) && defined(DEBUG)
@@ -25,7 +26,11 @@ int main(int argc, char **argv)
     system("title ADSI Encryptor Debug Console");
 #endif
 
-    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    utils::ConfigManager::getInstance().loadConfig();
+
+    if (utils::ConfigManager::getInstance().isEnableHighDPIScaling())
+        QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+
     auto app = std::make_unique<QApplication>(argc, argv);
 
     auto w = std::make_unique<window::MainWindow>();

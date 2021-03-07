@@ -17,6 +17,7 @@ REQUIRED)
 
 find_package(Boost COMPONENTS REQUIRED)
 find_package(cryptopp CONFIG REQUIRED)
+find_package(yaml-cpp CONFIG REQUIRED)
 
 include_directories(${Boost_INCLUDE_DIR})
 
@@ -35,6 +36,7 @@ set(PROJECT_SOURCE_FILES
     "generator/AESCryptoKeyGenerator.cpp"
     "Main.cpp"
     "TestSubject.cpp"
+    "utils/ConfigManager.cpp"
     "utils/DCT.cpp"
     "window/mainwindow/MainWindow.cpp"
 )
@@ -47,6 +49,7 @@ set(PROJECT_HEADER_FILES
     "generator/AESCryptoKeyGenerator.hpp"
     "generator/ICryptoKeyGenerator.hpp"
     "TestSubject.hpp"
+    "utils/ConfigManager.hpp"
     "utils/DCT.hpp"
     "window/mainwindow/MainWindow.hpp"
 )
@@ -67,6 +70,7 @@ endif ()
 target_link_libraries(
      ${PROJECT_NAME}
      cryptopp-static
+     yaml-cpp
      Qt5::Core
      Qt5::Gui
      Qt5::Widgets
