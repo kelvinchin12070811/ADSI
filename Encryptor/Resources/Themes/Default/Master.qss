@@ -1,0 +1,18 @@
+[accessibleName="sidebar"] {
+    background-color: lightgray;
+}
+
+QPushButton {
+    background-color: white;
+    border: none;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+QPushButton:hover {
+    background-color: #eaeaea;
+}
+
+QPushButton:pressed {
+    background-color: red;
+}

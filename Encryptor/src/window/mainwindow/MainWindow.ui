@@ -62,12 +62,12 @@
       <widget class="QFrame" name="sidebarPanel">
        <property name="maximumSize">
         <size>
-         <width>16777215</width>
+         <width>200</width>
          <height>16777215</height>
         </size>
        </property>
-       <property name="styleSheet">
-        <string notr="true">background-color: lightgrey</string>
+       <property name="accessibleName">
+        <string>sidebar</string>
        </property>
        <property name="frameShape">
         <enum>QFrame::NoFrame</enum>

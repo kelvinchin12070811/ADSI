@@ -1,3 +1,5 @@
 <RCC>
-    <qresource prefix="/"/>
+    <qresource prefix="/">
+        <file alias="Themes/Default/Master.qss">Resources/Themes/Default/Master.qss</file>
+    </qresource>
 </RCC>

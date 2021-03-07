@@ -24,6 +24,18 @@ namespace window
         explicit MainWindow(QWidget *parent = nullptr);
 
     private:
+        /**
+         * @brief Load QSS from selected path.
+         */
+        void loadStylesheet();
+        /**
+         * @brief Extra steps to initialize the UI.
+         */
+        void initUI();
+    private:
+        /**
+         * @brief UI generated via Qt Designer.
+         */
         std::unique_ptr<Ui::MainWindow> ui;
     };
 }
