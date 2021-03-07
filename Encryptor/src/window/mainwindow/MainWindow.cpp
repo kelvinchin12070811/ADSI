@@ -21,6 +21,11 @@ namespace window
         loadStylesheet();
     }
 
+    void MainWindow::onBtnLoadImgClicked()
+    {
+        QMessageBox::information(this, "Hello world!", "Hi there!");
+    }
+
     void MainWindow::loadStylesheet()
     {
         QFile styMaster{ QStringLiteral(":/Themes/Default/Master.qss") };

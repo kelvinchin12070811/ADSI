@@ -245,5 +245,25 @@
   </widget>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>btnImageLoad</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>onBtnLoadImgClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>79</x>
+     <y>250</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>227</x>
+     <y>520</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>onBtnLoadImgClicked()</slot>
+ </slots>
 </ui>

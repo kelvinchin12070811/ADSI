@@ -23,6 +23,9 @@ namespace window
         */
         explicit MainWindow(QWidget *parent = nullptr);
 
+    private slots:
+        void onBtnLoadImgClicked();
+
     private:
         /**
          * @brief Load QSS from selected path.
