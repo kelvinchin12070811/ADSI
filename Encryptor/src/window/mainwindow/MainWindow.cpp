@@ -10,6 +10,7 @@
 #include <QScreen>
 
 #include "window/mainwindow/MainWindow.hpp"
+#include "window/setting/Setting.hpp"
 
 namespace window
 {
@@ -24,6 +25,12 @@ namespace window
     void MainWindow::onBtnLoadImgClicked()
     {
         QMessageBox::information(this, "Hello world!", "Hi there!");
+    }
+
+    void MainWindow::onBtnSettingClicked()
+    {
+        auto dilSetting = std::make_unique<window::Setting>();
+        dilSetting->exec();
     }
 
     void MainWindow::loadStylesheet()

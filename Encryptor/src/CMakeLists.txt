@@ -27,6 +27,7 @@ find_program(DEPLOYQT_BIN NAMES windeployqt HINTS "${QMAKE_BIN_DIR}")
 
 set(PROJECT_UI_FILES
     "window/mainwindow/MainWindow.ui"
+    "window/setting/Setting.ui"
 )
 
 set(PROJECT_SOURCE_FILES
@@ -39,6 +40,7 @@ set(PROJECT_SOURCE_FILES
     "utils/ConfigManager.cpp"
     "utils/DCT.cpp"
     "window/mainwindow/MainWindow.cpp"
+    "window/setting/Setting.cpp"
 )
 
 set(PROJECT_HEADER_FILES
@@ -52,6 +54,7 @@ set(PROJECT_HEADER_FILES
     "utils/ConfigManager.hpp"
     "utils/DCT.hpp"
     "window/mainwindow/MainWindow.hpp"
+    "window/setting/Setting.hpp"
 )
 
 if (WIN32)

@@ -1,0 +1,6 @@
+QCheckBox::indicator {
+    border: none;
+    background-color: #d3d3d3;
+    width: 26px;
+    height: 13px;
+}

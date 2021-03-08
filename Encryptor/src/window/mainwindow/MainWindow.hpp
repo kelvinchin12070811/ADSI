@@ -25,6 +25,7 @@ namespace window
 
     private slots:
         void onBtnLoadImgClicked();
+        void onBtnSettingClicked();
 
     private:
         /**

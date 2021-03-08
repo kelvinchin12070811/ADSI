@@ -220,6 +220,13 @@
           </property>
          </spacer>
         </item>
+        <item>
+         <widget class="QPushButton" name="btnSetting">
+          <property name="text">
+           <string>Setting</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
       <widget class="QFrame" name="clientAreaPanel">
@@ -247,23 +254,40 @@
  <resources/>
  <connections>
   <connection>
+   <sender>btnSetting</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>onBtnSettingClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>119</x>
+     <y>479</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>186</x>
+     <y>544</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
    <sender>btnImageLoad</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>onBtnLoadImgClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>79</x>
-     <y>250</y>
+     <x>63</x>
+     <y>236</y>
     </hint>
     <hint type="destinationlabel">
-     <x>227</x>
-     <y>520</y>
+     <x>183</x>
+     <y>538</y>
     </hint>
    </hints>
   </connection>
  </connections>
  <slots>
+  <slot>onBtnSettingClicked()</slot>
   <slot>onBtnLoadImgClicked()</slot>
  </slots>
 </ui>
