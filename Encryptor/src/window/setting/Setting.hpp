@@ -22,10 +22,15 @@ namespace window
          * @param parent Parent of the dialog.
          */
         explicit Setting(QWidget *parent = nullptr);
+    private:
         /**
          * @brief Load stylesheet from resources.
          */
         void loadStylesheet();
+        /**
+         * @brief Load configurations to edit.
+         */
+        void loadConfigs();
     private slots:
         /**
          * @brief Action on cancel button clicked.
@@ -43,7 +48,7 @@ namespace window
         /**
          * @brief Ui objects generated via Qt Designer.
          */
-        std::unique_ptr<Ui::settingDialog> ui;
+        std::unique_ptr<Ui::settingDialog> _ui;
         /** @} */
     };
 }

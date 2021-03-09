@@ -15,11 +15,12 @@
 namespace window
 {
     Setting::Setting(QWidget *parent):
-        QDialog(parent), ui{ std::make_unique<Ui::settingDialog>() }
+        QDialog(parent), _ui{ std::make_unique<Ui::settingDialog>() }
     {
-        ui->setupUi(this);
+        _ui->setupUi(this);
 
         loadStylesheet();
+        loadConfigs();
     }
     
     void Setting::loadStylesheet()
@@ -45,6 +46,12 @@ namespace window
 
         this->setStyleSheet(constructedStylesheet);
     }
+
+    void Setting::loadConfigs()
+    {
+        auto configMng = &utils::ConfigManager::getInstance();
+        _ui->optEnableHighDPIScaling->setChecked(configMng->isEnableHighDPIScaling());
+    }
     
     void Setting::onBtnCancelClicked()
     {
@@ -53,7 +60,11 @@ namespace window
 
     void Setting::onBtnOkClicked()
     {
-        utils::ConfigManager::getInstance().dumpConfig();
+        auto configMng = &utils::ConfigManager::getInstance();
+
+        configMng->setEnableHighDPIScaling(_ui->optEnableHighDPIScaling->isChecked());
+
+        configMng->dumpConfig();
         QMessageBox::information(
             this,
             QStringLiteral("ADSI Encryptor"),
