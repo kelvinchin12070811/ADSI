@@ -29,6 +29,11 @@ namespace utils
             static constexpr std::string_view enableHighDPIScaling{ "enable high dpi scaling" };
         };
     public:
+        ConfigManager(const ConfigManager &rhs) = delete;
+        ConfigManager(ConfigManager &&rhs) = delete;
+        ConfigManager& operator=(const ConfigManager &rhs) = delete;
+        ConfigManager& operator=(ConfigManager &&rhs) = delete;
+
         /**
          * @brief Get singleton instance of ConfigManager
          * 
