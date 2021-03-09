@@ -16,6 +16,8 @@ set(PROJECT_SOURCE_FILES
     "../../Encryptor/src/codec/AESEncoderCodec.cpp"
     "../../Encryptor/src/codec/SHA3EncoderCodec.cpp"
     "../../Encryptor/src/generator/AESCryptoKeyGenerator.cpp"
+    "../../Encryptor/src/generator/PrivateRSACryptoKeyGenerator.cpp"
+    "../../Encryptor/src/generator/RSACryptoKeyGeneratorBase.cpp"
     "../../Encryptor/src/utils/DCT.cpp"
 )
 
@@ -26,6 +28,8 @@ set(PROJECT_HEADER_FILES
     "../../Encryptor/src/codec/SHA3EncoderCodec.hpp"
     "../../Encryptor/src/generator/AESCryptoKeyGenerator.hpp"
     "../../Encryptor/src/generator/ICryptoKeyGenerator.hpp"
+    "../../Encryptor/src/generator/PrivateRSACryptoKeyGenerator.hpp"
+    "../../Encryptor/src/generator/RSACryptoKeyGeneratorBase.hpp"
     "../../Encryptor/src/utils/DCT.hpp"
 )
 

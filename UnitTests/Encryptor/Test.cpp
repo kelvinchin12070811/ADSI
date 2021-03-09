@@ -11,6 +11,7 @@
 #include "codec/AESEncoderCodec.hpp"
 #include "codec/SHA3EncoderCodec.hpp"
 #include "generator/AESCryptoKeyGenerator.hpp"
+#include "generator/PrivateRSACryptoKeyGenerator.hpp"
 #include "utils/DCT.hpp"
 
 BOOST_AUTO_TEST_CASE(dct_algo_test)
@@ -133,6 +134,26 @@ BOOST_AUTO_TEST_CASE(aes_codec_test)
 
         std::string decoded{ reinterpret_cast<char *>(decResult.data()), decResult.size() };
         BOOST_REQUIRE(decoded == data);
+    }
+    catch (const std::exception &e)
+    {
+        BOOST_FAIL(e.what());
+    }
+}
+
+BOOST_AUTO_TEST_CASE(rsa_encryption_test)
+{
+    try
+    {
+        auto keyParams = key_generator::RSACryptoKeyGeneratorBase::generateKeyParams();
+        key_generator::PrivateRSACryptoKeyGenerator engPrivate{ keyParams };
+
+        engPrivate.generate();
+        auto privateKey = engPrivate.getGeneratedKey();
+
+        std::string text{ reinterpret_cast<char *>(privateKey.data()), privateKey.size() };
+
+        BOOST_FAIL(text);
     }
     catch (const std::exception &e)
     {
