@@ -34,6 +34,7 @@ set(PROJECT_SOURCE_FILES
     "codec/AESDecoderCodec.cpp"
     "codec/AESEncoderCodec.cpp"
     "codec/SHA3EncoderCodec.cpp"
+    "components/Switch.cpp"
     "generator/AESCryptoKeyGenerator.cpp"
     "Main.cpp"
     "TestSubject.cpp"
@@ -48,6 +49,7 @@ set(PROJECT_HEADER_FILES
     "codec/AESEncoderCodec.hpp"
     "codec/ICodec.hpp"
     "codec/SHA3EncoderCodec.hpp"
+    "components/Switch.hpp"
     "generator/AESCryptoKeyGenerator.hpp"
     "generator/ICryptoKeyGenerator.hpp"
     "TestSubject.hpp"
@@ -69,6 +71,11 @@ if (WIN32)
         ${DEPLOYQT_BIN} "$<TARGET_FILE:${PROJECT_NAME}>" --qmldir "${CMAKE_SOURCE_DIR}" --no-translations
     )
 endif ()
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+  target_compile_options(${PROJECT_NAME} PRIVATE "/ZI")
+  target_link_options(${PROJECT_NAME} PRIVATE "/SAFESEH:NO")
+endif()
 
 target_link_libraries(
      ${PROJECT_NAME}

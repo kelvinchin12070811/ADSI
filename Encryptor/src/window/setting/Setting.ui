@@ -14,8 +14,26 @@
    <string>Setting</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="leftMargin">
+    <number>5</number>
+   </property>
+   <property name="topMargin">
+    <number>5</number>
+   </property>
+   <property name="rightMargin">
+    <number>5</number>
+   </property>
+   <property name="bottomMargin">
+    <number>5</number>
+   </property>
    <item>
-    <widget class="QCheckBox" name="checkBox">
+    <widget class="components::Switch" name="checkBox">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>20</height>
+      </size>
+     </property>
      <property name="text">
       <string>Enable high DPI scaling</string>
      </property>
@@ -67,6 +85,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>components::Switch</class>
+   <extends>QCheckBox</extends>
+   <header>components/Switch.hpp</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>
