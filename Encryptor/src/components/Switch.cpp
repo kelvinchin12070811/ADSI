@@ -4,6 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *********************************************************************************************************************/
 #include <QPainter>
+#include <QPainterPath>
 
 #include "components/Switch.hpp"
 
@@ -24,19 +25,56 @@ namespace components
     {
         static_cast<void>(paintEvent);
         constexpr int labelLeftMargin{ 5 };
-        constexpr int labelTopMargin{ 2 };
+        constexpr int labelTopMargin{ 0 };
 
         QPainter painter{ this };
         QRect drawRect{ this->pos(), this->size() };
-        QColor bgColor = Qt::GlobalColor::gray;
-
-        painter.fillRect(
+        const int circleRadius{ static_cast<int>(drawRect.height() / 2.5f) };
+        QColor bgColour = this->isChecked() ? QColor{ 0x31, 0xB3, 0xEB } : Qt::GlobalColor::lightGray;
+        QPainterPath switchOutline;
+        switchOutline.addRoundedRect(
             QRect{
-                QPoint{ drawRect.x(), drawRect.y() },
-                QSize{ static_cast<int>(std::roundf(1.5f * drawRect.height())), drawRect.height() }
+                QPoint{ drawRect.x(), drawRect.y() + static_cast<int>(.15f * drawRect.height()) },
+                QSize{
+                    static_cast<int>(std::roundf(1.5f * drawRect.height())),
+                    static_cast<int>(std::roundf(.5f * drawRect.height()))
+                }
             },
-            bgColor
+            static_cast<int>(.75 * circleRadius),
+            static_cast<int>(.75 * circleRadius)
         );
+        QPainterPath switchToggler;
+        
+        if (!this->isChecked())
+        {
+            switchToggler.addEllipse(
+                QPoint{ drawRect.x() + circleRadius, drawRect.y() + circleRadius },
+                circleRadius,
+                circleRadius
+            );
+        }
+        else
+        {
+            switchToggler.addEllipse(
+                QPoint{
+                    drawRect.x() + circleRadius +
+                        static_cast<int>(std::roundf(1.5 * drawRect.height() - (circleRadius * 2))),
+                    drawRect.y() + circleRadius
+                },
+                circleRadius,
+                circleRadius
+            );
+        }
+
+        painter.setRenderHints(QPainter::RenderHint::Antialiasing | QPainter::RenderHint::HighQualityAntialiasing);
+
+        painter.fillPath(switchOutline, bgColour);
+
+        if (!this->isChecked())
+            painter.fillPath(switchToggler, Qt::GlobalColor::gray);
+        else
+            painter.fillPath(switchToggler, QColor{ 0x31, 0x8E, 0xEB });
+
         painter.drawText(
             drawRect.x() + static_cast<int>(std::roundf(1.5 * drawRect.height()) + labelLeftMargin),
             drawRect.y() + static_cast<int>(std::roundf(drawRect.height() * .5) + labelTopMargin),
