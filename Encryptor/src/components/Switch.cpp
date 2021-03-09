@@ -30,7 +30,7 @@ namespace components
         QPainter painter{ this };
         QRect drawRect{ this->pos(), this->size() };
         const int circleRadius{ static_cast<int>(drawRect.height() / 2.5f) };
-        QColor bgColour = this->isChecked() ? QColor{ 0x31, 0xB3, 0xEB } : Qt::GlobalColor::lightGray;
+        QColor bgColour = this->isChecked() ? QColor{ 0x64, 0xB5, 0xF6 } : QColor(0xBD, 0xBD, 0xBD);
         QPainterPath switchOutline;
         switchOutline.addRoundedRect(
             QRect{
@@ -71,9 +71,9 @@ namespace components
         painter.fillPath(switchOutline, bgColour);
 
         if (!this->isChecked())
-            painter.fillPath(switchToggler, Qt::GlobalColor::gray);
+            painter.fillPath(switchToggler, QColor{ 0x75, 0x75, 0x75 });
         else
-            painter.fillPath(switchToggler, QColor{ 0x31, 0x8E, 0xEB });
+            painter.fillPath(switchToggler, QColor{ 0x21, 0x96, 0xF3 });
 
         painter.drawText(
             drawRect.x() + static_cast<int>(std::roundf(1.5 * drawRect.height()) + labelLeftMargin),

@@ -1,0 +1,24 @@
+#btnOk {
+    background-color: #00C853;
+}
+
+#btnOk:hover {
+    background-color: #69F0AE;
+}
+
+#btnOk:pressed {
+    background-color: #B9F6CA;
+}
+
+#btnCancel {
+    background-color: #E0E0E0;
+}
+
+#btnCancel:hover {
+    background-color: #9E9E9E;
+}
+
+#btnCancel:pressed {
+    background-color: #757575;
+    color: #fff;
+}

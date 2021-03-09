@@ -62,6 +62,8 @@ namespace utils
         /**
          * @brief Modifiy the behaviour of the application if it should scale on higher DPI display.
          * @param value New value to apply, true if the application should scale, false otherwise.
+         * 
+         * @sa isEnableHighDPIScaling()
          */
         void setEnableHighDPIScaling(bool value);
     private:

@@ -4,6 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *********************************************************************************************************************/
 #include <initializer_list>
+#include <numeric>
 #include <QDebug>
 #include <QFile>
 #include <QMessageBox>
@@ -31,18 +32,19 @@ namespace window
         };
         QString constructedStylesheet;
 
-        for (const auto &itr : styles)
-        {
-            QFile file{ itr };
-            file.open(QIODevice::ReadOnly);
-            if (!file.isOpen())
-            {
-                qDebug() << QStringLiteral("Unable to load ui '%1'").arg(itr);
-                continue;
-            }
+        constructedStylesheet = std::accumulate(
+            styles.begin(),
+            styles.end(),
+            constructedStylesheet,
+            [](const QString &prev, const QString &cur) {
+                QFile input{ cur };
+                input.open(QIODevice::ReadOnly);
+                if (!input.isOpen()) return prev;
 
-            constructedStylesheet += file.readAll();
-        }
+                const auto buf = input.readAll();
+                return QStringLiteral("%1\n%2").arg(prev).arg(QString{ buf });
+            }
+        );
 
         this->setStyleSheet(constructedStylesheet);
     }
