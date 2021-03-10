@@ -18,6 +18,12 @@ namespace key_generator
          * @param keyParams Parameters to generate private key.
          */
         explicit PrivateRSACryptoKeyGenerator(CryptoPP::InvertibleRSAFunction keyParams);
+        /**
+         * @brief Generate private key from key data.
+         * @return Private key.
+         */
+        CryptoPP::RSA::PrivateKey getPrivatekey() const;
+
         void generate() override;
         std::vector<std::byte> getGeneratedKey() override;
         

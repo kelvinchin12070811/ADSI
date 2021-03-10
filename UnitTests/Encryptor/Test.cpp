@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
+#include <cryptopp/base64.h>
 #include <cryptopp/hex.h>
 #include <cryptopp/osrng.h>
 #include <memory>
@@ -12,6 +13,7 @@
 #include "codec/SHA3EncoderCodec.hpp"
 #include "generator/AESCryptoKeyGenerator.hpp"
 #include "generator/PrivateRSACryptoKeyGenerator.hpp"
+#include "generator/PublicRSACryptoKeyGenerator.hpp"
 #include "utils/DCT.hpp"
 
 BOOST_AUTO_TEST_CASE(dct_algo_test)
@@ -143,17 +145,50 @@ BOOST_AUTO_TEST_CASE(aes_codec_test)
 
 BOOST_AUTO_TEST_CASE(rsa_encryption_test)
 {
+    constexpr std::string_view data{ "A quick brown fox jumps over the lazy dog." };
     try
     {
         auto keyParams = key_generator::RSACryptoKeyGeneratorBase::generateKeyParams();
         key_generator::PrivateRSACryptoKeyGenerator engPrivate{ keyParams };
+        key_generator::PublicRSACryptoKeyGenerator engPublic{ keyParams };
+        
+        CryptoPP::AutoSeededRandomPool rndPool;
 
         engPrivate.generate();
-        auto privateKey = engPrivate.getGeneratedKey();
+        engPublic.generate();
+        auto privateKey = engPrivate.getPrivatekey();
+        auto publicKey = engPublic.getPublicKey();
 
-        std::string text{ reinterpret_cast<char *>(privateKey.data()), privateKey.size() };
+        CryptoPP::RSAES_OAEP_SHA_Encryptor encoder{ publicKey };
+        std::string datEncoded;
+        static_cast<void>(CryptoPP::StringSource{
+            { data.data(), data.size() },
+            true,
+            new CryptoPP::PK_EncryptorFilter{
+                rndPool,
+                encoder,
+                new CryptoPP::Base64Encoder{
+                    new CryptoPP::StringSink{ datEncoded },
+                    false
+                }
+            }
+        });
 
-        BOOST_FAIL(text);
+        CryptoPP::RSAES_OAEP_SHA_Decryptor decryptor{ privateKey };
+        std::string datDecoded;
+        static_cast<void>(CryptoPP::StringSource{
+            datEncoded,
+            true,
+            new CryptoPP::Base64Decoder{
+                new CryptoPP::PK_DecryptorFilter{
+                    rndPool,
+                    decryptor,
+                    new CryptoPP::StringSink{ datDecoded }
+                }
+            }
+        });
+
+        BOOST_REQUIRE(datDecoded == data);
     }
     catch (const std::exception &e)
     {

@@ -8,8 +8,16 @@
 namespace key_generator
 {
     PrivateRSACryptoKeyGenerator::PrivateRSACryptoKeyGenerator(CryptoPP::InvertibleRSAFunction keyParams):
-        _keyParams(std::move(keyParams))
+        _keyParams{ std::move(keyParams) }
     {
+    }
+
+    CryptoPP::RSA::PrivateKey PrivateRSACryptoKeyGenerator::getPrivatekey() const
+    {
+        CryptoPP::RSA::PrivateKey privateKey;
+        CryptoPP::ArraySource src{ reinterpret_cast<const CryptoPP::byte *>(_key.data()), _key.size(), true };
+        privateKey.BERDecode(src);
+        return privateKey;
     }
 
     void PrivateRSACryptoKeyGenerator::generate()
