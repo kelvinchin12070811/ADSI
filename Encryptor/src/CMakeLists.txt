@@ -36,14 +36,15 @@ set(PROJECT_SOURCE_FILES
     "codec/SHA3EncoderCodec.cpp"
     "components/Switch.cpp"
     "generator/AESCryptoKeyGenerator.cpp"
+    "generator/PrivateRSACryptoKeyGenerator.cpp"
+    "generator/PublicRSACryptoKeyGenerator.cpp"
+    "generator/RSACryptoKeyGeneratorBase.cpp"
     "Main.cpp"
     "TestSubject.cpp"
     "utils/ConfigManager.cpp"
     "utils/DCT.cpp"
     "window/mainwindow/MainWindow.cpp"
     "window/setting/Setting.cpp"
-    "generator/RSACryptoKeyGeneratorBase.cpp"
-    "generator/PrivateRSACryptoKeyGenerator.cpp"
 )
 
 set(PROJECT_HEADER_FILES
@@ -54,13 +55,14 @@ set(PROJECT_HEADER_FILES
     "components/Switch.hpp"
     "generator/AESCryptoKeyGenerator.hpp"
     "generator/ICryptoKeyGenerator.hpp"
+    "generator/PrivateRSACryptoKeyGenerator.hpp"
+    "generator/PublicRSACryptoKeyGenerator.hpp"
+    "generator/RSACryptoKeyGeneratorBase.hpp"
     "TestSubject.hpp"
     "utils/ConfigManager.hpp"
     "utils/DCT.hpp"
     "window/mainwindow/MainWindow.hpp"
     "window/setting/Setting.hpp"
-    "generator/RSACryptoKeyGeneratorBase.hpp"
-    "generator/PrivateRSACryptoKeyGenerator.hpp"
 )
 
 if (WIN32)
