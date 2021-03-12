@@ -160,29 +160,16 @@ BOOST_AUTO_TEST_CASE(rsa_encryption_test)
         auto privateKey = engPrivate.getPrivatekey();
         auto publicKey = engPublic.getPublicKey();
 
-        /*codec::RSAEncoderCodec encoder{ data, privateKey };
+        codec::RSAEncoderCodec encoder{ data, privateKey };
         encoder.execute();
-        auto encMsg = encoder.getCodecResult();*/
-
-        CryptoPP::RSASSA_PKCS1v15_SHA_Signer signer{ privateKey };
-
-        std::vector<CryptoPP::byte> encMsg;
-        static_cast<void>(CryptoPP::StringSource{
-            { data.begin(), data.end() },
-            true,
-            new CryptoPP::SignerFilter{
-                rndPool,
-                signer,
-                new CryptoPP::VectorSink{ encMsg }
-            }
-        });
+        auto encMsg = encoder.getCodecResult();
 
         std::string signature;
         static_cast<void>(CryptoPP::ArraySource{
             reinterpret_cast<CryptoPP::byte *>(encMsg.data()),
             encMsg.size(),
             true,
-            new CryptoPP::Base64Encoder{
+            new CryptoPP::HexEncoder{
                 new CryptoPP::StringSink{ signature }
             }
         });
