@@ -10,6 +10,7 @@
 
 #include "codec/AESDecoderCodec.hpp"
 #include "codec/AESEncoderCodec.hpp"
+#include "codec/RSASignEncoderCodec.hpp"
 #include "codec/SHA3EncoderCodec.hpp"
 #include "generator/AESCryptoKeyGenerator.hpp"
 #include "generator/PrivateRSACryptoKeyGenerator.hpp"
@@ -159,36 +160,47 @@ BOOST_AUTO_TEST_CASE(rsa_encryption_test)
         auto privateKey = engPrivate.getPrivatekey();
         auto publicKey = engPublic.getPublicKey();
 
-        CryptoPP::RSAES_OAEP_SHA_Encryptor encoder{ publicKey };
-        std::string datEncoded;
+        /*codec::RSAEncoderCodec encoder{ data, privateKey };
+        encoder.execute();
+        auto encMsg = encoder.getCodecResult();*/
+
+        CryptoPP::RSASSA_PKCS1v15_SHA_Signer signer{ privateKey };
+
+        std::vector<CryptoPP::byte> encMsg;
         static_cast<void>(CryptoPP::StringSource{
-            { data.data(), data.size() },
+            { data.begin(), data.end() },
             true,
-            new CryptoPP::PK_EncryptorFilter{
+            new CryptoPP::SignerFilter{
                 rndPool,
-                encoder,
-                new CryptoPP::Base64Encoder{
-                    new CryptoPP::StringSink{ datEncoded },
-                    false
-                }
+                signer,
+                new CryptoPP::VectorSink{ encMsg }
             }
         });
 
-        CryptoPP::RSAES_OAEP_SHA_Decryptor decryptor{ privateKey };
-        std::string datDecoded;
-        static_cast<void>(CryptoPP::StringSource{
-            datEncoded,
+        std::string signature;
+        static_cast<void>(CryptoPP::ArraySource{
+            reinterpret_cast<CryptoPP::byte *>(encMsg.data()),
+            encMsg.size(),
             true,
-            new CryptoPP::Base64Decoder{
-                new CryptoPP::PK_DecryptorFilter{
-                    rndPool,
-                    decryptor,
-                    new CryptoPP::StringSink{ datDecoded }
-                }
+            new CryptoPP::Base64Encoder{
+                new CryptoPP::StringSink{ signature }
             }
         });
 
-        BOOST_REQUIRE(datDecoded == data);
+        std::string test = std::string{ data.begin(), data.end() } + signature;
+
+        CryptoPP::RSASSA_PKCS1v15_SHA_Verifier verifier{ publicKey };
+        static_cast<void>(CryptoPP::StringSource{
+            test,
+            true,
+            new CryptoPP::SignatureVerificationFilter{
+                verifier,
+                nullptr,
+                CryptoPP::SignatureVerificationFilter::Flags::THROW_EXCEPTION
+            }
+        });
+
+        BOOST_REQUIRE(true);
     }
     catch (const std::exception &e)
     {

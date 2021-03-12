@@ -45,6 +45,7 @@ set(PROJECT_SOURCE_FILES
     "utils/DCT.cpp"
     "window/mainwindow/MainWindow.cpp"
     "window/setting/Setting.cpp"
+    "codec/RSASignEncoderCodec.cpp"
 )
 
 set(PROJECT_HEADER_FILES
@@ -63,6 +64,7 @@ set(PROJECT_HEADER_FILES
     "utils/DCT.hpp"
     "window/mainwindow/MainWindow.hpp"
     "window/setting/Setting.hpp"
+    "codec/RSASignEncoderCodec.hpp"
 )
 
 if (WIN32)

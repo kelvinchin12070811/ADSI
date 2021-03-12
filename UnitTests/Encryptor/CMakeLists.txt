@@ -14,6 +14,7 @@ include_directories(${Boost_INCLUDE_DIR})
 set(PROJECT_SOURCE_FILES
     "../../Encryptor/src/codec/AESDecoderCodec.cpp"
     "../../Encryptor/src/codec/AESEncoderCodec.cpp"
+    "../../Encryptor/src/codec/RSASignEncoderCodec.cpp"
     "../../Encryptor/src/codec/SHA3EncoderCodec.cpp"
     "../../Encryptor/src/generator/AESCryptoKeyGenerator.cpp"
     "../../Encryptor/src/generator/PrivateRSACryptoKeyGenerator.cpp"
@@ -27,6 +28,7 @@ set(PROJECT_HEADER_FILES
     "../../Encryptor/src/codec/AESEncoderCodec.hpp"
     "../../Encryptor/src/codec/ICodec.hpp"
     "../../Encryptor/src/codec/SHA3EncoderCodec.hpp"
+    "../../Encryptor/src/codec/RSASignEncoderCodec.hpp"
     "../../Encryptor/src/generator/AESCryptoKeyGenerator.hpp"
     "../../Encryptor/src/generator/ICryptoKeyGenerator.hpp"
     "../../Encryptor/src/generator/PrivateRSACryptoKeyGenerator.hpp"
