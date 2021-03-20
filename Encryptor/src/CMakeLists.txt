@@ -40,7 +40,7 @@ set(PROJECT_SOURCE_FILES
     "generator/PublicRSACryptoKeyGenerator.cpp"
     "generator/RSACryptoKeyGeneratorBase.cpp"
     "Main.cpp"
-    "TestSubject.cpp"
+    
     "utils/ConfigManager.cpp"
     "utils/DCT.cpp"
     "window/mainwindow/MainWindow.cpp"
@@ -59,7 +59,7 @@ set(PROJECT_HEADER_FILES
     "generator/PrivateRSACryptoKeyGenerator.hpp"
     "generator/PublicRSACryptoKeyGenerator.hpp"
     "generator/RSACryptoKeyGeneratorBase.hpp"
-    "TestSubject.hpp"
+    
     "utils/ConfigManager.hpp"
     "utils/DCT.hpp"
     "window/mainwindow/MainWindow.hpp"

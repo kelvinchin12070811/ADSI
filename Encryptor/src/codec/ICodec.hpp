@@ -59,5 +59,5 @@ namespace codec
         virtual void execute() = 0 {}
     };
 
-    ICodec::~ICodec() = default;
+    inline ICodec::~ICodec() = default;
 }

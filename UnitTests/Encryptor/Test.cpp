@@ -159,11 +159,18 @@ BOOST_AUTO_TEST_CASE(rsa_encryption_test)
         prKeyGen.generate();
 
         std::unique_ptr<codec::ICodec> signer =
-            std::make_unique<codec::RSASignEncoderCodec>(data.data(), data.size(), prKeyGen.getPrivatekey());
+            std::make_unique<codec::RSASignEncoderCodec>(
+                reinterpret_cast<const std::byte *>(data.data()),
+                data.size(),
+                prKeyGen.getPrivatekey()
+            );
         signer->execute();
-        auto rsltSignature = signer->getCodecResult();
-        signature = decltype(signature){
-        };
+        {
+            auto rsltSignature = signer->getCodecResult();
+            auto begin = reinterpret_cast<char *>(rsltSignature.data());
+            auto end = reinterpret_cast<decltype(begin)>(rsltSignature.data() + rsltSignature.size());
+            signature = std::string{ begin, end };
+        }
 
         CryptoPP::RSASSA_PKCS1v15_SHA_Verifier verifier{ pbKeyGen.getPublicKey() };
         auto success = verifier.VerifyMessage(reinterpret_cast<const CryptoPP::byte *>(data.data()), data.length(),

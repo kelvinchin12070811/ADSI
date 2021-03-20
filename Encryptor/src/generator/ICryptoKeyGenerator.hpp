@@ -29,5 +29,5 @@ namespace key_generator
         virtual void generate() = 0 {}
     };
 
-    ICryptoKeyGenerator::~ICryptoKeyGenerator() = default;
+    inline ICryptoKeyGenerator::~ICryptoKeyGenerator() = default;
 }
