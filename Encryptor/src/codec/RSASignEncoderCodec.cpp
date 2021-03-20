@@ -24,7 +24,7 @@ namespace codec
     {
     }
     
-    std::vector<std::byte> RSASignEncoderCodec::getCodecResult() const
+    const std::vector<std::byte> &RSASignEncoderCodec::getCodecResult() const
     {
         return _encodedData;
     }

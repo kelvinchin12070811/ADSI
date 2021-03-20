@@ -21,8 +21,8 @@ namespace key_generator
          */
         explicit AESCryptoKeyGenerator(std::string password);
 
-        virtual std::vector<std::byte> getGeneratedKey() override;
-        virtual void generate() override;
+        const std::vector<std::byte> &getGeneratedKey() override;
+        void generate() override;
 
     public: // Assessors
         /**

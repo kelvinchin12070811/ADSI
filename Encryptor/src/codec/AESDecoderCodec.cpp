@@ -38,7 +38,7 @@ namespace codec
         std::copy(data, data + size, std::back_inserter(_buffer));
     }
     
-    std::vector<std::byte> AESDecoderCodec::getCodecResult() const
+    const std::vector<std::byte> &AESDecoderCodec::getCodecResult() const
     {
         return _encoded;
     }

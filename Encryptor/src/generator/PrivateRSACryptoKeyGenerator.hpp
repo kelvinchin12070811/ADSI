@@ -25,7 +25,7 @@ namespace key_generator
         CryptoPP::RSA::PrivateKey getPrivatekey() const;
 
         void generate() override;
-        std::vector<std::byte> getGeneratedKey() override;
+        const std::vector<std::byte> &getGeneratedKey() override;
         
     public: // Mutators
         /**

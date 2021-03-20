@@ -16,10 +16,14 @@ namespace codec
     struct ICodec
     {
         /**
+         * @brief Virtual destructor of ICodec.
+         */
+        virtual ~ICodec() = 0;
+        /**
          * @brief Get result of transcoded bytestream.
          * @return Array of bytes.
          */
-        virtual std::vector<std::byte> getCodecResult() const = 0 {}
+        virtual const std::vector<std::byte> &getCodecResult() const = 0 {}
         /**
          * @brief Set data for codec to transcode.
          * @param data Input data.
@@ -54,4 +58,6 @@ namespace codec
          */
         virtual void execute() = 0 {}
     };
+
+    ICodec::~ICodec() = default;
 }

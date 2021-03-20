@@ -48,7 +48,7 @@ namespace key_generator
         return _keyParams;
     }
     
-    std::vector<std::byte> PrivateRSACryptoKeyGenerator::getGeneratedKey()
+    const std::vector<std::byte> &PrivateRSACryptoKeyGenerator::getGeneratedKey()
     {
         return _key;
     }

@@ -23,7 +23,7 @@ namespace key_generator
     {
     }
 
-    std::vector<std::byte> AESCryptoKeyGenerator::getGeneratedKey()
+    const std::vector<std::byte> &AESCryptoKeyGenerator::getGeneratedKey()
     {
         return _key;
     }

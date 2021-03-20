@@ -63,7 +63,7 @@ namespace codec
          */
         explicit SHA3EncoderCodec(std::byte *data, std::size_t size, std::unique_ptr<CryptoPP::SHA3> hasher = nullptr);
 
-        std::vector<std::byte> getCodecResult() const override;
+        const std::vector<std::byte> &getCodecResult() const override;
         void setCodecData(std::vector<std::byte> data) override;
         void setCodecData(const std::byte *data, std::size_t size) override;
         void setCodecData(std::string_view data) override;

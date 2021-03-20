@@ -46,7 +46,7 @@ namespace codec
             _buffer.push_back(data[idx]);
     }
 
-    std::vector<std::byte> SHA3EncoderCodec::getCodecResult() const
+    const std::vector<std::byte> &SHA3EncoderCodec::getCodecResult() const
     {
         return _encodedData;
     }

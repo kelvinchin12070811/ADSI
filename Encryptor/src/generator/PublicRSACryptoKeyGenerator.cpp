@@ -20,7 +20,7 @@ namespace key_generator
         return publicKey;
     }
 
-    std::vector<std::byte> PublicRSACryptoKeyGenerator::getGeneratedKey()
+    const std::vector<std::byte> &PublicRSACryptoKeyGenerator::getGeneratedKey()
     {
         return _key;
     }

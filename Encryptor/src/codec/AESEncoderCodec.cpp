@@ -46,7 +46,7 @@ namespace codec
         );
     }
     
-    std::vector<std::byte> AESEncoderCodec::getCodecResult() const
+    const std::vector<std::byte> &AESEncoderCodec::getCodecResult() const
     {
         return _encoded;
     }

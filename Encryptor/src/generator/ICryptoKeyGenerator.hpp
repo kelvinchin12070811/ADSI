@@ -15,13 +15,19 @@ namespace key_generator
     struct ICryptoKeyGenerator
     {
         /**
+         * @brief Virtual destructor for ICryptoKeyGenerator.
+         */
+        virtual ~ICryptoKeyGenerator() = 0;
+        /**
          * @brief Get generated key from the generator
          * @return std::vector of std::bytes represented as generated Crypto key.
          */
-        virtual std::vector<std::byte> getGeneratedKey() = 0 {}
+        const virtual std::vector<std::byte>& getGeneratedKey() = 0 {}
         /**
          * @brief Trigger generation of crypto key.
          */
         virtual void generate() = 0 {}
     };
+
+    ICryptoKeyGenerator::~ICryptoKeyGenerator() = default;
 }

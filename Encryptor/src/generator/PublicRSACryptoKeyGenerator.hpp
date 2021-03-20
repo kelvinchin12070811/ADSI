@@ -23,7 +23,7 @@ namespace key_generator
          * @return RSA public key.
          */
         CryptoPP::RSA::PublicKey getPublicKey() const;
-        std::vector<std::byte> getGeneratedKey() override;
+        const std::vector<std::byte> &getGeneratedKey() override;
         void generate() override;
 
     public: // Accessors
