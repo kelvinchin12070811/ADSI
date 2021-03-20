@@ -150,44 +150,26 @@ BOOST_AUTO_TEST_CASE(rsa_encryption_test)
     try
     {
         auto keyParams = key_generator::RSACryptoKeyGeneratorBase::generateKeyParams();
-        key_generator::PrivateRSACryptoKeyGenerator engPrivate{ keyParams };
-        key_generator::PublicRSACryptoKeyGenerator engPublic{ keyParams };
-        
         CryptoPP::AutoSeededRandomPool rndPool;
-
-        engPrivate.generate();
-        engPublic.generate();
-        auto privateKey = engPrivate.getPrivatekey();
-        auto publicKey = engPublic.getPublicKey();
-
-        codec::RSAEncoderCodec encoder{ data, privateKey };
-        encoder.execute();
-        auto encMsg = encoder.getCodecResult();
-
+        key_generator::PublicRSACryptoKeyGenerator pbKeyGen{ keyParams };
+        key_generator::PrivateRSACryptoKeyGenerator prKeyGen{ keyParams };
         std::string signature;
-        static_cast<void>(CryptoPP::ArraySource{
-            reinterpret_cast<CryptoPP::byte *>(encMsg.data()),
-            encMsg.size(),
-            true,
-            new CryptoPP::HexEncoder{
-                new CryptoPP::StringSink{ signature }
-            }
-        });
 
-        std::string test = std::string{ data.begin(), data.end() } + signature;
+        pbKeyGen.generate();
+        prKeyGen.generate();
 
-        CryptoPP::RSASSA_PKCS1v15_SHA_Verifier verifier{ publicKey };
-        static_cast<void>(CryptoPP::StringSource{
-            test,
-            true,
-            new CryptoPP::SignatureVerificationFilter{
-                verifier,
-                nullptr,
-                CryptoPP::SignatureVerificationFilter::Flags::THROW_EXCEPTION
-            }
-        });
+        std::unique_ptr<codec::ICodec> signer =
+            std::make_unique<codec::RSASignEncoderCodec>(data.data(), data.size(), prKeyGen.getPrivatekey());
+        signer->execute();
+        auto rsltSignature = signer->getCodecResult();
+        signature = decltype(signature){
+        };
 
-        BOOST_REQUIRE(true);
+        CryptoPP::RSASSA_PKCS1v15_SHA_Verifier verifier{ pbKeyGen.getPublicKey() };
+        auto success = verifier.VerifyMessage(reinterpret_cast<const CryptoPP::byte *>(data.data()), data.length(),
+            reinterpret_cast<const CryptoPP::byte *>(signature.c_str()), signature.length());
+
+        BOOST_REQUIRE(success);
     }
     catch (const std::exception &e)
     {

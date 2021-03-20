@@ -9,75 +9,72 @@
 
 namespace codec
 {
-    RSAEncoderCodec::RSAEncoderCodec(std::vector<std::byte> data, CryptoPP::RSA::PrivateKey key):
+    RSASignEncoderCodec::RSASignEncoderCodec(std::vector<std::byte> data, CryptoPP::RSA::PrivateKey key):
         _key{ std::move(key) }, _buffer{ std::move(data) }
     {
     }
 
-    RSAEncoderCodec::RSAEncoderCodec(const std::byte *data, std::size_t size, CryptoPP::RSA::PrivateKey key):
+    RSASignEncoderCodec::RSASignEncoderCodec(const std::byte *data, std::size_t size, CryptoPP::RSA::PrivateKey key):
         _key{ std::move(key) }, _buffer{ decltype(_buffer)(data, data + size) }
     {
     }
     
-    RSAEncoderCodec::RSAEncoderCodec(std::string_view data, CryptoPP::RSA::PrivateKey key):
-        RSAEncoderCodec(reinterpret_cast<const std::byte *>(data.data()), data.length(), std::move(key))
+    RSASignEncoderCodec::RSASignEncoderCodec(std::string_view data, CryptoPP::RSA::PrivateKey key):
+        RSASignEncoderCodec(reinterpret_cast<const std::byte *>(data.data()), data.length(), std::move(key))
     {
     }
     
-    std::vector<std::byte> RSAEncoderCodec::getCodecResult() const
+    std::vector<std::byte> RSASignEncoderCodec::getCodecResult() const
     {
         return _encodedData;
     }
 
-    void RSAEncoderCodec::setCodecData(std::vector<std::byte> data)
+    void RSASignEncoderCodec::setCodecData(std::vector<std::byte> data)
     {
         _buffer = std::move(data);
     }
 
-    void RSAEncoderCodec::setCodecData(const std::byte *data, std::size_t size)
+    void RSASignEncoderCodec::setCodecData(const std::byte *data, std::size_t size)
     {
         _buffer = decltype(_buffer)(data, data + size);
     }
 
-    void RSAEncoderCodec::setCodecData(std::string_view data)
+    void RSASignEncoderCodec::setCodecData(std::string_view data)
     {
         setCodecData(reinterpret_cast<const std::byte *>(data.data()), data.length());
     }
 
-    void RSAEncoderCodec::execute()
+    void RSASignEncoderCodec::execute()
     {
         CryptoPP::AutoSeededRandomPool rndPool;
-        CryptoPP::RSASSA_PKCS1v15_SHA_Signer encoder{ _key };
-        std::vector<CryptoPP::byte> bufEncoded;
-
-        static_cast<void>(CryptoPP::ArraySource{
-            reinterpret_cast<CryptoPP::byte *>(_buffer.data()),
-            _buffer.size(),
-            true,
-            new CryptoPP::SignerFilter{
-                rndPool,
-                encoder,
-                new CryptoPP::VectorSink{ bufEncoded }
-            }
-        });
-
-        auto begBufEncoded = reinterpret_cast<decltype(_encodedData)::value_type *>(bufEncoded.data());
-        auto endBufEncoded = begBufEncoded + bufEncoded.size();
-        setEncodedData({ begBufEncoded, endBufEncoded });
+        CryptoPP::RSASSA_PKCS1v15_SHA_Signer signer{ key() };
+        auto signature = std::make_unique<std::byte[]>(signer.MaxSignatureLength());
+        auto size = signer.SignMessage(
+            rndPool,
+            reinterpret_cast<const CryptoPP::byte *>(buffer().data()),
+            buffer().size(),
+            reinterpret_cast<CryptoPP::byte *>(signature.get())
+        );
+        setEncodedData({ signature.get(), signature.get() + size });
     }
     
-    void RSAEncoderCodec::setKey(CryptoPP::RSA::PrivateKey key)
+    void RSASignEncoderCodec::setKey(CryptoPP::RSA::PrivateKey key)
     {
         _key = std::move(key);
     }
     
-    const CryptoPP::RSA::PrivateKey &RSAEncoderCodec::key() const
+    const CryptoPP::RSA::PrivateKey &RSASignEncoderCodec::key() const
     {
         return _key;
     }
     
-    void RSAEncoderCodec::setEncodedData(std::vector<std::byte> value)
+    void RSASignEncoderCodec::setEncodedData(std::vector<std::byte> value)
     {
         _encodedData = std::move(value);
+    }
+    
+    const std::vector<std::byte> &RSASignEncoderCodec::buffer() const
+    {
+        return _buffer;
     }
 }

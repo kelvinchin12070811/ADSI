@@ -12,7 +12,7 @@ namespace codec
     /**
      * @brief Codec that signing data with RSA algorithm.
      */
-    class RSAEncoderCodec : public ICodec
+    class RSASignEncoderCodec : public ICodec
     {
     public:
         /**
@@ -20,29 +20,29 @@ namespace codec
          * @param data Data to sign.
          * @param key Private key use to sign the data.
          * 
-         * @sa RSAEncoderCodec(const std::byte *, std::size_t, CryptoPP::RSA::PrivateKey)
-         * @sa RSAEncoderCodec(std::string_view, CryptoPP::RSA::PrivateKey)
+         * @sa RSASignEncoderCodec(const std::byte *, std::size_t, CryptoPP::RSA::PrivateKey)
+         * @sa RSASignEncoderCodec(std::string_view, CryptoPP::RSA::PrivateKey)
          */
-        RSAEncoderCodec(std::vector<std::byte> data, CryptoPP::RSA::PrivateKey key);
+        RSASignEncoderCodec(std::vector<std::byte> data, CryptoPP::RSA::PrivateKey key);
         /**
          * @brief Create new encoder.
          * @param data Data to sign.
          * @param size Length of data.
          * @param key Private key use to sign the data.
          * 
-         * @sa RSAEncoderCodec(std::vector<std::byte>, CryptoPP::RSA::PrivateKey)
-         * @sa RSAEncoderCodec(std::string_view, CryptoPP::RSA::PrivateKey)
+         * @sa RSASignEncoderCodec(std::vector<std::byte>, CryptoPP::RSA::PrivateKey)
+         * @sa RSASignEncoderCodec(std::string_view, CryptoPP::RSA::PrivateKey)
          */
-        RSAEncoderCodec(const std::byte *data, std::size_t size, CryptoPP::RSA::PrivateKey key);
+        RSASignEncoderCodec(const std::byte *data, std::size_t size, CryptoPP::RSA::PrivateKey key);
         /**
          * @brief Create new encoder.
          * @param data Data to sign.
          * @param key Private key use to sign the data.
          * 
-         * @sa RSAEncoderCodec(std::vector<std::byte>, CryptoPP::RSA::PrivateKey)
-         * @sa RSAEncoderCodec(const std::byte *, std::size_t, CryptoPP::RSA::PrivateKey)
+         * @sa RSASignEncoderCodec(std::vector<std::byte>, CryptoPP::RSA::PrivateKey)
+         * @sa RSASignEncoderCodec(const std::byte *, std::size_t, CryptoPP::RSA::PrivateKey)
          */
-        RSAEncoderCodec(std::string_view data, CryptoPP::RSA::PrivateKey key);
+        RSASignEncoderCodec(std::string_view data, CryptoPP::RSA::PrivateKey key);
 
         std::vector<std::byte> getCodecResult() const override;
         void setCodecData(std::vector<std::byte> data) override;
@@ -70,6 +70,13 @@ namespace codec
          * @param value Value to assign.
          */
         void setEncodedData(std::vector<std::byte> value);
+
+    private: // Private Accessors.
+        /**
+         * @brief Get buffer of the signer
+         * @return Data stored in the buffer.
+         */
+        const std::vector<std::byte> &buffer() const;
 
     private:
         /**
