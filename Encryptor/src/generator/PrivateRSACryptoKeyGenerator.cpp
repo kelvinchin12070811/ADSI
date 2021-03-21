@@ -27,15 +27,8 @@ namespace key_generator
         CryptoPP::VectorSink encoder{ buffer };
 
         key.DEREncode(encoder);
-        _key.clear();
-        _key.shrink_to_fit();
-        _key.reserve(buffer.size());
-        std::transform(
-            buffer.begin(),
-            buffer.end(),
-            std::back_inserter(_key),
-            [](const auto &itr) { return static_cast<std::byte>(itr); }
-        );
+        auto begBuffer = reinterpret_cast<std::byte *>(buffer.data());
+        _key = { begBuffer, begBuffer + buffer.size() };
     }
     
     void PrivateRSACryptoKeyGenerator::setKeyParams(CryptoPP::InvertibleRSAFunction keyParams)

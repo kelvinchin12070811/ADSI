@@ -23,27 +23,17 @@ namespace codec
     }
 
     SHA3EncoderCodec::SHA3EncoderCodec(std::string_view data, std::unique_ptr<CryptoPP::SHA3> hasher):
-        SHA3EncoderCodec(std::move(hasher))
+        SHA3EncoderCodec(reinterpret_cast<const std::byte *>(data.data()), data.size(), std::move(hasher))
     {
-        _buffer.clear();
-        _buffer.shrink_to_fit();
-        _buffer.reserve(data.size());
-
-        for (const auto &itr : data)
-            _buffer.push_back(static_cast<std::byte>(itr));
     }
 
-    SHA3EncoderCodec::SHA3EncoderCodec(std::byte *data, std::size_t size, std::unique_ptr<CryptoPP::SHA3> hasher):
+    SHA3EncoderCodec::SHA3EncoderCodec(const std::byte * data, std::size_t size, std::unique_ptr<CryptoPP::SHA3> hasher):
         SHA3EncoderCodec(std::move(hasher))
     {
-        if (data == nullptr) throw std::invalid_argument{ "Parameter data must not be nullptr but it seems to be" };
+        if (data == nullptr)
+            throw std::invalid_argument{ "Parameter data must not be nullptr but it seems to be" };
 
-        _buffer.clear();
-        _buffer.shrink_to_fit();
-        _buffer.reserve(size);
-
-        for (const auto &idx : boost::irange(size))
-            _buffer.push_back(data[idx]);
+        _buffer = { data, data + size };
     }
 
     const std::vector<std::byte> &SHA3EncoderCodec::getCodecResult() const
@@ -61,10 +51,7 @@ namespace codec
         if (data == nullptr)
             throw std::invalid_argument{ "Parameter data must not be nullptr but seems to be." };
 
-        _buffer.clear();
-        _buffer.shrink_to_fit();
-        _buffer.reserve(size);
-        std::copy(data, data + size, std::back_inserter(_buffer));
+        _buffer = { data, data + size };
     }
 
     void SHA3EncoderCodec::setCodecData(std::string_view data)
@@ -74,8 +61,7 @@ namespace codec
 
     void SHA3EncoderCodec::execute()
     {
-        _encodedData.clear();
-        _encodedData.shrink_to_fit();
+        _encodedData = {};
         _encodedData.resize(_hasher->DigestSize());
         static_cast<void>(CryptoPP::ArraySource{
             reinterpret_cast<CryptoPP::byte *>(_buffer.data()),

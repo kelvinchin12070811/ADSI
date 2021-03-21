@@ -45,13 +45,6 @@ namespace key_generator
          */
         void setKeyParams(CryptoPP::InvertibleRSAFunction keyParams);
 
-    private: // Private Mutators
-        /**
-         * @brief Assign new value to generated key buffer.
-         * @param value New value to assign.
-         */
-        void setKey(std::vector<std::byte> value);
-
     private:
         /**
          * @name Attributes

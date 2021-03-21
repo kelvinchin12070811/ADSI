@@ -64,14 +64,14 @@ BOOST_AUTO_TEST_CASE(sha3_hasher_test)
     {
         constexpr std::string_view text{ "A quick brown fox jumps over the lazy dog." };
         constexpr std::string_view preCalHash{ "16f043d383269059753569d7ebff1a1d88f4d7a8a508d3814ef2e20891cfbd08" };
-        auto encoder = std::make_unique<codec::SHA3EncoderCodec>(text);
+        std::unique_ptr<codec::ICodec> encoder = std::make_unique<codec::SHA3EncoderCodec>(text);
 
 
         encoder->execute();
-        auto result = encoder->getCodecResult();
+        auto &result = encoder->getCodecResult();
         std::string hashText;
         static_cast<void>(CryptoPP::ArraySource{
-            reinterpret_cast<CryptoPP::byte *>(result.data()),
+            reinterpret_cast<const CryptoPP::byte *>(result.data()),
             result.size(),
             true,
             new CryptoPP::HexEncoder{
@@ -93,18 +93,20 @@ BOOST_AUTO_TEST_CASE(aes_keygen_test)
     constexpr std::string_view password{ "test" };
     constexpr std::string_view preCalHash{ "f220cf02e8e0bf291a08d1bfe53e989dae21f2bf20d919cf8a80bbc866c98c62" };
 
-    key_generator::AESCryptoKeyGenerator keyGen{ { password.data(), password.length() } };
-    keyGen.generate();
-    auto aesKey = keyGen.getGeneratedKey();
+    std::unique_ptr<key_generator::ICryptoKeyGenerator> keyGen{
+        std::make_unique<key_generator::AESCryptoKeyGenerator>(std::string{ password.begin(), password.end() })
+    };
+    keyGen->generate();
+    auto &aesKey = keyGen->getGeneratedKey();
 
-    codec::SHA3EncoderCodec shaEnc;
-    shaEnc.setCodecData(aesKey);
-    shaEnc.execute();
+    std::unique_ptr<codec::ICodec> shaEnc{ std::make_unique<codec::SHA3EncoderCodec>() };
+    shaEnc->setCodecData(aesKey);
+    shaEnc->execute();
     
-    auto key = shaEnc.getCodecResult();
+    auto &key = shaEnc->getCodecResult();
     std::string keyHash;
     static_cast<void>(CryptoPP::ArraySource{
-        reinterpret_cast<CryptoPP::byte *>(key.data()),
+        reinterpret_cast<const CryptoPP::byte *>(key.data()),
         key.size(),
         true,
         new CryptoPP::HexEncoder{
@@ -123,17 +125,19 @@ BOOST_AUTO_TEST_CASE(aes_codec_test)
         constexpr std::string_view password{ "ADamnSuperStrongPassword" };
         std::vector<std::byte> AESKey;
 
-        key_generator::AESCryptoKeyGenerator keyGen{ { password.data(), password.size() } };
-        keyGen.generate();
-        AESKey = keyGen.getGeneratedKey();
+        std::unique_ptr<key_generator::ICryptoKeyGenerator> keyGen{
+            std::make_unique<key_generator::AESCryptoKeyGenerator>(std::string{ password.data(), password.size() })
+        };
+        keyGen->generate();
+        AESKey = keyGen->getGeneratedKey();
 
-        codec::AESEncoderCodec encryptor{ data, AESKey };
-        encryptor.execute();
-        auto encResult = encryptor.getCodecResult();
+        std::unique_ptr<codec::ICodec> encryptor{ std::make_unique<codec::AESEncoderCodec>(data, AESKey) };
+        encryptor->execute();
+        auto encResult = encryptor->getCodecResult();
 
-        codec::AESDecoderCodec decryptor{ encResult, AESKey };
-        decryptor.execute();
-        auto decResult = decryptor.getCodecResult();
+        std::unique_ptr<codec::ICodec> decryptor{ std::make_unique<codec::AESDecoderCodec>(encResult, AESKey) };
+        decryptor->execute();
+        auto decResult = decryptor->getCodecResult();
 
         std::string decoded{ reinterpret_cast<char *>(decResult.data()), decResult.size() };
         BOOST_REQUIRE(decoded == data);

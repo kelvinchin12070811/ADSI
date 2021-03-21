@@ -64,20 +64,6 @@ namespace codec
          */
         const CryptoPP::RSA::PrivateKey &key() const;
 
-    private: // Private Mutators.
-        /**
-         * @brief Assign encodedData with provided value.
-         * @param value Value to assign.
-         */
-        void setEncodedData(std::vector<std::byte> value);
-
-    private: // Private Accessors.
-        /**
-         * @brief Get buffer of the signer
-         * @return Data stored in the buffer.
-         */
-        const std::vector<std::byte> &buffer() const;
-
     private:
         /**
          * @brief Private key that use to sign the data.

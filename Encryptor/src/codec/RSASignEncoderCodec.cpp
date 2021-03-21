@@ -36,7 +36,7 @@ namespace codec
 
     void RSASignEncoderCodec::setCodecData(const std::byte *data, std::size_t size)
     {
-        _buffer = decltype(_buffer)(data, data + size);
+        _buffer = { data, data + size };
     }
 
     void RSASignEncoderCodec::setCodecData(std::string_view data)
@@ -51,11 +51,11 @@ namespace codec
         auto signature = std::make_unique<std::byte[]>(signer.MaxSignatureLength());
         auto size = signer.SignMessage(
             rndPool,
-            reinterpret_cast<const CryptoPP::byte *>(buffer().data()),
-            buffer().size(),
+            reinterpret_cast<const CryptoPP::byte *>(_buffer.data()),
+            _buffer.size(),
             reinterpret_cast<CryptoPP::byte *>(signature.get())
         );
-        setEncodedData({ signature.get(), signature.get() + size });
+        _encodedData = { signature.get(), signature.get() + size };
     }
     
     void RSASignEncoderCodec::setKey(CryptoPP::RSA::PrivateKey key)
@@ -66,15 +66,5 @@ namespace codec
     const CryptoPP::RSA::PrivateKey &RSASignEncoderCodec::key() const
     {
         return _key;
-    }
-    
-    void RSASignEncoderCodec::setEncodedData(std::vector<std::byte> value)
-    {
-        _encodedData = std::move(value);
-    }
-    
-    const std::vector<std::byte> &RSASignEncoderCodec::buffer() const
-    {
-        return _buffer;
     }
 }

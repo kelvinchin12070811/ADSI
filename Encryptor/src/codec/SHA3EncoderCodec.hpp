@@ -27,7 +27,7 @@ namespace codec
          * 
          * @sa SHA3EncoderCodec(std::vector<std::byte>, std::unique_ptr<CryptoPP::SHA3>)
          * @sa SHA3EncoderCodec(std::string_view, std::unique_ptr<CryptoPP::SHA3>)
-         * @sa SHA3EncoderCodec(std::byte*, std::size_t, std::unique_ptr<CryptoPP::SHA3> hasher)
+         * @sa SHA3EncoderCodec(const std::byte*, std::size_t, std::unique_ptr<CryptoPP::SHA3> hasher)
          */
         explicit SHA3EncoderCodec(std::unique_ptr<CryptoPP::SHA3> hasher = nullptr);
         /**
@@ -37,7 +37,7 @@ namespace codec
          * 
          * @sa SHA3EncoderCodec(std::unique_ptr<CryptoPP::SHA3>)
          * @sa SHA3EncoderCodec(std::string_view, std::unique_ptr<CryptoPP::SHA3>)
-         * @sa SHA3EncoderCodec(std::byte*, std::size_t, std::unique_ptr<CryptoPP::SHA3> hasher)
+         * @sa SHA3EncoderCodec(const std::byte*, std::size_t, std::unique_ptr<CryptoPP::SHA3> hasher)
          */
         explicit SHA3EncoderCodec(std::vector<std::byte> data, std::unique_ptr<CryptoPP::SHA3> hasher = nullptr);
         /**
@@ -48,7 +48,7 @@ namespace codec
          * 
          * @sa SHA3EncoderCodec(std::unique_ptr<CryptoPP::SHA3>)
          * @sa SHA3EncoderCodec(std::vector<std::byte>, std::unique_ptr<CryptoPP::SHA3>)
-         * @sa SHA3EncoderCodec(std::byte*, std::size_t, std::unique_ptr<CryptoPP::SHA3> hasher)
+         * @sa SHA3EncoderCodec(const std::byte*, std::size_t, std::unique_ptr<CryptoPP::SHA3> hasher)
          */
         explicit SHA3EncoderCodec(std::string_view data, std::unique_ptr<CryptoPP::SHA3> hasher = nullptr);
         /**
@@ -62,7 +62,7 @@ namespace codec
          * @sa SHA3EncoderCodec(std::vector<std::byte>, std::unique_ptr<CryptoPP::SHA3>)
          * @sa SHA3EncoderCodec(std::string_view, std::unique_ptr<CryptoPP::SHA3>)
          */
-        explicit SHA3EncoderCodec(std::byte *data, std::size_t size, std::unique_ptr<CryptoPP::SHA3> hasher = nullptr);
+        explicit SHA3EncoderCodec(const std::byte * data, std::size_t size, std::unique_ptr<CryptoPP::SHA3> hasher = nullptr);
 
         const std::vector<std::byte> &getCodecResult() const override;
         void setCodecData(std::vector<std::byte> data) override;

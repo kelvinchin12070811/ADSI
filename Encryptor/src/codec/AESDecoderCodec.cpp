@@ -34,8 +34,7 @@ namespace codec
     {
         if (data == nullptr) return;
 
-        _buffer.reserve(size);
-        std::copy(data, data + size, std::back_inserter(_buffer));
+        _buffer = { data, data + size };
     }
     
     const std::vector<std::byte> &AESDecoderCodec::getCodecResult() const
@@ -53,10 +52,7 @@ namespace codec
         if (data == nullptr)
             throw std::invalid_argument{ "Parameter data must not be nullptr but seems to be." };
 
-        _buffer.clear();
-        _buffer.shrink_to_fit();
-        _buffer.reserve(size);
-        std::copy(data, data + size, std::back_inserter(_buffer));
+        _buffer = { data, data + size };
     }
 
     void AESDecoderCodec::setCodecData(std::string_view data)
@@ -96,15 +92,8 @@ namespace codec
             }
         });
 
-        _encoded.clear();
-        _encoded.shrink_to_fit();
-        _encoded.reserve(result.size());
-        std::transform(
-            result.cbegin(),
-            result.cend(),
-            std::back_inserter(_encoded),
-            [](const auto &itr) { return static_cast<std::byte>(itr); }
-        );
+        auto begResult = reinterpret_cast<std::byte *>(result.data());
+        _encoded = { begResult, begResult + result.size() };
     }
     
     void AESDecoderCodec::setKey(std::vector<std::byte> key)

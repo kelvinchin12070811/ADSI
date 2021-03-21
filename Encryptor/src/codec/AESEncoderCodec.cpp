@@ -31,19 +31,14 @@ namespace codec
         if (data == nullptr)
             throw std::invalid_argument{ "Data must not be nullptr but seems to receive it." };
 
-        _buffer = decltype(_buffer){ data, data + size };
+        _buffer = { data, data + size };
     }
 
     AESEncoderCodec::AESEncoderCodec(std::string_view data, std::vector<std::byte> key):
         AESEncoderCodec(key)
     {
-        _buffer.reserve(data.size());
-        std::transform(
-            data.cbegin(),
-            data.cend(),
-            std::back_inserter(_buffer),
-            [](const auto &itr) { return static_cast<std::byte>(itr); }
-        );
+        auto begin = reinterpret_cast<const std::byte *>(data.data());
+        _buffer = { begin, begin + data.size() };
     }
     
     const std::vector<std::byte> &AESEncoderCodec::getCodecResult() const
@@ -61,10 +56,7 @@ namespace codec
         if (data == nullptr)
             throw std::invalid_argument{ "Parameter data must not be nullptr but seems to be." };
 
-        _buffer.clear();
-        _buffer.shrink_to_fit();
-        _buffer.reserve(size);
-        std::copy(data, data + size, std::back_inserter(_buffer));
+        _buffer = { data, data + size };
     }
 
     void AESEncoderCodec::setCodecData(std::string_view data)
@@ -104,15 +96,8 @@ namespace codec
             }
         });
 
-        _encoded.clear();
-        _encoded.shrink_to_fit();
-        _encoded.reserve(result.size());
-        std::transform(
-            result.begin(),
-            result.end(),
-            std::back_inserter(_encoded),
-            [](const auto &itr) { return static_cast<std::byte>(itr); }
-        );
+        auto begResult = reinterpret_cast<std::byte *>(result.data());
+        _encoded = { begResult, begResult + result.size() };
     }
     
     void AESEncoderCodec::setKey(std::vector<std::byte> key)

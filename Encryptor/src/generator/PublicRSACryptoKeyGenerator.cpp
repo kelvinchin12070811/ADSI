@@ -32,9 +32,9 @@ namespace key_generator
         CryptoPP::VectorSink encoder{ buffer };
         publicKey.DEREncode(encoder);
         
-        auto begin = reinterpret_cast<std::byte *>(buffer.data());
-        auto end = begin + buffer.size();
-        setKey(decltype(_key)(begin, end));
+        auto begBuffer = reinterpret_cast<std::byte *>(buffer.data());
+        _key = { begBuffer, begBuffer + buffer.size() };
+        
     }
     
     const CryptoPP::InvertibleRSAFunction &PublicRSACryptoKeyGenerator::keyParams() const
@@ -45,10 +45,5 @@ namespace key_generator
     void PublicRSACryptoKeyGenerator::setKeyParams(CryptoPP::InvertibleRSAFunction keyParams)
     {
         _keyParams = std::move(keyParams);
-    }
-    
-    void PublicRSACryptoKeyGenerator::setKey(std::vector<std::byte> value)
-    {
-        _key.swap(value);
     }
 }
