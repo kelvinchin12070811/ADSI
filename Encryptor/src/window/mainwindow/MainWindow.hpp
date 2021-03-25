@@ -4,8 +4,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *********************************************************************************************************************/
 #pragma once
-#include <memory>
+#include <QImage>
 #include <QMainWindow>
+
+#include <memory>
+#include <string_view>
 
 #include "ui_MainWindow.h"
 
@@ -16,6 +19,9 @@ namespace window {
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
+private:
+    static constexpr std::string_view SelectImageFormatFilter { "*.jpg;*.png" };
+
 public:
     /**
      * @brief Construct default window.
@@ -42,5 +48,9 @@ private:
      * @brief UI generated via Qt Designer.
      */
     std::unique_ptr<Ui::MainWindow> ui_;
+    /**
+     * @brief Image to sign.
+     */
+    QImage targetImage;
 };
 }

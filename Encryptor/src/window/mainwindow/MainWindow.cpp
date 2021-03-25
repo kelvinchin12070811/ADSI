@@ -3,11 +3,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *********************************************************************************************************************/
-#include <stdexcept>
 #include <QFile>
+#include <QFileDialog>
 #include <QGuiApplication>
 #include <QMessageBox>
+#include <QPixmap>
 #include <QScreen>
+
+#include <stdexcept>
 
 #include "window/mainwindow/MainWindow.hpp"
 #include "window/setting/Setting.hpp"
@@ -23,7 +26,18 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::onBtnLoadImgClicked()
 {
-    QMessageBox::information(this, "Hello world!", "Hi there!");
+    auto imgPath = QFileDialog::getOpenFileName(this, tr("Select Image"), {},
+                                                { SelectImageFormatFilter.data() });
+    
+    if (imgPath.isEmpty())
+        return;
+
+    targetImage.load(imgPath);
+    auto imgPreview = QPixmap::fromImage(targetImage);
+    imgPreview =
+            imgPreview.scaled(ui_->labImagePreview->size(), Qt::AspectRatioMode::KeepAspectRatio,
+                              Qt::TransformationMode::SmoothTransformation);
+    ui_->labImagePreview->setPixmap(imgPreview);
 }
 
 void MainWindow::onBtnSettingClicked()
