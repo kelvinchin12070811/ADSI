@@ -73,7 +73,7 @@ if (WIN32)
          ${PROJECT_HEADER_FILES}
          ${PROJECT_UI_FILES}
          "../Resource.qrc"
-      )
+     )
 
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND
         ${DEPLOYQT_BIN} "$<TARGET_FILE:${PROJECT_NAME}>" --qmldir "${CMAKE_SOURCE_DIR}" --no-translations

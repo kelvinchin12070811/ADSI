@@ -5,45 +5,44 @@
  *********************************************************************************************************************/
 #include "generator/PublicRSACryptoKeyGenerator.hpp"
 
-namespace key_generator
+namespace key_generator {
+PublicRSACryptoKeyGenerator::PublicRSACryptoKeyGenerator(CryptoPP::InvertibleRSAFunction keyParams)
+    : _keyParams { std::move(keyParams) }
 {
-    PublicRSACryptoKeyGenerator::PublicRSACryptoKeyGenerator(CryptoPP::InvertibleRSAFunction keyParams):
-        _keyParams{ std::move(keyParams) }
-    {
-    }
+}
 
-    CryptoPP::RSA::PublicKey PublicRSACryptoKeyGenerator::getPublicKey() const
-    {
-        CryptoPP::RSA::PublicKey publicKey;
-        CryptoPP::ArraySource src{ reinterpret_cast<const CryptoPP::byte *>(_key.data()), _key.size(), true };
-        publicKey.BERDecode(src);
-        return publicKey;
-    }
+CryptoPP::RSA::PublicKey PublicRSACryptoKeyGenerator::getPublicKey() const
+{
+    CryptoPP::RSA::PublicKey publicKey;
+    CryptoPP::ArraySource src { reinterpret_cast<const CryptoPP::byte *>(_key.data()), _key.size(),
+                                true };
+    publicKey.BERDecode(src);
+    return publicKey;
+}
 
-    const std::vector<std::byte> &PublicRSACryptoKeyGenerator::getGeneratedKey()
-    {
-        return _key;
-    }
+const std::vector<std::byte> &PublicRSACryptoKeyGenerator::getGeneratedKey()
+{
+    return _key;
+}
 
-    void PublicRSACryptoKeyGenerator::generate()
-    {
-        std::vector<CryptoPP::byte> buffer;
-        CryptoPP::RSA::PublicKey publicKey{ keyParams() };
-        CryptoPP::VectorSink encoder{ buffer };
-        publicKey.DEREncode(encoder);
-        
-        auto begBuffer = reinterpret_cast<std::byte *>(buffer.data());
-        _key = { begBuffer, begBuffer + buffer.size() };
-        
-    }
-    
-    const CryptoPP::InvertibleRSAFunction &PublicRSACryptoKeyGenerator::keyParams() const
-    {
-        return _keyParams;
-    }
-    
-    void PublicRSACryptoKeyGenerator::setKeyParams(CryptoPP::InvertibleRSAFunction keyParams)
-    {
-        _keyParams = std::move(keyParams);
-    }
+void PublicRSACryptoKeyGenerator::generate()
+{
+    std::vector<CryptoPP::byte> buffer;
+    CryptoPP::RSA::PublicKey publicKey { keyParams() };
+    CryptoPP::VectorSink encoder { buffer };
+    publicKey.DEREncode(encoder);
+
+    auto begBuffer = reinterpret_cast<std::byte *>(buffer.data());
+    _key = { begBuffer, begBuffer + buffer.size() };
+}
+
+const CryptoPP::InvertibleRSAFunction &PublicRSACryptoKeyGenerator::keyParams() const
+{
+    return _keyParams;
+}
+
+void PublicRSACryptoKeyGenerator::setKeyParams(CryptoPP::InvertibleRSAFunction keyParams)
+{
+    _keyParams = std::move(keyParams);
+}
 }

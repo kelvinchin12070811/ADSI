@@ -8,47 +8,47 @@
 #include <utils/ConfigManager.hpp>
 #include <yaml-cpp/yaml.h>
 
-namespace utils
+namespace utils {
+ConfigManager &ConfigManager::getInstance()
 {
-    ConfigManager &ConfigManager::getInstance()
-    {
-        static ConfigManager instance;
-        return instance;
-    }
+    static ConfigManager instance;
+    return instance;
+}
 
-    void ConfigManager::loadConfig()
-    {
-        QFileInfo cfgFileInfo{ ConfigName::cfgFileName.data() };
-        if (!cfgFileInfo.exists()) return;
+void ConfigManager::loadConfig()
+{
+    QFileInfo cfgFileInfo { ConfigName::cfgFileName.data() };
+    if (!cfgFileInfo.exists())
+        return;
 
-        YAML::Node document;
-        document = YAML::LoadFile(cfgFileInfo.absoluteFilePath().toStdString());
-        setEnableHighDPIScaling(document["app"][ConfigName::enableHighDPIScaling.data()].as<bool>(isEnableHighDPIScaling()));
-    }
+    YAML::Node document;
+    document = YAML::LoadFile(cfgFileInfo.absoluteFilePath().toStdString());
+    setEnableHighDPIScaling(document["app"][ConfigName::enableHighDPIScaling.data()].as<bool>(
+            isEnableHighDPIScaling()));
+}
 
-    void ConfigManager::dumpConfig()
-    {
-        YAML::Node document;
-        
-        document["app"][ConfigName::enableHighDPIScaling.data()] = isEnableHighDPIScaling();
+void ConfigManager::dumpConfig()
+{
+    YAML::Node document;
 
-        std::ofstream cfgWriter{ ConfigName::cfgFileName.data() };
-        if (!cfgWriter.is_open()) return;
-        cfgWriter << YAML::Dump(document) << std::endl;
-        cfgWriter.close();
-    }
+    document["app"][ConfigName::enableHighDPIScaling.data()] = isEnableHighDPIScaling();
 
-    bool ConfigManager::isEnableHighDPIScaling() const
-    {
-        return _enableHighDPIScaling;
-    }
+    std::ofstream cfgWriter { ConfigName::cfgFileName.data() };
+    if (!cfgWriter.is_open())
+        return;
+    cfgWriter << YAML::Dump(document) << std::endl;
+    cfgWriter.close();
+}
 
-    void ConfigManager::setEnableHighDPIScaling(bool value)
-    {
-        _enableHighDPIScaling = value;
-    }
+bool ConfigManager::isEnableHighDPIScaling() const
+{
+    return _enableHighDPIScaling;
+}
 
-    ConfigManager::ConfigManager()
-    {
-    }
+void ConfigManager::setEnableHighDPIScaling(bool value)
+{
+    _enableHighDPIScaling = value;
+}
+
+ConfigManager::ConfigManager() { }
 }

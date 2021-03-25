@@ -7,13 +7,12 @@
 
 #include "generator/RSACryptoKeyGeneratorBase.hpp"
 
-namespace key_generator
+namespace key_generator {
+CryptoPP::InvertibleRSAFunction RSACryptoKeyGeneratorBase::generateKeyParams()
 {
-    CryptoPP::InvertibleRSAFunction RSACryptoKeyGeneratorBase::generateKeyParams()
-    {
-        CryptoPP::AutoSeededRandomPool rdnPool;
-        CryptoPP::InvertibleRSAFunction keyParams;
-        keyParams.GenerateRandomWithKeySize(rdnPool, 3072);
-        return keyParams;
-    }
+    CryptoPP::AutoSeededRandomPool rdnPool;
+    CryptoPP::InvertibleRSAFunction keyParams;
+    keyParams.GenerateRandomWithKeySize(rdnPool, 3072);
+    return keyParams;
+}
 }

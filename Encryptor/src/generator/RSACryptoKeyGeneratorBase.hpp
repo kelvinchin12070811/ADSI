@@ -8,18 +8,17 @@
 
 #include "generator/ICryptoKeyGenerator.hpp"
 
-namespace key_generator
+namespace key_generator {
+/**
+ * @brief Abstract class that RSA's generators based on.
+ */
+class RSACryptoKeyGeneratorBase : public ICryptoKeyGenerator
 {
+public:
     /**
-     * @brief Abstract class that RSA's generators based on.
+     * @brief Generate random params for public/private keys.
+     * @return Random params to generate public/private keys.
      */
-    class RSACryptoKeyGeneratorBase : public ICryptoKeyGenerator
-    {
-    public:
-        /**
-         * @brief Generate random params for public/private keys.
-         * @return Random params to generate public/private keys.
-         */
-        static CryptoPP::InvertibleRSAFunction generateKeyParams();
-    };
+    static CryptoPP::InvertibleRSAFunction generateKeyParams();
+};
 }

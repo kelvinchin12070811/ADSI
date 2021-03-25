@@ -9,47 +9,48 @@
 
 #include "ui_Setting.h"
 
-namespace window
+namespace window {
+/**
+ * @brief Dialog used to set configuration of the application.
+ */
+class Setting : public QDialog
 {
+    Q_OBJECT
+public:
     /**
-     * @brief Dialog used to set configuration of the application.
+     * @brief Construct new object of Setting dialog.
+     * @param parent Parent of the dialog.
      */
-    class Setting : public QDialog
-    {
-        Q_OBJECT
-    public:
-        /**
-         * @brief Construct new object of Setting dialog.
-         * @param parent Parent of the dialog.
-         */
-        explicit Setting(QWidget *parent = nullptr);
-    private:
-        /**
-         * @brief Load stylesheet from resources.
-         */
-        void loadStylesheet();
-        /**
-         * @brief Load configurations to edit.
-         */
-        void loadConfigs();
-    private slots:
-        /**
-         * @brief Action on cancel button clicked.
-         */
-        void onBtnCancelClicked();
-        /**
-         * @brief Action on ok button clicked.
-         */
-        void onBtnOkClicked();
-    private:
-        /**
-         * @name Attributes
-         * @{
-         */
-        /**
-         * @brief Ui objects generated via Qt Designer.
-         */
-        std::unique_ptr<Ui::settingDialog> _ui;
-        /** @} */
-    };
+    explicit Setting(QWidget *parent = nullptr);
+
+private:
+    /**
+     * @brief Load stylesheet from resources.
+     */
+    void loadStylesheet();
+    /**
+     * @brief Load configurations to edit.
+     */
+    void loadConfigs();
+private slots:
+    /**
+     * @brief Action on cancel button clicked.
+     */
+    void onBtnCancelClicked();
+    /**
+     * @brief Action on ok button clicked.
+     */
+    void onBtnOkClicked();
+
+private:
+    /**
+     * @name Attributes
+     * @{
+     */
+    /**
+     * @brief Ui objects generated via Qt Designer.
+     */
+    std::unique_ptr<Ui::settingDialog> _ui;
+    /** @} */
+};
 }

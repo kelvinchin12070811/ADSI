@@ -11,96 +11,89 @@
 
 #include "codec/AESDecoderCodec.hpp"
 
-namespace codec
+namespace codec {
+AESDecoderCodec::AESDecoderCodec(std::vector<std::byte> key)
+    : AESDecoderCodec(nullptr, 0, std::move(key))
 {
-    AESDecoderCodec::AESDecoderCodec(std::vector<std::byte> key):
-        AESDecoderCodec(nullptr, 0, std::move(key))
-    {
-    }
+}
 
-    AESDecoderCodec::AESDecoderCodec(std::vector<std::byte> data, std::vector<std::byte> key):
-        AESDecoderCodec(nullptr, 0, std::move(key))
-    {
-        _buffer = std::move(data);
-    }
+AESDecoderCodec::AESDecoderCodec(std::vector<std::byte> data, std::vector<std::byte> key)
+    : AESDecoderCodec(nullptr, 0, std::move(key))
+{
+    _buffer = std::move(data);
+}
 
-    AESDecoderCodec::AESDecoderCodec(std::string_view data, std::vector<std::byte> key):
-        AESDecoderCodec(reinterpret_cast<const std::byte *>(data.data()), data.length(), std::move(key))
-    {
-    }
+AESDecoderCodec::AESDecoderCodec(std::string_view data, std::vector<std::byte> key)
+    : AESDecoderCodec(reinterpret_cast<const std::byte *>(data.data()), data.length(),
+                      std::move(key))
+{
+}
 
-    AESDecoderCodec::AESDecoderCodec(const std::byte *data, std::size_t size, std::vector<std::byte> key):
-        _key{ std::move(key) }
-    {
-        if (data == nullptr) return;
+AESDecoderCodec::AESDecoderCodec(const std::byte *data, std::size_t size,
+                                 std::vector<std::byte> key)
+    : _key { std::move(key) }
+{
+    if (data == nullptr)
+        return;
 
-        _buffer = { data, data + size };
-    }
-    
-    const std::vector<std::byte> &AESDecoderCodec::getCodecResult() const
-    {
-        return _encoded;
-    }
-    
-    void AESDecoderCodec::setCodecData(std::vector<std::byte> data)
-    {
-        _buffer = std::move(data);
-    }
+    _buffer = { data, data + size };
+}
 
-    void AESDecoderCodec::setCodecData(const std::byte *data, std::size_t size)
-    {
-        if (data == nullptr)
-            throw std::invalid_argument{ "Parameter data must not be nullptr but seems to be." };
+const std::vector<std::byte> &AESDecoderCodec::getCodecResult() const
+{
+    return _encoded;
+}
 
-        _buffer = { data, data + size };
-    }
+void AESDecoderCodec::setCodecData(std::vector<std::byte> data)
+{
+    _buffer = std::move(data);
+}
 
-    void AESDecoderCodec::setCodecData(std::string_view data)
-    {
-        setCodecData(reinterpret_cast<const std::byte *>(data.data()), data.size());
-    }
-    
-    void AESDecoderCodec::execute()
-    {
-        CryptoPP::OFB_Mode<CryptoPP::AES>::Encryption prndPool;
-        CryptoPP::CBC_Mode<CryptoPP::AES>::Decryption decAes;
-        CryptoPP::SecByteBlock iv{ CryptoPP::AES::BLOCKSIZE };
-        CryptoPP::SecByteBlock decKey{ _key.size() };
-        CryptoPP::SecByteBlock prndPoolIV{ CryptoPP::AES::BLOCKSIZE };
+void AESDecoderCodec::setCodecData(const std::byte *data, std::size_t size)
+{
+    if (data == nullptr)
+        throw std::invalid_argument { "Parameter data must not be nullptr but seems to be." };
 
-        std::transform(
-            _key.crbegin(),
-            _key.crbegin() + prndPoolIV.size(),
-            prndPoolIV.begin(),
-            [](const auto &itr) { return static_cast<CryptoPP::byte>(itr); }
-        );
+    _buffer = { data, data + size };
+}
 
-        prndPool.SetKeyWithIV(reinterpret_cast<CryptoPP::byte *>(_key.data()), _key.size(), prndPoolIV);
-        prndPool.GenerateBlock(iv, iv.size());
-        prndPool.GenerateBlock(decKey, decKey.size());
+void AESDecoderCodec::setCodecData(std::string_view data)
+{
+    setCodecData(reinterpret_cast<const std::byte *>(data.data()), data.size());
+}
 
-        decAes.SetKeyWithIV(decKey, decKey.size(), iv);
-        
-        std::vector<CryptoPP::byte> result;
-        static_cast<void>(CryptoPP::ArraySource{
-            reinterpret_cast<CryptoPP::byte *>(_buffer.data()),
-            _buffer.size(),
-            true,
-            new CryptoPP::StreamTransformationFilter{
-                decAes,
-                new CryptoPP::VectorSink{ result }
-            }
-        });
+void AESDecoderCodec::execute()
+{
+    CryptoPP::OFB_Mode<CryptoPP::AES>::Encryption prndPool;
+    CryptoPP::CBC_Mode<CryptoPP::AES>::Decryption decAes;
+    CryptoPP::SecByteBlock iv { CryptoPP::AES::BLOCKSIZE };
+    CryptoPP::SecByteBlock decKey { _key.size() };
+    CryptoPP::SecByteBlock prndPoolIV { CryptoPP::AES::BLOCKSIZE };
 
-        auto begResult = reinterpret_cast<std::byte *>(result.data());
-        _encoded = { begResult, begResult + result.size() };
-    }
-    
-    void AESDecoderCodec::setKey(std::vector<std::byte> key)
-    {
-        if (key.empty())
-            throw std::invalid_argument{ "Parameter key must not be empty but seems to be" };
+    std::transform(_key.crbegin(), _key.crbegin() + prndPoolIV.size(), prndPoolIV.begin(),
+                   [](const auto &itr) { return static_cast<CryptoPP::byte>(itr); });
 
-        _key = std::move(key);
-    }
+    prndPool.SetKeyWithIV(reinterpret_cast<CryptoPP::byte *>(_key.data()), _key.size(), prndPoolIV);
+    prndPool.GenerateBlock(iv, iv.size());
+    prndPool.GenerateBlock(decKey, decKey.size());
+
+    decAes.SetKeyWithIV(decKey, decKey.size(), iv);
+
+    std::vector<CryptoPP::byte> result;
+    static_cast<void>(CryptoPP::ArraySource {
+            reinterpret_cast<CryptoPP::byte *>(_buffer.data()), _buffer.size(), true,
+            new CryptoPP::StreamTransformationFilter { decAes,
+                                                       new CryptoPP::VectorSink { result } } });
+
+    auto begResult = reinterpret_cast<std::byte *>(result.data());
+    _encoded = { begResult, begResult + result.size() };
+}
+
+void AESDecoderCodec::setKey(std::vector<std::byte> key)
+{
+    if (key.empty())
+        throw std::invalid_argument { "Parameter key must not be empty but seems to be" };
+
+    _key = std::move(key);
+}
 }

@@ -9,38 +9,38 @@
 
 #include "ui_MainWindow.h"
 
-namespace window
+namespace window {
+/**
+ * @brief Main application window
+ */
+class MainWindow : public QMainWindow
 {
+    Q_OBJECT
+public:
     /**
-     * @brief Main application window
+     * @brief Construct default window.
+     * @param parent Parent of the window, nullptr for no parent.
      */
-    class MainWindow : public QMainWindow
-    {
-        Q_OBJECT
-    public:
-        /**
-         * @brief Construct default window.
-         * @param parent Parent of the window, nullptr for no parent.
-        */
-        explicit MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow(QWidget *parent = nullptr);
 
-    private slots:
-        void onBtnLoadImgClicked();
-        void onBtnSettingClicked();
+private slots:
+    void onBtnLoadImgClicked();
+    void onBtnSettingClicked();
 
-    private:
-        /**
-         * @brief Load QSS from selected path.
-         */
-        void loadStylesheet();
-        /**
-         * @brief Extra steps to initialize the UI.
-         */
-        void initUI();
-    private:
-        /**
-         * @brief UI generated via Qt Designer.
-         */
-        std::unique_ptr<Ui::MainWindow> ui;
-    };
+private:
+    /**
+     * @brief Load QSS from selected path.
+     */
+    void loadStylesheet();
+    /**
+     * @brief Extra steps to initialize the UI.
+     */
+    void initUI();
+
+private:
+    /**
+     * @brief UI generated via Qt Designer.
+     */
+    std::unique_ptr<Ui::MainWindow> ui;
+};
 }

@@ -6,59 +6,58 @@
 #pragma once
 #include "generator/RSACryptoKeyGeneratorBase.hpp"
 
-namespace key_generator
+namespace key_generator {
+/**
+ * @brief Private key generator of RSA algorithm.
+ */
+class PrivateRSACryptoKeyGenerator : public RSACryptoKeyGeneratorBase
 {
+public:
     /**
-     * @brief Private key generator of RSA algorithm.
+     * @brief Construct new generator with keyParams.
+     * @param keyParams Parameters to generate private key.
      */
-    class PrivateRSACryptoKeyGenerator : public RSACryptoKeyGeneratorBase
-    {
-    public:
-        /**
-         * @brief Construct new generator with keyParams.
-         * @param keyParams Parameters to generate private key.
-         */
-        explicit PrivateRSACryptoKeyGenerator(CryptoPP::InvertibleRSAFunction keyParams);
-        /**
-         * @brief Generate private key from key data.
-         * @return Private key.
-         */
-        CryptoPP::RSA::PrivateKey getPrivatekey() const;
+    explicit PrivateRSACryptoKeyGenerator(CryptoPP::InvertibleRSAFunction keyParams);
+    /**
+     * @brief Generate private key from key data.
+     * @return Private key.
+     */
+    CryptoPP::RSA::PrivateKey getPrivatekey() const;
 
-        void generate() override;
-        const std::vector<std::byte> &getGeneratedKey() override;
-        
-    public: // Mutators
-        /**
-         * @brief Assign new keyParams to generator.
-         * @param keyParams Parameters to assign.
-         */
-        void setKeyParams(CryptoPP::InvertibleRSAFunction keyParams);
+    void generate() override;
+    const std::vector<std::byte> &getGeneratedKey() override;
 
-    public: // Accessors
-        /**
-         * @brief Get assigned keyParams.
-         * @return Assigned keyParams.
-        */
-        const CryptoPP::InvertibleRSAFunction &keyParams() const;
+public: // Mutators
+    /**
+     * @brief Assign new keyParams to generator.
+     * @param keyParams Parameters to assign.
+     */
+    void setKeyParams(CryptoPP::InvertibleRSAFunction keyParams);
 
-    private:
-        /**
-         * @name Attributes
-         * @{
-         */
-        /**
-         * @brief Key parameters to generate private key.
-         * 
-         * @sa
-         */
-        CryptoPP::InvertibleRSAFunction _keyParams;
-        /**
-         * @brief Generated private key.
-         * 
-         * @sa getGeneratedKey()
-         */
-        std::vector<std::byte> _key;
-        /** @} */
-    };
+public: // Accessors
+    /**
+     * @brief Get assigned keyParams.
+     * @return Assigned keyParams.
+     */
+    const CryptoPP::InvertibleRSAFunction &keyParams() const;
+
+private:
+    /**
+     * @name Attributes
+     * @{
+     */
+    /**
+     * @brief Key parameters to generate private key.
+     *
+     * @sa
+     */
+    CryptoPP::InvertibleRSAFunction _keyParams;
+    /**
+     * @brief Generated private key.
+     *
+     * @sa getGeneratedKey()
+     */
+    std::vector<std::byte> _key;
+    /** @} */
+};
 }

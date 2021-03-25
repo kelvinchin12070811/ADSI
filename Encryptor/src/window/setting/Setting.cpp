@@ -13,65 +13,56 @@
 #include "utils/ConfigManager.hpp"
 #include "window/setting/Setting.hpp"
 
-namespace window
+namespace window {
+Setting::Setting(QWidget *parent) : QDialog(parent), _ui { std::make_unique<Ui::settingDialog>() }
 {
-    Setting::Setting(QWidget *parent):
-        QDialog(parent), _ui{ std::make_unique<Ui::settingDialog>() }
-    {
-        _ui->setupUi(this);
+    _ui->setupUi(this);
 
-        loadStylesheet();
-        loadConfigs();
-    }
-    
-    void Setting::loadStylesheet()
-    {
-        auto styles = {
-            QStringLiteral(":/Themes/Default/Master.qss"),
-            QStringLiteral(":/Themes/Default/SettingWindow.qss")
-        };
-        QString constructedStylesheet;
+    loadStylesheet();
+    loadConfigs();
+}
 
-        constructedStylesheet = std::accumulate(
-            styles.begin(),
-            styles.end(),
-            constructedStylesheet,
-            [](const QString &prev, const QString &cur) {
-                QFile input{ cur };
-                input.open(QIODevice::ReadOnly);
-                if (!input.isOpen()) return prev;
+void Setting::loadStylesheet()
+{
+    auto styles = { QStringLiteral(":/Themes/Default/Master.qss"),
+                    QStringLiteral(":/Themes/Default/SettingWindow.qss") };
+    QString constructedStylesheet;
 
-                const auto buf = input.readAll();
-                return QStringLiteral("%1\n%2").arg(prev).arg(QString{ buf });
-            }
-        );
+    constructedStylesheet =
+            std::accumulate(styles.begin(), styles.end(), constructedStylesheet,
+                            [](const QString &prev, const QString &cur) {
+                                QFile input { cur };
+                                input.open(QIODevice::ReadOnly);
+                                if (!input.isOpen())
+                                    return prev;
 
-        this->setStyleSheet(constructedStylesheet);
-    }
+                                const auto buf = input.readAll();
+                                return QStringLiteral("%1\n%2").arg(prev).arg(QString { buf });
+                            });
 
-    void Setting::loadConfigs()
-    {
-        auto configMng = &utils::ConfigManager::getInstance();
-        _ui->optEnableHighDPIScaling->setChecked(configMng->isEnableHighDPIScaling());
-    }
-    
-    void Setting::onBtnCancelClicked()
-    {
-        this->close();
-    }
+    this->setStyleSheet(constructedStylesheet);
+}
 
-    void Setting::onBtnOkClicked()
-    {
-        auto configMng = &utils::ConfigManager::getInstance();
+void Setting::loadConfigs()
+{
+    auto configMng = &utils::ConfigManager::getInstance();
+    _ui->optEnableHighDPIScaling->setChecked(configMng->isEnableHighDPIScaling());
+}
 
-        configMng->setEnableHighDPIScaling(_ui->optEnableHighDPIScaling->isChecked());
+void Setting::onBtnCancelClicked()
+{
+    this->close();
+}
 
-        configMng->dumpConfig();
-        QMessageBox::information(
-            this,
-            QStringLiteral("ADSI Encryptor"),
-            tr("Settings saved, restart application to take effect.")
-        );
-        this->close();
-    }
+void Setting::onBtnOkClicked()
+{
+    auto configMng = &utils::ConfigManager::getInstance();
+
+    configMng->setEnableHighDPIScaling(_ui->optEnableHighDPIScaling->isChecked());
+
+    configMng->dumpConfig();
+    QMessageBox::information(this, QStringLiteral("ADSI Encryptor"),
+                             tr("Settings saved, restart application to take effect."));
+    this->close();
+}
 }
