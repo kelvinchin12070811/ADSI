@@ -70,15 +70,15 @@ private:
      * @sa setKey(CryptoPP::RSA::PrivateKey key)
      * @sa key()
      */
-    CryptoPP::RSA::PrivateKey _key;
+    CryptoPP::RSA::PrivateKey key_;
     /**
      * @brief Data buffer to sign.
      */
-    std::vector<std::byte> _buffer;
+    std::vector<std::byte> buffer_;
     /**
      * @brief Encoded data stream.
      * @sa
      */
-    std::vector<std::byte> _encodedData;
+    std::vector<std::byte> encodedData_;
 };
 }

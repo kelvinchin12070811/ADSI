@@ -9,13 +9,13 @@
 
 namespace codec {
 RSASignEncoderCodec::RSASignEncoderCodec(std::vector<std::byte> data, CryptoPP::RSA::PrivateKey key)
-    : _key { std::move(key) }, _buffer { std::move(data) }
+    : key_ { std::move(key) }, buffer_ { std::move(data) }
 {
 }
 
 RSASignEncoderCodec::RSASignEncoderCodec(const std::byte *data, std::size_t size,
                                          CryptoPP::RSA::PrivateKey key)
-    : _key { std::move(key) }, _buffer { decltype(_buffer)(data, data + size) }
+    : key_ { std::move(key) }, buffer_ { decltype(buffer_)(data, data + size) }
 {
 }
 
@@ -27,17 +27,17 @@ RSASignEncoderCodec::RSASignEncoderCodec(std::string_view data, CryptoPP::RSA::P
 
 const std::vector<std::byte> &RSASignEncoderCodec::getCodecResult() const
 {
-    return _encodedData;
+    return encodedData_;
 }
 
 void RSASignEncoderCodec::setCodecData(std::vector<std::byte> data)
 {
-    _buffer = std::move(data);
+    buffer_ = std::move(data);
 }
 
 void RSASignEncoderCodec::setCodecData(const std::byte *data, std::size_t size)
 {
-    _buffer = { data, data + size };
+    buffer_ = { data, data + size };
 }
 
 void RSASignEncoderCodec::setCodecData(std::string_view data)
@@ -51,18 +51,18 @@ void RSASignEncoderCodec::execute()
     CryptoPP::RSASSA_PKCS1v15_SHA_Signer signer { key() };
     auto signature = std::make_unique<std::byte[]>(signer.MaxSignatureLength());
     auto size =
-            signer.SignMessage(rndPool, reinterpret_cast<const CryptoPP::byte *>(_buffer.data()),
-                               _buffer.size(), reinterpret_cast<CryptoPP::byte *>(signature.get()));
-    _encodedData = { signature.get(), signature.get() + size };
+            signer.SignMessage(rndPool, reinterpret_cast<const CryptoPP::byte *>(buffer_.data()),
+                               buffer_.size(), reinterpret_cast<CryptoPP::byte *>(signature.get()));
+    encodedData_ = { signature.get(), signature.get() + size };
 }
 
 void RSASignEncoderCodec::setKey(CryptoPP::RSA::PrivateKey key)
 {
-    _key = std::move(key);
+    key_ = std::move(key);
 }
 
 const CryptoPP::RSA::PrivateKey &RSASignEncoderCodec::key() const
 {
-    return _key;
+    return key_;
 }
 }

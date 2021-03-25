@@ -51,13 +51,13 @@ private:
      *
      * @sa
      */
-    CryptoPP::InvertibleRSAFunction _keyParams;
+    CryptoPP::InvertibleRSAFunction keyParams_;
     /**
      * @brief Generated private key.
      *
      * @sa getGeneratedKey()
      */
-    std::vector<std::byte> _key;
+    std::vector<std::byte> key_;
     /** @} */
 };
 }

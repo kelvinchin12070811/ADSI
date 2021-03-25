@@ -86,7 +86,7 @@ private:
      *
      * @sa setKey(std::vector<std::byte>)
      */
-    std::vector<std::byte> _key;
+    std::vector<std::byte> key_;
     /**
      * @brief Data buffer used to encode data.
      *
@@ -94,10 +94,10 @@ private:
      * @sa void setBuffer(const std::byte *, std::size_t)
      * @sa void setBuffer(std::string_view)
      */
-    std::vector<std::byte> _buffer;
+    std::vector<std::byte> buffer_;
     /**
      * @brief Encoded data produced by the encoder.
      */
-    std::vector<std::byte> _encoded;
+    std::vector<std::byte> encoded_;
 };
 }

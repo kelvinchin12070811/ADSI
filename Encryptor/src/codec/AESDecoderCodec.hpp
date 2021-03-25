@@ -94,16 +94,16 @@ private:
     /**
      * @brief Key to use in decryption of data.
      */
-    std::vector<std::byte> _key;
+    std::vector<std::byte> key_;
     /**
      * @brief Encoded data produced by decryptor.
      */
-    std::vector<std::byte> _encoded;
+    std::vector<std::byte> encoded_;
     /**
      * @brief Buffer of data stream to encode.
      *
      * Buffer where decryptor read and decode bytes from.
      */
-    std::vector<std::byte> _buffer;
+    std::vector<std::byte> buffer_;
 };
 }

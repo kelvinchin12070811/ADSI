@@ -17,11 +17,11 @@
 #include "generator/AESCryptoKeyGenerator.hpp"
 
 namespace key_generator {
-AESCryptoKeyGenerator::AESCryptoKeyGenerator(std::string password) : _password(password) { }
+AESCryptoKeyGenerator::AESCryptoKeyGenerator(std::string password) : password_(password) { }
 
 const std::vector<std::byte> &AESCryptoKeyGenerator::getGeneratedKey()
 {
-    return _key;
+    return key_;
 }
 
 void AESCryptoKeyGenerator::generate()
@@ -31,26 +31,26 @@ void AESCryptoKeyGenerator::generate()
     CryptoPP::SHA3_256 sha3_256Digester;
     CryptoPP::OFB_Mode<CryptoPP::AES>::Encryption psuedoRndEngine;
 
-    auto encSHA = std::make_unique<codec::SHA3EncoderCodec>(_password);
+    auto encSHA = std::make_unique<codec::SHA3EncoderCodec>(password_);
     encSHA->execute();
     pwHash = encSHA->getCodecResult();
 
     std::transform(pwHash.crbegin(), pwHash.crbegin() + iv.size(), iv.begin(),
                    [](const auto &curItem) { return static_cast<CryptoPP::byte>(curItem); });
 
-    _key.resize(CryptoPP::AES::MAX_KEYLENGTH);
+    key_.resize(CryptoPP::AES::MAX_KEYLENGTH);
     psuedoRndEngine.SetKeyWithIV(reinterpret_cast<CryptoPP::byte *>(pwHash.data()), pwHash.size(),
                                  iv.data());
-    psuedoRndEngine.GenerateBlock(reinterpret_cast<CryptoPP::byte *>(_key.data()), _key.size());
+    psuedoRndEngine.GenerateBlock(reinterpret_cast<CryptoPP::byte *>(key_.data()), key_.size());
 }
 
 std::string_view AESCryptoKeyGenerator::password() const
 {
-    return _password;
+    return password_;
 }
 
 void AESCryptoKeyGenerator::setPassword(std::string value)
 {
-    _password = std::move(value);
+    password_ = std::move(value);
 }
 }

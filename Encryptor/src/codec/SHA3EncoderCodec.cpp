@@ -11,14 +11,14 @@
 
 namespace codec {
 SHA3EncoderCodec::SHA3EncoderCodec(std::unique_ptr<CryptoPP::SHA3> hasher)
-    : _hasher { hasher == nullptr ? std::make_unique<CryptoPP::SHA3_256>() : std::move(hasher) }
+    : hasher_ { hasher == nullptr ? std::make_unique<CryptoPP::SHA3_256>() : std::move(hasher) }
 {
 }
 
 SHA3EncoderCodec::SHA3EncoderCodec(std::vector<std::byte> data,
                                    std::unique_ptr<CryptoPP::SHA3> hasher)
-    : _buffer { std::move(data) },
-      _hasher { hasher == nullptr ? std::make_unique<CryptoPP::SHA3_256>() : std::move(hasher) }
+    : buffer_ { std::move(data) },
+      hasher_ { hasher == nullptr ? std::make_unique<CryptoPP::SHA3_256>() : std::move(hasher) }
 {
 }
 
@@ -35,17 +35,17 @@ SHA3EncoderCodec::SHA3EncoderCodec(const std::byte *data, std::size_t size,
     if (data == nullptr)
         throw std::invalid_argument { "Parameter data must not be nullptr but it seems to be" };
 
-    _buffer = { data, data + size };
+    buffer_ = { data, data + size };
 }
 
 const std::vector<std::byte> &SHA3EncoderCodec::getCodecResult() const
 {
-    return _encodedData;
+    return encodedData_;
 }
 
 void SHA3EncoderCodec::setCodecData(std::vector<std::byte> data)
 {
-    _buffer = std::move(data);
+    buffer_ = std::move(data);
 }
 
 void SHA3EncoderCodec::setCodecData(const std::byte *data, std::size_t size)
@@ -53,7 +53,7 @@ void SHA3EncoderCodec::setCodecData(const std::byte *data, std::size_t size)
     if (data == nullptr)
         throw std::invalid_argument { "Parameter data must not be nullptr but seems to be." };
 
-    _buffer = { data, data + size };
+    buffer_ = { data, data + size };
 }
 
 void SHA3EncoderCodec::setCodecData(std::string_view data)
@@ -63,23 +63,23 @@ void SHA3EncoderCodec::setCodecData(std::string_view data)
 
 void SHA3EncoderCodec::execute()
 {
-    _encodedData = {};
-    _encodedData.resize(_hasher->DigestSize());
+    encodedData_ = {};
+    encodedData_.resize(hasher_->DigestSize());
     static_cast<void>(CryptoPP::ArraySource {
-            reinterpret_cast<CryptoPP::byte *>(_buffer.data()), _buffer.size(), true,
-            new CryptoPP::HashFilter { *_hasher.get(),
+            reinterpret_cast<CryptoPP::byte *>(buffer_.data()), buffer_.size(), true,
+            new CryptoPP::HashFilter { *hasher_.get(),
                                        new CryptoPP::ArraySink { reinterpret_cast<CryptoPP::byte *>(
-                                                                         _encodedData.data()),
-                                                                 _encodedData.size() } } });
+                                                                         encodedData_.data()),
+                                                                 encodedData_.size() } } });
 }
 
 const CryptoPP::SHA3 *SHA3EncoderCodec::hasher() const
 {
-    return _hasher.get();
+    return hasher_.get();
 }
 
 void SHA3EncoderCodec::setHasher(std::unique_ptr<CryptoPP::SHA3> hasher)
 {
-    _hasher = std::move(hasher);
+    hasher_ = std::move(hasher);
 }
 }

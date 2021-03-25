@@ -108,7 +108,7 @@ private:
      *
      * @sa hasher()
      */
-    std::unique_ptr<CryptoPP::SHA3> _hasher { nullptr };
+    std::unique_ptr<CryptoPP::SHA3> hasher_ { nullptr };
     /**
      * @brief Data buffer for encoder to encode.
      *
@@ -118,10 +118,10 @@ private:
      * @sa setBuffer(std::string_view)
      * @sa setBuffer(const std::byte*, std::size_t)
      */
-    std::vector<std::byte> _buffer {};
+    std::vector<std::byte> buffer_ {};
     /**
      * @brief Encoded data that produced by the encoder.
      */
-    std::vector<std::byte> _encodedData {};
+    std::vector<std::byte> encodedData_ {};
 };
 }

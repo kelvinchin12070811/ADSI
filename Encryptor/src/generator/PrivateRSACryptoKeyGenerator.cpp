@@ -15,7 +15,7 @@ PrivateRSACryptoKeyGenerator::PrivateRSACryptoKeyGenerator(
 CryptoPP::RSA::PrivateKey PrivateRSACryptoKeyGenerator::getPrivatekey() const
 {
     CryptoPP::RSA::PrivateKey privateKey;
-    CryptoPP::ArraySource src { reinterpret_cast<const CryptoPP::byte *>(_key.data()), _key.size(),
+    CryptoPP::ArraySource src { reinterpret_cast<const CryptoPP::byte *>(key_.data()), key_.size(),
                                 true };
     privateKey.BERDecode(src);
     return privateKey;
@@ -24,26 +24,26 @@ CryptoPP::RSA::PrivateKey PrivateRSACryptoKeyGenerator::getPrivatekey() const
 void PrivateRSACryptoKeyGenerator::generate()
 {
     std::vector<CryptoPP::byte> buffer;
-    CryptoPP::RSA::PrivateKey key { _keyParams };
+    CryptoPP::RSA::PrivateKey key { keyParams_ };
     CryptoPP::VectorSink encoder { buffer };
 
     key.DEREncode(encoder);
     auto begBuffer = reinterpret_cast<std::byte *>(buffer.data());
-    _key = { begBuffer, begBuffer + buffer.size() };
+    key_ = { begBuffer, begBuffer + buffer.size() };
 }
 
 void PrivateRSACryptoKeyGenerator::setKeyParams(CryptoPP::InvertibleRSAFunction keyParams)
 {
-    _keyParams = std::move(keyParams);
+    keyParams_ = std::move(keyParams);
 }
 
 const CryptoPP::InvertibleRSAFunction &PrivateRSACryptoKeyGenerator::keyParams() const
 {
-    return _keyParams;
+    return keyParams_;
 }
 
 const std::vector<std::byte> &PrivateRSACryptoKeyGenerator::getGeneratedKey()
 {
-    return _key;
+    return key_;
 }
 }
