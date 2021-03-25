@@ -50,7 +50,7 @@ private:
     /**
      * @brief Ui objects generated via Qt Designer.
      */
-    std::unique_ptr<Ui::settingDialog> _ui;
+    std::unique_ptr<Ui::settingDialog> ui_;
     /** @} */
 };
 }

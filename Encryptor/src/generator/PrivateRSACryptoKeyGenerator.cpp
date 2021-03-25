@@ -8,7 +8,7 @@
 namespace key_generator {
 PrivateRSACryptoKeyGenerator::PrivateRSACryptoKeyGenerator(
         CryptoPP::InvertibleRSAFunction keyParams)
-    : _keyParams { std::move(keyParams) }
+    : keyParams_ { std::move(keyParams) }
 {
 }
 

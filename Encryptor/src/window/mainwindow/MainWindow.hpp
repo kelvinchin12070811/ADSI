@@ -41,6 +41,6 @@ private:
     /**
      * @brief UI generated via Qt Designer.
      */
-    std::unique_ptr<Ui::MainWindow> ui;
+    std::unique_ptr<Ui::MainWindow> ui_;
 };
 }

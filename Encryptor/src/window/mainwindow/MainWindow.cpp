@@ -14,9 +14,9 @@
 
 namespace window {
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui { std::make_unique<Ui::MainWindow>() }
+    : QMainWindow(parent), ui_ { std::make_unique<Ui::MainWindow>() }
 {
-    ui->setupUi(this);
+    ui_->setupUi(this);
     initUI();
     loadStylesheet();
 }
@@ -41,7 +41,7 @@ void MainWindow::loadStylesheet()
         throw std::runtime_error { "Unable to load style file Master.qss" };
 
     auto stylesheet = QString { styMaster.readAll() };
-    ui->centralwidget->setStyleSheet(stylesheet);
+    ui_->centralwidget->setStyleSheet(stylesheet);
 }
 
 void MainWindow::initUI()
@@ -49,9 +49,9 @@ void MainWindow::initUI()
     constexpr int maxSize { 16777215 };
 
     auto largeWidth = QGuiApplication::primaryScreen()->size().width();
-    ui->splitSidebar->setStretchFactor(ui->splitSidebar->indexOf(ui->sidebarPanel), 0);
-    ui->splitSidebar->setStretchFactor(ui->splitSidebar->indexOf(ui->clientAreaPanel), 1);
-    ui->sidebarPanel->resize(ui->sidebarPanel->maximumWidth(), ui->sidebarPanel->height());
-    ui->sidebarPanel->setMaximumWidth(maxSize);
+    ui_->splitSidebar->setStretchFactor(ui_->splitSidebar->indexOf(ui_->sidebarPanel), 0);
+    ui_->splitSidebar->setStretchFactor(ui_->splitSidebar->indexOf(ui_->clientAreaPanel), 1);
+    ui_->sidebarPanel->resize(ui_->sidebarPanel->maximumWidth(), ui_->sidebarPanel->height());
+    ui_->sidebarPanel->setMaximumWidth(maxSize);
 }
 }

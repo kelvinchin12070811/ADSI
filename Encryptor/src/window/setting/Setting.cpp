@@ -14,9 +14,9 @@
 #include "window/setting/Setting.hpp"
 
 namespace window {
-Setting::Setting(QWidget *parent) : QDialog(parent), _ui { std::make_unique<Ui::settingDialog>() }
+Setting::Setting(QWidget *parent) : QDialog(parent), ui_ { std::make_unique<Ui::settingDialog>() }
 {
-    _ui->setupUi(this);
+    ui_->setupUi(this);
 
     loadStylesheet();
     loadConfigs();
@@ -46,7 +46,7 @@ void Setting::loadStylesheet()
 void Setting::loadConfigs()
 {
     auto configMng = &utils::ConfigManager::getInstance();
-    _ui->optEnableHighDPIScaling->setChecked(configMng->isEnableHighDPIScaling());
+    ui_->optEnableHighDPIScaling->setChecked(configMng->isEnableHighDPIScaling());
 }
 
 void Setting::onBtnCancelClicked()
@@ -58,7 +58,7 @@ void Setting::onBtnOkClicked()
 {
     auto configMng = &utils::ConfigManager::getInstance();
 
-    configMng->setEnableHighDPIScaling(_ui->optEnableHighDPIScaling->isChecked());
+    configMng->setEnableHighDPIScaling(ui_->optEnableHighDPIScaling->isChecked());
 
     configMng->dumpConfig();
     QMessageBox::information(this, QStringLiteral("ADSI Encryptor"),
