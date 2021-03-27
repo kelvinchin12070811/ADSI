@@ -28,16 +28,9 @@ void MainWindow::onBtnLoadImgClicked()
 {
     auto imgPath = QFileDialog::getOpenFileName(this, tr("Select Image"), {},
                                                 { SelectImageFormatFilter.data() });
-    
-    if (imgPath.isEmpty())
-        return;
-
+    if (imgPath.isEmpty()) return;
     targetImage.load(imgPath);
-    auto imgPreview = QPixmap::fromImage(targetImage);
-    imgPreview =
-            imgPreview.scaled(ui_->labImagePreview->size(), Qt::AspectRatioMode::KeepAspectRatio,
-                              Qt::TransformationMode::SmoothTransformation);
-    ui_->labImagePreview->setPixmap(imgPreview);
+    ui_->labImagePreview->setImage(&targetImage);
 }
 
 void MainWindow::onBtnSettingClicked()
