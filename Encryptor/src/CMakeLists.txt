@@ -33,38 +33,38 @@ set(PROJECT_UI_FILES
 set(PROJECT_SOURCE_FILES
     "codec/AESDecoderCodec.cpp"
     "codec/AESEncoderCodec.cpp"
+    "codec/RSASignEncoderCodec.cpp"
     "codec/SHA3EncoderCodec.cpp"
+    "components/ImagePreview.cpp"
     "components/Switch.cpp"
     "generator/AESCryptoKeyGenerator.cpp"
     "generator/PrivateRSACryptoKeyGenerator.cpp"
     "generator/PublicRSACryptoKeyGenerator.cpp"
     "generator/RSACryptoKeyGeneratorBase.cpp"
     "Main.cpp"
-    
     "utils/ConfigManager.cpp"
     "utils/DCT.cpp"
     "window/mainwindow/MainWindow.cpp"
     "window/setting/Setting.cpp"
-    "codec/RSASignEncoderCodec.cpp"
 )
 
 set(PROJECT_HEADER_FILES
     "codec/AESDecoderCodec.hpp"
     "codec/AESEncoderCodec.hpp"
     "codec/ICodec.hpp"
+    "codec/RSASignEncoderCodec.hpp"
     "codec/SHA3EncoderCodec.hpp"
+    "components/ImagePreview.hpp"
     "components/Switch.hpp"
     "generator/AESCryptoKeyGenerator.hpp"
     "generator/ICryptoKeyGenerator.hpp"
     "generator/PrivateRSACryptoKeyGenerator.hpp"
     "generator/PublicRSACryptoKeyGenerator.hpp"
     "generator/RSACryptoKeyGeneratorBase.hpp"
-    
     "utils/ConfigManager.hpp"
     "utils/DCT.hpp"
     "window/mainwindow/MainWindow.hpp"
     "window/setting/Setting.hpp"
-    "codec/RSASignEncoderCodec.hpp"
 )
 
 if (WIN32)
