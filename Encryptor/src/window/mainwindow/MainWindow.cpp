@@ -12,6 +12,7 @@
 
 #include <stdexcept>
 
+#include "db/DBManager.hpp"
 #include "window/mainwindow/MainWindow.hpp"
 #include "window/setting/Setting.hpp"
 
@@ -22,6 +23,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui_->setupUi(this);
     initUI();
     loadStylesheet();
+    db::DBManager::getInstance().initDB();
 }
 
 void MainWindow::onBtnLoadImgClicked()

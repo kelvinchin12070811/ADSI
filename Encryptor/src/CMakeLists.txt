@@ -18,6 +18,8 @@ REQUIRED)
 find_package(Boost COMPONENTS REQUIRED)
 find_package(cryptopp CONFIG REQUIRED)
 find_package(yaml-cpp CONFIG REQUIRED)
+find_package(unofficial-sqlite3 CONFIG REQUIRED)
+find_package(SqliteOrm CONFIG REQUIRED)
 
 include_directories(${Boost_INCLUDE_DIR})
 
@@ -37,6 +39,7 @@ set(PROJECT_SOURCE_FILES
     "codec/SHA3EncoderCodec.cpp"
     "components/ImagePreview.cpp"
     "components/Switch.cpp"
+    "db/DBManager.cpp"
     "generator/AESCryptoKeyGenerator.cpp"
     "generator/PrivateRSACryptoKeyGenerator.cpp"
     "generator/PublicRSACryptoKeyGenerator.cpp"
@@ -56,6 +59,9 @@ set(PROJECT_HEADER_FILES
     "codec/SHA3EncoderCodec.hpp"
     "components/ImagePreview.hpp"
     "components/Switch.hpp"
+    "db/data/Author.hpp"
+    "db/data/KeyStore.hpp"
+    "db/DBManager.hpp"
     "generator/AESCryptoKeyGenerator.hpp"
     "generator/ICryptoKeyGenerator.hpp"
     "generator/PrivateRSACryptoKeyGenerator.hpp"
@@ -89,6 +95,8 @@ target_link_libraries(
      ${PROJECT_NAME}
      cryptopp-static
      yaml-cpp
+     unofficial::sqlite3::sqlite3
+     sqlite_orm::sqlite_orm
      Qt5::Core
      Qt5::Gui
      Qt5::Widgets
