@@ -68,7 +68,7 @@
        </property>
        <property name="maximumSize">
         <size>
-         <width>200</width>
+         <width>240</width>
          <height>16777215</height>
         </size>
        </property>
@@ -135,25 +135,11 @@
          </spacer>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout">
-          <property name="sizeConstraint">
-           <enum>QLayout::SetDefaultConstraint</enum>
+         <widget class="QPushButton" name="btnLoadKey">
+          <property name="text">
+           <string>Select Key</string>
           </property>
-          <item>
-           <widget class="QPushButton" name="btnLoadKey">
-            <property name="text">
-             <string>Load key</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="btnNewKey">
-            <property name="text">
-             <string>New key</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
+         </widget>
         </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -167,7 +153,7 @@
           <item>
            <widget class="QPushButton" name="btnImageExport">
             <property name="text">
-             <string>Export Image</string>
+             <string>Sign and Export Image</string>
             </property>
            </widget>
           </item>
@@ -181,7 +167,7 @@
           <property name="sizeHint" stdset="0">
            <size>
             <width>17</width>
-            <height>265</height>
+            <height>267</height>
            </size>
           </property>
          </spacer>
@@ -273,8 +259,8 @@
    <slot>onBtnLoadImgClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>63</x>
-     <y>236</y>
+     <x>73</x>
+     <y>187</y>
     </hint>
     <hint type="destinationlabel">
      <x>183</x>
@@ -282,9 +268,26 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>btnLoadKey</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>onBtnLoadKeyClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>182</x>
+     <y>151</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>357</x>
+     <y>559</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>onBtnSettingClicked()</slot>
   <slot>onBtnLoadImgClicked()</slot>
+  <slot>onBtnLoadKeyClicked()</slot>
  </slots>
 </ui>

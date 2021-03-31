@@ -32,6 +32,7 @@ public:
 private slots:
     void onBtnLoadImgClicked();
     void onBtnSettingClicked();
+    void onBtnLoadKeyClicked();
 
 private:
     /**

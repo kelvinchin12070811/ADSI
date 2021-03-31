@@ -14,6 +14,7 @@
 #include <stdexcept>
 
 #include "db/DBManager.hpp"
+#include "window/authorinfoeditor/AuthorInfoEditor.hpp"
 #include "window/mainwindow/MainWindow.hpp"
 #include "window/setting/Setting.hpp"
 
@@ -50,8 +51,14 @@ void MainWindow::onBtnLoadImgClicked()
 
 void MainWindow::onBtnSettingClicked()
 {
-    auto dilSetting = std::make_unique<window::Setting>();
+    std::unique_ptr<QDialog> dilSetting = std::make_unique<window::Setting>();
     dilSetting->exec();
+}
+
+void MainWindow::onBtnLoadKeyClicked()
+{
+    std::unique_ptr<QDialog> dialog = std::make_unique<window::AuthorInfoEditor>(this);
+    dialog->exec();
 }
 
 void MainWindow::loadStylesheet()
