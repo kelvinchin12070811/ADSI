@@ -20,6 +20,7 @@ find_package(cryptopp CONFIG REQUIRED)
 find_package(yaml-cpp CONFIG REQUIRED)
 find_package(unofficial-sqlite3 CONFIG REQUIRED)
 find_package(SqliteOrm CONFIG REQUIRED)
+find_package(KF5WidgetsAddons CONFIG REQUIRED)
 
 include_directories(${Boost_INCLUDE_DIR})
 
@@ -97,10 +98,11 @@ endif()
 target_link_libraries(
      ${PROJECT_NAME}
      cryptopp-static
-     yaml-cpp
-     unofficial::sqlite3::sqlite3
-     sqlite_orm::sqlite_orm
+     KF5::WidgetsAddons
      Qt5::Core
      Qt5::Gui
      Qt5::Widgets
+     sqlite_orm::sqlite_orm
+     unofficial::sqlite3::sqlite3
+     yaml-cpp
 )
