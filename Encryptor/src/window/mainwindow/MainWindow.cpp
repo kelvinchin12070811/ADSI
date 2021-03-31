@@ -43,8 +43,8 @@ void MainWindow::onBtnLoadImgClicked()
     auto imgPath = QFileDialog::getOpenFileName(this, tr("Select Image"), {},
                                                 { SelectImageFormatFilter.data() });
     if (imgPath.isEmpty()) return;
-    targetImage.load(imgPath);
-    ui_->labImagePreview->setImage(&targetImage);
+    targetImage_.load(imgPath);
+    ui_->labImagePreview->setImage(&targetImage_);
 }
 
 void MainWindow::onBtnSettingClicked()

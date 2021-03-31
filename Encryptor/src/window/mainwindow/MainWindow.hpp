@@ -51,6 +51,6 @@ private:
     /**
      * @brief Image to sign.
      */
-    QImage targetImage;
+    QImage targetImage_;
 };
 }
