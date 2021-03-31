@@ -86,7 +86,7 @@ public: // Mutators
      * @brief Assign decryption key for decryption.
      * @param key AES key for decryption, must not be empty.
      *
-     * @throw std::invalid_argument if @param key is empty.
+     * @throw std::invalid_argument if @p key is empty.
      */
     void setKey(std::vector<std::byte> key);
     /** @} */

@@ -27,12 +27,13 @@ MainWindow::MainWindow(QWidget *parent)
     auto *storage = &db::DBManager::getInstance();
     storage->initDB();
 
-
-    db::data::Author author { "Kelvin Chin", "kelvinchin@tester.org", "https://www.example.com" };
-
     try {
-        auto id = storage->storage().insert(author);
-        qDebug() << id;
+        using namespace sqlite_orm;
+        auto author = storage->storage().get_all<db::data::Author>(
+                where(c(&db::data::Author::authorName) == "Sakura Miyamoto"));
+        qDebug() << author.begin()->authorID;
+        qDebug() << QString::fromStdString(author.begin()->authorName);
+        qDebug() << QString::fromStdString(author.begin()->authorEmail);
     } catch (const std::exception &e) {
         qDebug() << e.what();
     }

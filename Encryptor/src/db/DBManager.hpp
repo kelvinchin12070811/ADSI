@@ -10,9 +10,19 @@
 #include "db/data/Author.hpp"
 
 namespace db {
+/**
+ * @brief Singleton object to manage database connection.
+ * 
+ * This singleton object help ADSI Encryptor to communicate with its SQLite3 database.
+ */
 class DBManager
 {
 public:
+    /**
+     * @brief Initializer function use to create connection to the SQLite3 database.
+     * @tparam ...Args Represented as arguments passed into the template.
+     * @return Connected SQLite3 database.
+     */
     template<typename... Args>
     auto static createStorage()
     {
@@ -43,15 +53,29 @@ public:
     DBManager &operator=(const DBManager &) = delete;
     DBManager &operator=(DBManager &&) = delete;
 
+    /**
+     * @brief Get unique instance of the DBManager.
+     * @return Unique instance of the DBManager.
+     */
     static DBManager &getInstance();
 
+    /**
+     * @brief Initialize the SQLite3 database.
+     */
     void initDB();
+    /**
+     * @brief Get the connected database.
+     * @return Connected SQLite3 database.
+     */
     decltype(DBManager::createStorage()) &storage();
 
 private:
     DBManager() {};
 
 private:
+    /**
+     * @brief SQLite3 database connection hook.
+     */
     decltype(DBManager::createStorage()) storage_ { createStorage() };
 };
 }

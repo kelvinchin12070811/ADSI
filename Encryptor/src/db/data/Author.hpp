@@ -8,8 +8,21 @@
 #include <string>
 
 namespace db::data {
+/**
+ * @brief Author table of database
+ * 
+ * Describe the information of a author.
+ */
 struct Author
 {
+    Author() { }
+    /**
+     * @brief Construct new Author info from existing record.
+     * @param authorID Unique ID of the author.
+     * @param authorName Author name.
+     * @param authorEmail Author email address.
+     * @param authorPortFolioURL Author portfolio URL.
+     */
     Author(std::uint32_t authorID, std::string authorName, std::string authorEmail,
            std::string authorPortFolioURL)
         : authorID { authorID },
@@ -19,14 +32,32 @@ struct Author
     {
     }
     
+    /**
+     * @brief Construct new Author info entry to insert into database. Author ID will be given automatically.
+     * @param authorName Author name.
+     * @param authorEmail Author email address. 
+     * @param authorPortFolioURL Author portfolio URL.
+     */
     Author(std::string authorName, std::string authorEmail, std::string authorPortFolioURL)
         : Author(-1u, authorName, authorEmail, authorPortFolioURL)
     {
     }
 
+    /**
+     * @brief Unique ID of the Author record.
+     */
     std::uint32_t authorID;
+    /**
+     * @brief Name of the author.
+     */
     std::string authorName;
+    /**
+     * @brief Email of the author.
+     */
     std::string authorEmail;
+    /**
+     * @brief Author's portfolio URL.
+     */
     std::string authorPortFolioURL;
 };
 }
