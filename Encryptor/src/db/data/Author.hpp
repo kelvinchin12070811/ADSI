@@ -10,6 +10,20 @@
 namespace db::data {
 struct Author
 {
+    Author(std::uint32_t authorID, std::string authorName, std::string authorEmail,
+           std::string authorPortFolioURL)
+        : authorID { authorID },
+          authorName { authorName },
+          authorEmail { authorEmail },
+          authorPortFolioURL { authorPortFolioURL }
+    {
+    }
+    
+    Author(std::string authorName, std::string authorEmail, std::string authorPortFolioURL)
+        : Author(-1u, authorName, authorEmail, authorPortFolioURL)
+    {
+    }
+
     std::uint32_t authorID;
     std::string authorName;
     std::string authorEmail;

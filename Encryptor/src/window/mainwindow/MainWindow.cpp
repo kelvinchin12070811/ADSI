@@ -3,6 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *********************************************************************************************************************/
+#include <QDebug>
 #include <QFile>
 #include <QFileDialog>
 #include <QGuiApplication>
@@ -23,7 +24,18 @@ MainWindow::MainWindow(QWidget *parent)
     ui_->setupUi(this);
     initUI();
     loadStylesheet();
-    db::DBManager::getInstance().initDB();
+    auto *storage = &db::DBManager::getInstance();
+    storage->initDB();
+
+
+    db::data::Author author { "Kelvin Chin", "kelvinchin@tester.org", "https://www.example.com" };
+
+    try {
+        auto id = storage->storage().insert(author);
+        qDebug() << id;
+    } catch (const std::exception &e) {
+        qDebug() << e.what();
+    }
 }
 
 void MainWindow::onBtnLoadImgClicked()

@@ -13,6 +13,31 @@ namespace db {
 class DBManager
 {
 public:
+    template<typename... Args>
+    auto static createStorage()
+    {
+        using namespace sqlite_orm;
+
+        return make_storage(
+                "usrdata.db",
+                make_table("Author",
+                           make_column("authorID", &data::Author::authorID, primary_key(),
+                                       autoincrement()),
+                           make_column("authorName", &data::Author::authorName),
+                           make_column("authorEmail", &data::Author::authorEmail),
+                           make_column("authorPortFolioURL", &data::Author::authorPortFolioURL)),
+                make_table("KeyStore",
+                           make_column("keyID", &data::KeyStore::keyID, primary_key(),
+                                       autoincrement()),
+                           make_column("authorID", &data::KeyStore::authorID),
+                           make_column("keyPublic", &data::KeyStore::keyPublic),
+                           make_column("keyPrivate", &data::KeyStore::keyPrivate),
+                           make_column("keyPasswordHash", &data::KeyStore::keyPasswordHash),
+                           foreign_key(&data::KeyStore::authorID)
+                                   .references(&data::Author::authorID)));
+    }
+
+public:
     DBManager(const DBManager &) = delete;
     DBManager(DBManager &&) = delete;
     DBManager &operator=(const DBManager &) = delete;
@@ -21,33 +46,12 @@ public:
     static DBManager &getInstance();
 
     void initDB();
+    decltype(DBManager::createStorage()) &storage();
 
 private:
     DBManager() {};
 
-    template <typename... Args>
-    auto static createStorage()
-    {
-        using namespace sqlite_orm;
-        return make_storage(
-                "bin.db",
-                make_table("Author",
-                           make_column("authorID", &data::Author::authorID, primary_key(),
-                                       autoincrement()),
-                           make_column("authorName", &data::Author::authorName),
-                           make_column("authorEmail", &data::Author::authorEmail),
-                           make_column("authorPortFolioURL", &data::Author::authorPortFolioURL)),
-                make_table(
-                        "KeyStore",
-                        make_column("keyID", &data::KeyStore::keyID, primary_key(),
-                                    autoincrement()),
-                        foreign_key(&data::KeyStore::authorID).references(&data::Author::authorID),
-                        make_column("keyPublic", &data::KeyStore::keyPublic),
-                        make_column("keyPrivate", &data::KeyStore::keyPrivate),
-                        make_column("keyPasswordHash", &data::KeyStore::keyPasswordHash)));
-    }
-
 private:
-    decltype(createStorage()) storage { createStorage() };
+    decltype(DBManager::createStorage()) storage_ { createStorage() };
 };
 }
