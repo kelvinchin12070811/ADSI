@@ -8,6 +8,7 @@
 #include <QApplication>
 
 #include "utils/ConfigManager.hpp"
+#include "utils/StylesManager.hpp"
 #include "window/mainwindow/MainWindow.hpp"
 
 #if defined(WIN32) && defined(DEBUG)
@@ -27,6 +28,7 @@ int main(int argc, char **argv)
 #endif
 
     utils::ConfigManager::getInstance().loadConfig();
+    utils::StylesManager::getInstance().addGlobalStylesheet(QStringLiteral(":/Themes/Default/Master.qss"));
 
     if (utils::ConfigManager::getInstance().isEnableHighDPIScaling())
         QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);

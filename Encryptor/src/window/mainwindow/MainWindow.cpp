@@ -14,6 +14,7 @@
 #include <stdexcept>
 
 #include "db/DBManager.hpp"
+#include "utils/StylesManager.hpp"
 #include "window/authorinfoeditor/AuthorInfoEditor.hpp"
 #include "window/mainwindow/MainWindow.hpp"
 #include "window/setting/Setting.hpp"
@@ -63,14 +64,7 @@ void MainWindow::onBtnLoadKeyClicked()
 
 void MainWindow::loadStylesheet()
 {
-    QFile styMaster { QStringLiteral(":/Themes/Default/Master.qss") };
-    styMaster.open(QIODevice::OpenModeFlag::ReadOnly);
-
-    if (!styMaster.isOpen())
-        throw std::runtime_error { "Unable to load style file Master.qss" };
-
-    auto stylesheet = QString { styMaster.readAll() };
-    ui_->centralwidget->setStyleSheet(stylesheet);
+    utils::StylesManager::getInstance().applyStylesheets(ui_->centralwidget);
 }
 
 void MainWindow::initUI()

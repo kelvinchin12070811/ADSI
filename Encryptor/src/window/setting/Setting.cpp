@@ -11,6 +11,7 @@
 #include <stdexcept>
 
 #include "utils/ConfigManager.hpp"
+#include "utils/StylesManager.hpp"
 #include "window/setting/Setting.hpp"
 
 namespace window {
@@ -24,23 +25,8 @@ Setting::Setting(QWidget *parent) : QDialog(parent), ui_ { std::make_unique<Ui::
 
 void Setting::loadStylesheet()
 {
-    auto styles = { QStringLiteral(":/Themes/Default/Master.qss"),
-                    QStringLiteral(":/Themes/Default/SettingWindow.qss") };
-    QString constructedStylesheet;
-
-    constructedStylesheet =
-            std::accumulate(styles.begin(), styles.end(), constructedStylesheet,
-                            [](const QString &prev, const QString &cur) {
-                                QFile input { cur };
-                                input.open(QIODevice::ReadOnly);
-                                if (!input.isOpen())
-                                    return prev;
-
-                                const auto buf = input.readAll();
-                                return QStringLiteral("%1\n%2").arg(prev).arg(QString { buf });
-                            });
-
-    this->setStyleSheet(constructedStylesheet);
+    utils::StylesManager::getInstance().applyStylesheets(
+            this, { QStringLiteral(":/Themes/Default/SettingWindow.qss") });
 }
 
 void Setting::loadConfigs()

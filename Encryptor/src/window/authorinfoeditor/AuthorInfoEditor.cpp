@@ -10,5 +10,7 @@ AuthorInfoEditor::AuthorInfoEditor(QWidget *parent)
     : QDialog(parent), ui_ { std::make_unique<Ui::AuthorInfoEditor>() }
 {
     ui_->setupUi(this);
+
+    
 }
 }
