@@ -1,0 +1,26 @@
+QDialog {
+    background-color: white;
+}
+
+QTabWidget::pane {
+    border-top: 1px solid lightgrey;
+}
+
+QTabBar {
+    background-color: white;
+}
+
+QTabBar::tab {
+    background-color: white;
+    color: grey;
+    padding: 5px 15px;
+}
+
+QTabBar::tab:selected {
+    color: black;
+    border-bottom: 1px solid black;
+}
+
+QPushButton {
+    background-color: lightgrey;
+}

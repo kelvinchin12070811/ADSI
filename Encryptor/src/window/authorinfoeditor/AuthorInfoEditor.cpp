@@ -12,6 +12,12 @@ AuthorInfoEditor::AuthorInfoEditor(QWidget *parent)
 {
     ui_->setupUi(this);
 
-    utils::StylesManager::getInstance().applyStylesheets(this);
+    utils::StylesManager::getInstance().applyStylesheets(
+            this, { ":/Themes/Default/AuthorInfoEditor.qss" });
+}
+
+void AuthorInfoEditor::onBtnCancelClicked()
+{
+    this->close();
 }
 }

@@ -107,5 +107,25 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>btnCancel</sender>
+   <signal>clicked()</signal>
+   <receiver>AuthorInfoEditor</receiver>
+   <slot>onBtnCancelClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>347</x>
+     <y>283</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>555</x>
+     <y>368</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>onBtnCancelClicked()</slot>
+ </slots>
 </ui>

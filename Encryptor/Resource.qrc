@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file alias="Themes/Default/Master.qss">Resources/Themes/Default/Master.qss</file>
         <file alias="Themes/Default/SettingWindow.qss">Resources/Themes/Default/SettingWindow.qss</file>
+        <file alias="Themes/Default/AuthorInfoEditor.qss">Resources/Themes/Default/AuthorInfoEditor.qss</file>
     </qresource>
 </RCC>

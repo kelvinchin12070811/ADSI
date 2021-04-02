@@ -24,7 +24,16 @@ public:
      */
     explicit AuthorInfoEditor(QWidget *parent = nullptr);
 
+private slots:
+    /**
+     * @brief Triggered when cancel button is clicked.
+     */
+    void onBtnCancelClicked();
+
 private:
+    /**
+     * @brief Contains the UI elements of the AuthorInfoEditor.
+     */
     std::unique_ptr<Ui::AuthorInfoEditor> ui_ { nullptr };
 };
 }
