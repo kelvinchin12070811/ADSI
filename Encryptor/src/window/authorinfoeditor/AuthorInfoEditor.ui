@@ -38,6 +38,23 @@
       <attribute name="title">
        <string>Authors</string>
       </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="KEditListWidget" name="authorList" native="true"/>
+       </item>
+      </layout>
      </widget>
      <widget class="QWidget" name="tabRSAKeys">
       <attribute name="title">
@@ -106,6 +123,14 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>KEditListWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">KEditListWidget</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>

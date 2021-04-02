@@ -24,3 +24,8 @@ QTabBar::tab:selected {
 QPushButton {
     background-color: lightgrey;
 }
+
+QLineEdit {
+    border: none;
+    border-bottom: 1px solid black;
+}
