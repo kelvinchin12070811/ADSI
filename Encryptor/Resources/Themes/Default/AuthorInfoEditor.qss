@@ -37,6 +37,10 @@ QListView {
 
 QLineEdit {
     border: none;
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid lightgrey;
     padding: 2px;
+}
+
+QLineEdit:focus {
+    border-bottom-color: black;
 }

@@ -32,8 +32,35 @@ private slots:
 
 private:
     /**
+     * @brief Additional steps to setup UI of AuthorInfoEditor.
+     */
+    void setupUI();
+    /**
+     * @brief Load required data from database and initialize the views.
+     */
+    void loadData();
+    /**
+     * @brief Initialize extra signals connection required to setup the UI.
+     */
+    void initConnections();
+    /**
+     * @brief Action triggered when new author entry is created.
+     * @param inserted Author name that newly created.
+     */
+    void onNewAuthorAdded(QString inserted);
+    /**
+     * @brief Action triggered when new button is clicked.
+     */
+    void onAddButtonClicked();
+
+private:
+    /**
      * @brief Contains the UI elements of the AuthorInfoEditor.
      */
     std::unique_ptr<Ui::AuthorInfoEditor> ui_ { nullptr };
+    /**
+     * @brief State of user inputed author name.
+     */
+    QString stateAuthorName_;
 };
 }
