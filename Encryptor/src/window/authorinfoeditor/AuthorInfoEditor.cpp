@@ -14,6 +14,8 @@ AuthorInfoEditor::AuthorInfoEditor(QWidget *parent)
 
     utils::StylesManager::getInstance().applyStylesheets(
             this, { ":/Themes/Default/AuthorInfoEditor.qss" });
+    ui_->authorList->upButton()->hide();
+    ui_->authorList->downButton()->hide();
 }
 
 void AuthorInfoEditor::onBtnCancelClicked()

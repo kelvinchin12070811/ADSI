@@ -21,11 +21,22 @@ QTabBar::tab:selected {
     border-bottom: 1px solid black;
 }
 
+[accessibleName="authorListFrame"] {
+    margin: 5px;
+    margin-bottom: 0px;
+}
+
 QPushButton {
     background-color: lightgrey;
+}
+
+QListView {
+    border: none;
+    background-color: #f3f3f3;
 }
 
 QLineEdit {
     border: none;
     border-bottom: 1px solid black;
+    padding: 2px;
 }

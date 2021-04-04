@@ -13,10 +13,7 @@
   <property name="windowTitle">
    <string>Author Info Editor</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="spacing">
-    <number>0</number>
-   </property>
+  <layout class="QVBoxLayout" name="verticalLayout_3">
    <property name="leftMargin">
     <number>0</number>
    </property>
@@ -52,7 +49,34 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="KEditListWidget" name="authorList" native="true"/>
+        <widget class="QFrame" name="authorListFrame">
+         <property name="accessibleName">
+          <string>authorListFrame</string>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="KEditListWidget" name="authorList" native="true"/>
+          </item>
+         </layout>
+        </widget>
        </item>
       </layout>
      </widget>
