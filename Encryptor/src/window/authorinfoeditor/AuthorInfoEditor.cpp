@@ -72,8 +72,7 @@ void AuthorInfoEditor::onEditAuthorDetails(const QModelIndex &idxItem)
 
     auto *db = &db::DBManager::getInstance().storage();
     db->update(*result);
-    ui_->authorList->clear();
-    loadData();
+    ui_->authorList->lineEdit()->setText(QString::fromStdString(result->authorName));
 }
 
 void AuthorInfoEditor::onAuthorNameChanged()
