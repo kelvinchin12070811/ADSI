@@ -12,6 +12,7 @@
 
 #include "db/DBManager.hpp"
 #include "utils/StylesManager.hpp"
+#include "window/authorinfoeditor/AuthorDetailsEditor.hpp"
 #include "window/authorinfoeditor/AuthorInfoEditor.hpp"
 
 namespace window {
@@ -62,9 +63,8 @@ void AuthorInfoEditor::initConnections()
             &AuthorInfoEditor::onAddButtonClicked);
     connect(ui_->authorList->lineEdit(), &QLineEdit::textChanged,
             [this](const QString &value) { stateAuthorName_ = value; });
-    connect(ui_->authorList->listView(), &QListView::doubleClicked, [this](const QModelIndex &idx) {
-        qDebug() << idx.row() << ": " << idx.data(Qt::DisplayRole).toString();
-    });
+    connect(ui_->authorList->listView(), &QListView::doubleClicked, this,
+            &AuthorInfoEditor::onEditAuthorDetails);
 }
 
 void AuthorInfoEditor::onNewAuthorAdded(QString inserted)
@@ -93,5 +93,11 @@ void AuthorInfoEditor::onAddButtonClicked()
 
     QMessageBox::information(this, this->windowTitle(),
                              QStringLiteral("Name \"%1\" already exist.").arg(stateAuthorName_));
+}
+
+void AuthorInfoEditor::onEditAuthorDetails(const QModelIndex &idxItem) {
+    auto dialog = std::make_unique<window::AuthorDetailsEditor>(
+            idxItem.data(Qt::DisplayRole).toString(), this);
+    dialog->exec();
 }
 }

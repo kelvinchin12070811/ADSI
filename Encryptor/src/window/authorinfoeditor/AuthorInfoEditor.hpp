@@ -52,6 +52,11 @@ private:
      * @brief Action triggered when new button is clicked.
      */
     void onAddButtonClicked();
+    /**
+     * @brief Triggered when an author info record is double clicked.
+     * @param idxItem Index of item to edit.
+     */
+    void onEditAuthorDetails(const QModelIndex &idxItem);
 
 private:
     /**

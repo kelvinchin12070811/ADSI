@@ -29,9 +29,10 @@ get_filename_component(QMAKE_BIN_DIR "${QMAKE_BIN}" DIRECTORY)
 find_program(DEPLOYQT_BIN NAMES windeployqt HINTS "${QMAKE_BIN_DIR}")
 
 set(PROJECT_UI_FILES
+    "window/authorinfoeditor/AuthorDetailsEditor.ui"
+    "window/authorinfoeditor/AuthorInfoEditor.ui"
     "window/mainwindow/MainWindow.ui"
     "window/setting/Setting.ui"
-    "window/authorinfoeditor/AuthorInfoEditor.ui"
 )
 
 set(PROJECT_SOURCE_FILES
@@ -50,6 +51,7 @@ set(PROJECT_SOURCE_FILES
     "utils/ConfigManager.cpp"
     "utils/DCT.cpp"
     "utils/StylesManager.cpp"
+    "window/authorinfoeditor/AuthorDetailsEditor.cpp"
     "window/authorinfoeditor/AuthorInfoEditor.cpp"
     "window/mainwindow/MainWindow.cpp"
     "window/setting/Setting.cpp"
@@ -74,6 +76,7 @@ set(PROJECT_HEADER_FILES
     "utils/ConfigManager.hpp"
     "utils/DCT.hpp"
     "utils/StylesManager.hpp"
+    "window/authorinfoeditor/AuthorDetailsEditor.hpp"
     "window/authorinfoeditor/AuthorInfoEditor.hpp"
     "window/mainwindow/MainWindow.hpp"
     "window/setting/Setting.hpp"
