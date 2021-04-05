@@ -29,20 +29,6 @@ private slots:
      * @brief Triggered when cancel button is clicked.
      */
     void onBtnCancelClicked();
-
-private:
-    /**
-     * @brief Additional steps to setup UI of AuthorInfoEditor.
-     */
-    void setupUI();
-    /**
-     * @brief Load required data from database and initialize the views.
-     */
-    void loadData();
-    /**
-     * @brief Initialize extra signals connection required to setup the UI.
-     */
-    void initConnections();
     /**
      * @brief Action triggered when new author entry is created.
      * @param inserted Author name that newly created.
@@ -57,6 +43,24 @@ private:
      * @param idxItem Index of item to edit.
      */
     void onEditAuthorDetails(const QModelIndex &idxItem);
+    /**
+     * @brief Triggered when a author name is changed.
+     */
+    void onAuthorNameChanged();
+
+private:
+    /**
+     * @brief Additional steps to setup UI of AuthorInfoEditor.
+     */
+    void setupUI();
+    /**
+     * @brief Load required data from database and initialize the views.
+     */
+    void loadData();
+    /**
+     * @brief Initialize extra signals connection required to setup the UI.
+     */
+    void initConnections();
 
 private:
     /**
