@@ -33,6 +33,7 @@ MainWindow::MainWindow(QWidget *parent)
         using namespace sqlite_orm;
         auto author = storage->storage().get_all<db::data::Author>(
                 where(c(&db::data::Author::authorName) == "Sakura Miyamoto"));
+        if (author.empty()) throw std::out_of_range { "No entries found." };
         qDebug() << author.begin()->authorID;
         qDebug() << QString::fromStdString(author.begin()->authorName);
         qDebug() << QString::fromStdString(author.begin()->authorEmail);
