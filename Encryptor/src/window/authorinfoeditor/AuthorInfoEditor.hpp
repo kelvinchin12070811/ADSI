@@ -62,5 +62,9 @@ private:
      * @brief State of user inputed author name.
      */
     QString stateAuthorName_;
+    /**
+     * @brief Counter that keep tracking last amunt of author entries.
+     */
+    std::uint32_t lastAuthorCount_;
 };
 }

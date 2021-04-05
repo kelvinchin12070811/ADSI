@@ -47,10 +47,13 @@ void AuthorInfoEditor::loadData()
     using namespace sqlite_orm;
 
     auto *db = &db::DBManager::getInstance().storage();
+    
     for (const auto &itr :
          db->iterate<db::data::Author>(order_by(&db::data::Author::authorID).desc())) {
         ui_->authorList->insertItem(QString::fromStdString(itr.authorName));
     }
+
+    lastAuthorCount_ = ui_->authorList->items().count();
 }
 void AuthorInfoEditor::initConnections()
 {
@@ -79,23 +82,13 @@ void AuthorInfoEditor::onAddButtonClicked()
 {
     using namespace sqlite_orm;
 
-    try {
-        auto authorName = stateAuthorName_.toStdString();
-        auto *db = &db::DBManager::getInstance().storage();
-        auto authors = db->get_all<db::data::Author>(
-                where(c(&db::data::Author::authorName) == authorName));
-
-        auto authorList = ui_->authorList->items();
-        authorList.sort();
-        auto result = std::binary_search(authorList.begin(), authorList.end(), stateAuthorName_,
-                                   [](const auto &lhs, const auto &rhs) { return lhs < rhs; });
-
-        if (result && authors.empty()) return;
-        QMessageBox::critical(this, this->windowTitle(),
-                              QStringLiteral("Name \"%1\" already exist.")
-                                      .arg(QString::fromStdString(authorName)));
-    } catch (const std::exception &e) {
-        QMessageBox::critical(this, this->windowTitle(), e.what());
+    if (std::uint32_t curAuthorCount { static_cast<uint32_t>(ui_->authorList->items().count()) };
+        curAuthorCount > lastAuthorCount_) {
+        lastAuthorCount_ = curAuthorCount;
+        return;
     }
+
+    QMessageBox::information(this, this->windowTitle(),
+                             QStringLiteral("Name \"%1\" already exist.").arg(stateAuthorName_));
 }
 }
