@@ -11,7 +11,13 @@ AuthorDetailsEditor::AuthorDetailsEditor(QString authorName, QWidget *parent)
     : QDialog(parent), authorName_ { authorName }, ui_ { std::make_unique<Ui::AuthorDetailsEditor>() }
 {
     ui_->setupUi(this);
+    setupUI();
     utils::StylesManager::getInstance().applyStylesheets(
             this, { ":/Themes/Default/AuthorInfoEditor.qss" });
+}
+
+void AuthorDetailsEditor::setupUI()
+{
+    ui_->lnedtName->setText(authorName_);
 }
 }

@@ -28,6 +28,12 @@ public:
 
 private:
     /**
+     * @brief Additional steps to setup ui of the dialog.
+     */
+    void setupUI();
+
+private:
+    /**
      * @brief Represented as generated ui from Qt Designer.
      */
     std::unique_ptr<Ui::AuthorDetailsEditor> ui_;
