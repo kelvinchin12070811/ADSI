@@ -123,8 +123,8 @@
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>279</x>
-     <y>249</y>
+     <x>491</x>
+     <y>204</y>
     </hint>
     <hint type="destinationlabel">
      <x>339</x>
@@ -132,5 +132,24 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>btnOk</sender>
+   <signal>clicked()</signal>
+   <receiver>AuthorDetailsEditor</receiver>
+   <slot>onBtnOkClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>389</x>
+     <y>192</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>375</x>
+     <y>266</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
+ <slots>
+  <slot>onBtnOkClicked()</slot>
+ </slots>
 </ui>

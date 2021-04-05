@@ -7,7 +7,9 @@
 #include <QDialog>
 
 #include <memory>
+#include <optional>
 
+#include "db/data/Author.hpp"
 #include "ui_AuthorDetailsEditor.h"
 
 namespace window {
@@ -25,12 +27,23 @@ public:
      * @param parent Indicate the parent of the dialog, nullptr if no parent.
      */
     explicit AuthorDetailsEditor(QString authorName, QWidget *parent = nullptr);
+    /**
+     * @brief Get result from the dialog.
+     * @return Newly submitted author details or std::nullopt if not submitted.
+     */
+    std::optional<db::data::Author> result();
 
 private:
     /**
-     * @brief Additional steps to setup ui of the dialog.
+     * @brief Load required data from data base to the editing form.
      */
-    void setupUI();
+    void loadData();
+
+private slots:
+    /**
+     * @brief Triggered when Ok button is clicked and submit the form.
+     */
+    void onBtnOkClicked();
 
 private:
     /**
@@ -41,6 +54,13 @@ private:
      * @brief Name of author to edit his details.
      */
     QString authorName_;
-
+    /**
+     * @brief Internal reference of the author object.
+     */
+    db::data::Author author_;
+    /**
+     * @brief Determine if the form has been submitted or not.
+     */
+    bool submitted_ { false };
 };
 }

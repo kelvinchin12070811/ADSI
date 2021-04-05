@@ -67,6 +67,13 @@ void AuthorInfoEditor::onEditAuthorDetails(const QModelIndex &idxItem)
     auto dialog = std::make_unique<window::AuthorDetailsEditor>(
             idxItem.data(Qt::DisplayRole).toString(), this);
     dialog->exec();
+    auto result = dialog->result();
+    if (!result.has_value()) return;
+
+    auto *db = &db::DBManager::getInstance().storage();
+    db->update(*result);
+    ui_->authorList->clear();
+    loadData();
 }
 
 void AuthorInfoEditor::onAuthorNameChanged()
