@@ -25,18 +25,16 @@ std::optional<db::data::Author> AuthorDetailsEditor::result()
 
 void AuthorDetailsEditor::loadData()
 {
-    using namespace sqlite_orm;
-    auto *db = &db::DBManager::getInstance().storage();
-    auto authors = db->get_all<db::data::Author>(
-            where(c(&db::data::Author::authorName) == authorName_.toStdString()), limit(1));
+    auto *dbManager = &db::DBManager::getInstance();
+    auto author = dbManager->getAuthorByName(authorName_.toStdString());
     
-    if (authors.empty()) {
+    if (!author.has_value()) {
         throw std::out_of_range {
             QStringLiteral("No author named \"%1\" found.").arg(authorName_).toUtf8().data()
         };
     }
 
-    author_ = *authors.begin();
+    author_ = *author;
     ui_->lnedtName->setText(QString::fromStdString(author_.authorName));
     ui_->lnedtEmail->setText(QString::fromStdString(author_.authorEmail));
     ui_->lnedtPortfolio->setText(QString::fromStdString(author_.authorPortFolioURL));

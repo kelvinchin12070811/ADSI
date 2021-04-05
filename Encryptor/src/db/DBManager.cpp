@@ -5,6 +5,8 @@
  *********************************************************************************************************************/
 #include <QDebug>
 
+#include <vector>
+
 #include "db/DBManager.hpp"
 
 namespace db {
@@ -19,8 +21,39 @@ void DBManager::initDB()
     storage_.sync_schema();
 }
 
-decltype(DBManager::createStorage()) &DBManager::storage()
+std::optional<data::Author> DBManager::getAuthorByID(uint32_t id)
 {
-    return storage_;
+    try {
+        return storage_.get<data::Author>(id);
+    } catch (const std::exception &e) {
+        return std::nullopt;
+    }
+}
+
+std::optional<data::Author> DBManager::getAuthorByName(std::string_view name)
+{
+    using namespace sqlite_orm;
+    auto authors = storage_.get_all<data::Author>(
+            where(c(&data::Author::authorName) == static_cast<std::string>(name)),
+            limit(1));
+    return authors.empty() ? std::nullopt : std::make_optional(*authors.begin());
+}
+
+std::optional<data::Author> DBManager::getAuthorByDistance(uint32_t distance)
+{
+    using namespace sqlite_orm;
+    auto authors = storage_.get_all<data::Author>(order_by(&data::Author::authorID).desc(),
+                                                  limit(1, offset(distance)));
+    return authors.empty() ? std::nullopt : std::make_optional(*authors.begin());
+}
+
+uint32_t DBManager::insertNewAuthor(data::Author author)
+{
+    return storage_.insert(author);
+}
+
+void DBManager::updateAuthor(data::Author author)
+{
+    storage_.update(author);
 }
 }

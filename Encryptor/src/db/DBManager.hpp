@@ -4,6 +4,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *********************************************************************************************************************/
 #pragma once
+#include <optional>
+#include <string_view>
+
 #include <sqlite_orm/sqlite_orm.h>
 
 #include "db/data/KeyStore.hpp"
@@ -47,6 +50,16 @@ public:
                                    .references(&data::Author::authorID)));
     }
 
+    /**
+     * @brief Get iterator to iterate trough all available authors.
+     * @return Iterator to access all authors.
+     */
+    auto iterateAuthor()
+    {
+        return storage_.iterate<data::Author>(sqlite_orm::order_by(&data::Author::authorID).desc());
+    };
+
+
 public:
     DBManager(const DBManager &) = delete;
     DBManager(DBManager &&) = delete;
@@ -64,10 +77,34 @@ public:
      */
     void initDB();
     /**
-     * @brief Get the connected database.
-     * @return Connected SQLite3 database.
+     * @brief Get author by it's unique id.
+     * @param id ID of the author to retrieve.
+     * @return Author with at the corresponded id.
      */
-    decltype(DBManager::createStorage()) &storage();
+    std::optional<data::Author> getAuthorByID(uint32_t id);
+    /**
+     * @brief Get author by it's name.
+     * @param name Name of the author to get.
+     * @return Author with name of @p name.
+     */
+    std::optional<data::Author> getAuthorByName(std::string_view name);
+    /**
+     * @brief Get author at the specified distance.
+     * @param distance Dinstance of the entry from begin.
+     * @return Author at specified distance.
+     */
+    std::optional<data::Author> getAuthorByDistance(uint32_t distance);
+    /**
+     * @brief Insert new author into database.
+     * @param author Author to insert.
+     * @return Index of the author record newly created.
+     */
+    uint32_t insertNewAuthor(data::Author author);
+    /**
+     * @brief Update author entry.
+     * @param author Author data to update.
+     */
+    void updateAuthor(data::Author author);
 
 private:
     DBManager() {};

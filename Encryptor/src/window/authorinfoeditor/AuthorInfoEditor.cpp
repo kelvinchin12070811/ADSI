@@ -37,15 +37,10 @@ void AuthorInfoEditor::onBtnCancelClicked()
 void AuthorInfoEditor::onNewAuthorAdded(QString inserted)
 {
     using namespace sqlite_orm;
-    auto *db = &db::DBManager::getInstance().storage();
+    auto *dbManager = &db::DBManager::getInstance();
     db::data::Author newAuthor;
     newAuthor.authorName = inserted.toStdString();
-
-    try {
-        db->insert(newAuthor);
-    } catch (const std::exception &e) {
-        QMessageBox::critical(this, this->windowTitle(), e.what());
-    }
+    dbManager->insertNewAuthor(std::move(newAuthor));
 }
 
 void AuthorInfoEditor::onAddButtonClicked()
@@ -70,8 +65,8 @@ void AuthorInfoEditor::onEditAuthorDetails(const QModelIndex &idxItem)
     auto result = dialog->result();
     if (!result.has_value()) return;
 
-    auto *db = &db::DBManager::getInstance().storage();
-    db->update(*result);
+    auto *dbManager = &db::DBManager::getInstance();
+    dbManager->updateAuthor(*result);
     ui_->authorList->lineEdit()->setText(QString::fromStdString(result->authorName));
 }
 
@@ -81,14 +76,13 @@ void AuthorInfoEditor::onAuthorNameChanged()
 
     auto curIdx = ui_->authorList->currentItem();
     auto curText = ui_->authorList->currentText();
-    auto *db = &db::DBManager::getInstance().storage();
+    auto *dbManager = &db::DBManager::getInstance();
 
-    auto author = db->get_all<db::data::Author>(order_by(&db::data::Author::authorID).desc(),
-                                                limit(1, offset(curIdx)));
-    if (author.empty()) return;
-    db::data::Author newAuthor { *author.begin() };
+    auto author = dbManager->getAuthorByDistance(curIdx);
+    if (!author.has_value()) return;
+    db::data::Author newAuthor { *author };
     newAuthor.authorName = curText.toStdString();
-    db->update(newAuthor);
+    dbManager->updateAuthor(newAuthor);
 }
 
 void AuthorInfoEditor::setupUI()
@@ -104,13 +98,9 @@ void AuthorInfoEditor::loadData()
 {
     using namespace sqlite_orm;
 
-    auto *db = &db::DBManager::getInstance().storage();
-    
-    for (const auto &itr :
-         db->iterate<db::data::Author>(order_by(&db::data::Author::authorID).desc())) {
+    auto *dbManager = &db::DBManager::getInstance();
+    for (const auto &itr : dbManager->iterateAuthor())
         ui_->authorList->insertItem(QString::fromStdString(itr.authorName));
-    }
-
     lastAuthorCount_ = ui_->authorList->items().count();
 }
 
