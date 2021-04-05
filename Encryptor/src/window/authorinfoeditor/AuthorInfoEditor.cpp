@@ -62,6 +62,9 @@ void AuthorInfoEditor::initConnections()
             &AuthorInfoEditor::onAddButtonClicked);
     connect(ui_->authorList->lineEdit(), &QLineEdit::textChanged,
             [this](const QString &value) { stateAuthorName_ = value; });
+    connect(ui_->authorList->listView(), &QListView::doubleClicked, [this](const QModelIndex &idx) {
+        qDebug() << idx.row() << ": " << idx.data(Qt::DisplayRole).toString();
+    });
 }
 
 void AuthorInfoEditor::onNewAuthorAdded(QString inserted)
