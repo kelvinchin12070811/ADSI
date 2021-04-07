@@ -21,6 +21,7 @@ find_package(yaml-cpp CONFIG REQUIRED)
 find_package(unofficial-sqlite3 CONFIG REQUIRED)
 find_package(SqliteOrm CONFIG REQUIRED)
 find_package(KF5WidgetsAddons CONFIG REQUIRED)
+find_package(fmt CONFIG REQUIRED)
 
 include_directories(${Boost_INCLUDE_DIR})
 
@@ -103,6 +104,7 @@ endif()
 target_link_libraries(
      ${PROJECT_NAME}
      cryptopp-static
+     fmt::fmt
      KF5::WidgetsAddons
      Qt5::Core
      Qt5::Gui

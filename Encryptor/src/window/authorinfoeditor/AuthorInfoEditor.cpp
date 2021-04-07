@@ -10,6 +10,8 @@
 
 #include <algorithm>
 
+#include <fmt/format.h>
+
 #include "db/DBManager.hpp"
 #include "utils/StylesManager.hpp"
 #include "window/authorinfoeditor/AuthorDetailsEditor.hpp"
@@ -136,7 +138,9 @@ void AuthorInfoEditor::switchedToKeyListTab()
 {
     auto curIdx = ui_->authorList->currentItem();
     auto curText = ui_->authorList->currentText();
-    
+
+    ui_->lsvwKeys->clear();
+
     if (curIdx < 0) {
         ui_->btnNewRSA->setDisabled(true);
         ui_->btnRemoveRSA->setDisabled(true);
@@ -146,5 +150,11 @@ void AuthorInfoEditor::switchedToKeyListTab()
     }
 
     auto *dbManager = &db::DBManager::getInstance();
+    auto author = dbManager->getAuthorByName(curText.toStdString());
+    if (!author.has_value()) return;
+
+    for (const auto &key : dbManager->iterateKeysByAuthor(author->authorID)) {
+        ui_->lsvwKeys->addItem(QString::fromStdString(key.keyPrivate));
+    }
 }
 }

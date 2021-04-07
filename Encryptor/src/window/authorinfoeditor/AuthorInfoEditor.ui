@@ -104,7 +104,7 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QListView" name="lsvwKeys"/>
+        <widget class="QListWidget" name="lsvwKeys"/>
        </item>
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_4">
