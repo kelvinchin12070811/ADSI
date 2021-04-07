@@ -75,14 +75,24 @@ void AuthorInfoEditor::onAuthorNameChanged()
     using namespace sqlite_orm;
 
     auto curIdx = ui_->authorList->currentItem();
+    if (curIdx < 0) return;
+
     auto curText = ui_->authorList->currentText();
     auto *dbManager = &db::DBManager::getInstance();
-
     auto author = dbManager->getAuthorByDistance(curIdx);
+
     if (!author.has_value()) return;
     db::data::Author newAuthor { *author };
     newAuthor.authorName = curText.toStdString();
     dbManager->updateAuthor(newAuthor);
+}
+
+void AuthorInfoEditor::onRemoveAuthor(const QString &text)
+{
+    auto *dbManager = &db::DBManager::getInstance();
+    auto author = dbManager->getAuthorByName(text.toStdString());
+    if (!author.has_value()) return;
+    dbManager->removeAuthorById(author->authorID);
 }
 
 void AuthorInfoEditor::setupUI()
@@ -114,5 +124,6 @@ void AuthorInfoEditor::initConnections()
     connect(ui_->authorList->listView(), &QListView::doubleClicked, this,
             &AuthorInfoEditor::onEditAuthorDetails);
     connect(ui_->authorList, &KEditListWidget::changed, this, &AuthorInfoEditor::onAuthorNameChanged);
+    connect(ui_->authorList, &KEditListWidget::removed, this, &AuthorInfoEditor::onRemoveAuthor);
 }
 }

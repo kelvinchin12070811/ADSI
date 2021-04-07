@@ -47,6 +47,11 @@ private slots:
      * @brief Triggered when a author name is changed.
      */
     void onAuthorNameChanged();
+    /**
+     * @brief Triggered when a author is removed.
+     * @param text Author name that is removed.
+     */
+    void onRemoveAuthor(const QString &text);
 
 private:
     /**

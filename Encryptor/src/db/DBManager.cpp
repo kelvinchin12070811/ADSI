@@ -21,7 +21,7 @@ void DBManager::initDB()
     storage_.sync_schema();
 }
 
-std::optional<data::Author> DBManager::getAuthorByID(uint32_t id)
+std::optional<data::Author> DBManager::getAuthorByID(std::uint32_t id)
 {
     try {
         return storage_.get<data::Author>(id);
@@ -39,7 +39,7 @@ std::optional<data::Author> DBManager::getAuthorByName(std::string_view name)
     return authors.empty() ? std::nullopt : std::make_optional(*authors.begin());
 }
 
-std::optional<data::Author> DBManager::getAuthorByDistance(uint32_t distance)
+std::optional<data::Author> DBManager::getAuthorByDistance(std::uint32_t distance)
 {
     using namespace sqlite_orm;
     auto authors = storage_.get_all<data::Author>(order_by(&data::Author::authorID).desc(),
@@ -47,7 +47,7 @@ std::optional<data::Author> DBManager::getAuthorByDistance(uint32_t distance)
     return authors.empty() ? std::nullopt : std::make_optional(*authors.begin());
 }
 
-uint32_t DBManager::insertNewAuthor(data::Author author)
+std::uint32_t DBManager::insertNewAuthor(data::Author author)
 {
     return storage_.insert(author);
 }
@@ -55,5 +55,10 @@ uint32_t DBManager::insertNewAuthor(data::Author author)
 void DBManager::updateAuthor(data::Author author)
 {
     storage_.update(author);
+}
+
+void DBManager::removeAuthorById(std::uint32_t id)
+{
+    storage_.remove<data::Author>(id);
 }
 }

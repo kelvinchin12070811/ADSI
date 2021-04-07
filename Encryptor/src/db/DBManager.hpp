@@ -81,7 +81,7 @@ public:
      * @param id ID of the author to retrieve.
      * @return Author with at the corresponded id.
      */
-    std::optional<data::Author> getAuthorByID(uint32_t id);
+    std::optional<data::Author> getAuthorByID(std::uint32_t id);
     /**
      * @brief Get author by it's name.
      * @param name Name of the author to get.
@@ -93,18 +93,23 @@ public:
      * @param distance Dinstance of the entry from begin.
      * @return Author at specified distance.
      */
-    std::optional<data::Author> getAuthorByDistance(uint32_t distance);
+    std::optional<data::Author> getAuthorByDistance(std::uint32_t distance);
     /**
      * @brief Insert new author into database.
      * @param author Author to insert.
      * @return Index of the author record newly created.
      */
-    uint32_t insertNewAuthor(data::Author author);
+    std::uint32_t insertNewAuthor(data::Author author);
     /**
      * @brief Update author entry.
      * @param author Author data to update.
      */
     void updateAuthor(data::Author author);
+    /**
+     * @brief Remove author by its id.
+     * @param id ID of author to remove.
+     */
+    void removeAuthorById(std::uint32_t id);
 
 private:
     DBManager() {};
