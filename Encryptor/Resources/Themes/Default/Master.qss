@@ -16,3 +16,8 @@ QPushButton:hover {
 QPushButton:pressed {
     background-color: #bdbdbd;
 }
+
+QMessageBox QPushButton {
+    min-height: 15px;
+    min-width: 60px;
+}

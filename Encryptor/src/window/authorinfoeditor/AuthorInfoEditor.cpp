@@ -95,6 +95,11 @@ void AuthorInfoEditor::onRemoveAuthor(const QString &text)
     dbManager->removeAuthorById(author->authorID);
 }
 
+void AuthorInfoEditor::onChangedTab(int index)
+{
+    if (index == ui_->gtabAuthorInfo->indexOf(ui_->tabRSAKeys)) switchedToKeyListTab();
+}
+
 void AuthorInfoEditor::setupUI()
 {
     auto buttons = ui_->authorList->buttons();
@@ -125,5 +130,21 @@ void AuthorInfoEditor::initConnections()
             &AuthorInfoEditor::onEditAuthorDetails);
     connect(ui_->authorList, &KEditListWidget::changed, this, &AuthorInfoEditor::onAuthorNameChanged);
     connect(ui_->authorList, &KEditListWidget::removed, this, &AuthorInfoEditor::onRemoveAuthor);
+}
+
+void AuthorInfoEditor::switchedToKeyListTab()
+{
+    auto curIdx = ui_->authorList->currentItem();
+    auto curText = ui_->authorList->currentText();
+    
+    if (curIdx < 0) {
+        ui_->btnNewRSA->setDisabled(true);
+        ui_->btnRemoveRSA->setDisabled(true);
+    } else {
+        ui_->btnNewRSA->setDisabled(false);
+        ui_->btnRemoveRSA->setDisabled(false);
+    }
+
+    auto *dbManager = &db::DBManager::getInstance();
 }
 }

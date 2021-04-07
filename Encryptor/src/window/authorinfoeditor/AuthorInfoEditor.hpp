@@ -52,6 +52,11 @@ private slots:
      * @param text Author name that is removed.
      */
     void onRemoveAuthor(const QString &text);
+    /**
+     * @brief Triggered when user switched to other tab.
+     * @param index Index of the tab user switched to.
+     */
+    void onChangedTab(int index);
 
 private:
     /**
@@ -66,6 +71,10 @@ private:
      * @brief Initialize extra signals connection required to setup the UI.
      */
     void initConnections();
+    /**
+     * @brief Initialize RSA key list tab when user switched to it.
+     */
+    void switchedToKeyListTab();
 
 private:
     /**

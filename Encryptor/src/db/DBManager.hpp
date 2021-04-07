@@ -59,6 +59,12 @@ public:
         return storage_.iterate<data::Author>(sqlite_orm::order_by(&data::Author::authorID).desc());
     };
 
+    auto iterateKeysByAuthor(std::uint32_t authorID)
+    {
+        using namespace sqlite_orm;
+        return storage_.iterate<data::KeyStore>(where(c(&data::KeyStore::authorID) == authorID),
+                                                order_by(&data::KeyStore::authorID).desc());
+    }
 
 public:
     DBManager(const DBManager &) = delete;
