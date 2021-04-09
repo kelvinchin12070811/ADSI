@@ -47,12 +47,12 @@ std::optional<data::Author> DBManager::getAuthorByDistance(std::uint32_t distanc
     return authors.empty() ? std::nullopt : std::make_optional(*authors.begin());
 }
 
-std::uint32_t DBManager::insertNewAuthor(data::Author author)
+std::uint32_t DBManager::insertNewAuthor(const data::Author &author)
 {
     return storage_.insert(author);
 }
 
-void DBManager::updateAuthor(data::Author author)
+void DBManager::updateAuthor(const data::Author &author)
 {
     storage_.update(author);
 }
@@ -60,5 +60,10 @@ void DBManager::updateAuthor(data::Author author)
 void DBManager::removeAuthorById(std::uint32_t id)
 {
     storage_.remove<data::Author>(id);
+}
+
+void DBManager::insertNewKeyForAuthor(const data::KeyStore &key)
+{
+    storage_.insert(key);
 }
 }

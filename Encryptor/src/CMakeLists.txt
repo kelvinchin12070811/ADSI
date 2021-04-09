@@ -8,6 +8,13 @@ set(CMAKE_INCLUDE_CURRENT_DIR on)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_CRT_SECURE_NO_WARNINGS")
+set(LIB_LIBBCRYPT_INC_PATH "" CACHE PATH "Include path of libbcrypt")
+set(LIB_LIBBCRYPT_LIB_PATH "" CACHE FILEPATH "Lib file of libbcrypt")
+
+if("${LIB_LIBBCRYPT_INC_PATH}" STREQUAL "" OR
+   "${LIB_LIBBCRYPT_LIB_PATH}" STREQUAL "")
+    message(FATAL_ERROR "Libraries path does not specified!")
+endif()
 
 find_package(Qt5 COMPONENTS
     Core
@@ -24,6 +31,7 @@ find_package(KF5WidgetsAddons CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 
 include_directories(${Boost_INCLUDE_DIR})
+include_directories(${LIB_LIBBCRYPT_INC_PATH})
 
 get_target_property(QMAKE_BIN Qt5::qmake IMPORTED_LOCATION)
 get_filename_component(QMAKE_BIN_DIR "${QMAKE_BIN}" DIRECTORY)
@@ -103,6 +111,7 @@ endif()
 
 target_link_libraries(
      ${PROJECT_NAME}
+     ${LIB_LIBBCRYPT_LIB_PATH}
      cryptopp-static
      fmt::fmt
      KF5::WidgetsAddons

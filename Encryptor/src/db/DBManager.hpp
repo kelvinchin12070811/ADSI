@@ -105,17 +105,27 @@ public:
      * @param author Author to insert.
      * @return Index of the author record newly created.
      */
-    std::uint32_t insertNewAuthor(data::Author author);
+    std::uint32_t insertNewAuthor(const data::Author &author);
     /**
      * @brief Update author entry.
      * @param author Author data to update.
      */
-    void updateAuthor(data::Author author);
+    void updateAuthor(const data::Author &author);
     /**
      * @brief Remove author by its id.
      * @param id ID of author to remove.
      */
     void removeAuthorById(std::uint32_t id);
+    /**
+     * @brief Insert newly generated key for author into database.
+     * @param key Key object to insert.
+     */
+    void insertNewKeyForAuthor(const data::KeyStore &key);
+    /**
+     * @brief Remove selected key from database.
+     * @param id Key object to remove.
+     */
+    void removeKeyByID(std::uint32_t id);
 
 private:
     DBManager() {};
