@@ -153,7 +153,7 @@
           <item>
            <widget class="QPushButton" name="btnImageExport">
             <property name="text">
-             <string>Sign and Export Image</string>
+             <string>Sign Image</string>
             </property>
            </widget>
           </item>
