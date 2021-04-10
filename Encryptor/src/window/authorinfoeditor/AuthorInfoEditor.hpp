@@ -57,6 +57,14 @@ private slots:
      * @param index Index of the tab user switched to.
      */
     void onChangedTab(int index);
+    /**
+     * @brief Triggered when user tend to generate new key.
+     */
+    void onNewKeyClicked();
+    /**
+     * @brief Triggered when user tend to remove selected key.
+     */
+    void onRemoveKey();
 
 private:
     /**

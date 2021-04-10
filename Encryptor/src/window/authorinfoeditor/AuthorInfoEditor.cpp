@@ -102,6 +102,25 @@ void AuthorInfoEditor::onChangedTab(int index)
     if (index == ui_->gtabAuthorInfo->indexOf(ui_->tabRSAKeys)) switchedToKeyListTab();
 }
 
+void AuthorInfoEditor::onNewKeyClicked()
+{
+    QMessageBox info;
+    auto btnOk = info.addButton("Hello too", QMessageBox::ButtonRole::YesRole);
+    info.setIcon(QMessageBox::Icon::Information);
+    info.setText(tr("Hello world"));
+    info.exec();
+
+    if (info.clickedButton() == btnOk) qDebug() << "clicked!";
+}
+
+void AuthorInfoEditor::onRemoveKey()
+{
+    auto idx = ui_->lsvwKeys->currentIndex();
+    if (idx.column() < 0) return;
+
+    qDebug() << "Removing" << idx.column();
+}
+
 void AuthorInfoEditor::setupUI()
 {
     auto buttons = ui_->authorList->buttons();

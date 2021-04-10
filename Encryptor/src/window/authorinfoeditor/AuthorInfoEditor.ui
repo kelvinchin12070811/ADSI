@@ -32,7 +32,7 @@
    <item>
     <widget class="QTabWidget" name="gtabAuthorInfo">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tabAuthors">
       <attribute name="title">
@@ -255,9 +255,43 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>btnNewRSA</sender>
+   <signal>clicked()</signal>
+   <receiver>AuthorInfoEditor</receiver>
+   <slot>onNewKeyClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>356</x>
+     <y>41</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>621</x>
+     <y>114</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>btnRemoveRSA</sender>
+   <signal>clicked()</signal>
+   <receiver>AuthorInfoEditor</receiver>
+   <slot>onRemoveKey()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>341</x>
+     <y>71</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>573</x>
+     <y>227</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>onBtnCancelClicked()</slot>
   <slot>onChangedTab(int)</slot>
+  <slot>onNewKeyClicked()</slot>
+  <slot>onRemoveKey()</slot>
  </slots>
 </ui>
