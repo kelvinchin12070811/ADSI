@@ -47,6 +47,7 @@ set(PROJECT_UI_FILES
 set(PROJECT_SOURCE_FILES
     "codec/AESDecoderCodec.cpp"
     "codec/AESEncoderCodec.cpp"
+    "codec/Base64EncoderCodec.cpp"
     "codec/RSASignEncoderCodec.cpp"
     "codec/SHA3EncoderCodec.cpp"
     "components/ImagePreview.cpp"
@@ -69,7 +70,9 @@ set(PROJECT_SOURCE_FILES
 set(PROJECT_HEADER_FILES
     "codec/AESDecoderCodec.hpp"
     "codec/AESEncoderCodec.hpp"
+    "codec/Base64EncoderCodec.hpp"
     "codec/ICodec.hpp"
+    "codec/ICodecFactory.hpp"
     "codec/RSASignEncoderCodec.hpp"
     "codec/SHA3EncoderCodec.hpp"
     "components/ImagePreview.hpp"
