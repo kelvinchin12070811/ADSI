@@ -12,6 +12,7 @@
 
 #include <fmt/format.h>
 
+#include "codec/DefaultCodecFactory.hpp"
 #include "db/DBManager.hpp"
 #include "utils/StylesManager.hpp"
 #include "window/authorinfoeditor/AuthorDetailsEditor.hpp"
@@ -104,13 +105,14 @@ void AuthorInfoEditor::onChangedTab(int index)
 
 void AuthorInfoEditor::onNewKeyClicked()
 {
-    QMessageBox info;
-    auto btnOk = info.addButton("Hello too", QMessageBox::ButtonRole::YesRole);
-    info.setIcon(QMessageBox::Icon::Information);
-    info.setText(tr("Hello world"));
-    info.exec();
-
-    if (info.clickedButton() == btnOk) qDebug() << "clicked!";
+    std::string data { "A quick brown fox jumps over the lazy dog" };
+    std::unique_ptr<codec::ICodecFactory> factory = std::make_unique<codec::DefaultCodecFactory>();
+    auto encoBase64 = factory->createDefaultB2TEncoder({ data });
+    encoBase64->execute();
+    auto &result = encoBase64->getCodecResult();
+    auto begResult = reinterpret_cast<const char *>(result.data());
+    std::string str = { begResult, begResult + result.size() };
+    qDebug() << QString::fromStdString(str);
 }
 
 void AuthorInfoEditor::onRemoveKey()

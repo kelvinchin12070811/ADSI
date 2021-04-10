@@ -6,19 +6,30 @@
 #pragma once
 #include <cstddef>
 #include <memory>
-#include <vector>
 #include <string_view>
+#include <variant>
+#include <vector>
 
 #include "codec/ICodec.hpp"
 
-namespace {
+namespace codec {
+/**
+ * @brief Interface of factory that control the creation of the codecs available.
+ */
 struct ICodecFactory
 {
-    virtual std::unique_ptr<ICodec> createDefaultB2TEncoder(std::vector<std::byte> *data) = 0 { }
-    virtual std::unique_ptr<ICodec> createDefaultB2TEncoder(std::string_view data) = 0 { }
-    virtual std::unique_ptr<ICodec> createDefaultB2TEncoder(const std::byte *data,
-                                                            std::size_t length) = 0
-    {
-    }
+    /**
+     * @brief Type of data supported by the codec.
+     */
+    using CodecDataStream = std::variant<std::vector<std::byte>, std::string_view,
+                                         std::pair<const std::byte *, std::size_t>>;
+
+    /**
+     * @brief Create default binary to text encoder.
+     * @param data Data to pass into the encoder.
+     * @return New encoder consturcted.
+     * @throw std::invalid_argument if @p data does not contain valid data or it's empty.
+     */
+    virtual std::unique_ptr<ICodec> createDefaultB2TEncoder(CodecDataStream data) = 0 { }
 };
 }

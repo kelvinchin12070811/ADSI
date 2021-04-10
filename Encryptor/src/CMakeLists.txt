@@ -65,7 +65,7 @@ set(PROJECT_SOURCE_FILES
     "window/authorinfoeditor/AuthorInfoEditor.cpp"
     "window/mainwindow/MainWindow.cpp"
     "window/setting/Setting.cpp"
-)
+ "codec/DefaultCodecFactory.cpp")
 
 set(PROJECT_HEADER_FILES
     "codec/AESDecoderCodec.hpp"
@@ -92,7 +92,7 @@ set(PROJECT_HEADER_FILES
     "window/authorinfoeditor/AuthorInfoEditor.hpp"
     "window/mainwindow/MainWindow.hpp"
     "window/setting/Setting.hpp"
-)
+ "codec/DefaultCodecFactory.hpp")
 
 if (WIN32)
     add_executable(${PROJECT_NAME} WIN32

@@ -23,17 +23,26 @@ public:
     /**
      * @brief Construct new encoder with array of data.
      * @param data Data to encode.
+     * 
+     * @sa Base64EncoderCodec(std::string_view)
+     * @sa Base64EncoderCodec(const std::byte *, std::size_t)
      */
     explicit Base64EncoderCodec(std::vector<std::byte> data);
     /**
      * @brief Construct new encoder with string of data.
      * @param data String to encode
+     * 
+     * @sa Base64EncoderCodec(std::vector<std::byte>)
+     * @sa Base64EncoderCodec(const std::byte *, std::size_t)
      */
     explicit Base64EncoderCodec(std::string_view data);
     /**
      * @brief Construct new encoder with c style array of data.
      * @param data Pointer of the beginning of the element in the array.
      * @param length Length of the data.
+     * 
+     * @sa Base64EncoderCodec(std::vector<std::byte>)
+     * @sa Base64EncoderCodec(std::string_view)
      */
     explicit Base64EncoderCodec(const std::byte *data, std::size_t length);
 
