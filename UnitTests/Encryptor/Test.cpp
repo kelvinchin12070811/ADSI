@@ -10,6 +10,7 @@
 
 #include "codec/AESDecoderCodec.hpp"
 #include "codec/AESEncoderCodec.hpp"
+#include "codec/DefaultCodecFactory.hpp"
 #include "codec/RSASignEncoderCodec.hpp"
 #include "codec/SHA3EncoderCodec.hpp"
 #include "generator/AESCryptoKeyGenerator.hpp"
@@ -163,4 +164,20 @@ BOOST_AUTO_TEST_CASE(rsa_encryption_test)
     } catch (const std::exception &e) {
         BOOST_FAIL(e.what());
     }
+}
+
+BOOST_AUTO_TEST_CASE(base64_encoder_test)
+{
+    constexpr std::string_view testData { "A quick brownfox jumps over the lazy dog." };
+    constexpr std::string_view preCalculated {
+        "QSBxdWljayBicm93bmZveCBqdW1wcyBvdmVyIHRoZSBsYXp5IGRvZy4="
+    };
+    std::unique_ptr<codec::ICodecFactory> factory = std::make_unique<codec::DefaultCodecFactory>();
+    auto codec = factory->createDefaultB2TEncoder(testData);
+    codec->execute();
+    
+    auto result = codec->getCodecResult();
+    auto begResult = reinterpret_cast<const char *>(result.data());
+    std::string resultStr { begResult, begResult + result.size() };
+    BOOST_REQUIRE(resultStr == preCalculated);
 }
