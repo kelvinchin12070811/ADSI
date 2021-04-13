@@ -14,6 +14,7 @@ include_directories(${Boost_INCLUDE_DIR})
 set(PROJECT_SOURCE_FILES
     "../../Encryptor/src/codec/AESDecoderCodec.cpp"
     "../../Encryptor/src/codec/AESEncoderCodec.cpp"
+    "../../Encryptor/src/codec/Base64DecoderCodec.cpp"
     "../../Encryptor/src/codec/Base64EncoderCodec.cpp"
     "../../Encryptor/src/codec/DefaultCodecFactory.cpp"
     "../../Encryptor/src/codec/RSASignEncoderCodec.cpp"
@@ -28,7 +29,8 @@ set(PROJECT_SOURCE_FILES
 set(PROJECT_HEADER_FILES
     "../../Encryptor/src/codec/AESDecoderCodec.hpp"
     "../../Encryptor/src/codec/AESEncoderCodec.hpp"
-    "../../Encryptor/src/codec/Base64EncoderCodec.cpp"
+    "../../Encryptor/src/codec/Base64DecoderCodec.hpp"
+    "../../Encryptor/src/codec/Base64EncoderCodec.hpp"
     "../../Encryptor/src/codec/DefaultCodecFactory.hpp"
     "../../Encryptor/src/codec/ICodec.hpp"
     "../../Encryptor/src/codec/ICodec.hpp"

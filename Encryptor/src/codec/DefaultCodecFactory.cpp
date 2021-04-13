@@ -5,6 +5,7 @@
  *********************************************************************************************************************/
 #include <stdexcept>
 
+#include "codec/Base64DecoderCodec.hpp"
 #include "codec/Base64EncoderCodec.hpp"
 #include "codec/DefaultCodecFactory.hpp"
 
@@ -13,7 +14,7 @@ std::unique_ptr<ICodec> DefaultCodecFactory::createDefaultB2TEncoder(CodecDataSt
 {
     if (std::holds_alternative<std::vector<std::byte>>(data)) {
         auto &&tmp = std::get<std::vector<std::byte>>(data);
-        return std::make_unique<Base64EncoderCodec>(tmp);
+        return std::make_unique<Base64EncoderCodec>(std::move(tmp));
     }
 
     if (std::holds_alternative<std::string_view>(data))
@@ -22,6 +23,26 @@ std::unique_ptr<ICodec> DefaultCodecFactory::createDefaultB2TEncoder(CodecDataSt
     if (std::holds_alternative<std::pair<const std::byte *, std::size_t>>(data)) {
         const auto &[pointer, size] = std::get<std::pair<const std::byte *, std::size_t>>(data);
         return std::make_unique<Base64EncoderCodec>(pointer, size);
+    }
+
+    return nullptr;
+}
+
+std::unique_ptr<ICodec> DefaultCodecFactory::createDefaultB2TDecoder(CodecDataStream data)
+{
+    if (std::holds_alternative<std::vector<std::byte>>(data)) {
+        auto &&tmp = std::get<std::vector<std::byte>>(data);
+        return std::make_unique<Base64DecoderCodec>(std::move(tmp));
+    }
+
+    if (std::holds_alternative<std::string_view>(data)) {
+        auto &&tmp = std::get<std::string_view>(data);
+        return std::make_unique<Base64DecoderCodec>(tmp);
+    }
+
+    if (std::holds_alternative<std::pair<const std::byte *, std::size_t>>(data)) {
+        const auto &[pointer, size] = std::get<std::pair<const std::byte *, std::size_t>>(data);
+        return std::make_unique<Base64DecoderCodec>(pointer, size);
     }
 
     return nullptr;

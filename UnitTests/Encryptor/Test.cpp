@@ -176,8 +176,24 @@ BOOST_AUTO_TEST_CASE(base64_encoder_test)
     auto codec = factory->createDefaultB2TEncoder(testData);
     codec->execute();
     
-    auto result = codec->getCodecResult();
+    const auto &result = codec->getCodecResult();
     auto begResult = reinterpret_cast<const char *>(result.data());
     std::string resultStr { begResult, begResult + result.size() };
     BOOST_REQUIRE(resultStr == preCalculated);
+}
+
+BOOST_AUTO_TEST_CASE(base64_decoder_test)
+{
+    constexpr std::string_view testData { "A quick brownfox jumps over the lazy dog." };
+    constexpr std::string_view preCalculated {
+        "QSBxdWljayBicm93bmZveCBqdW1wcyBvdmVyIHRoZSBsYXp5IGRvZy4="
+    };
+    std::unique_ptr<codec::ICodecFactory> factory = std::make_unique<codec::DefaultCodecFactory>();
+    std::unique_ptr<codec::ICodec> codec = factory->createDefaultB2TDecoder(preCalculated);
+    codec->execute();
+
+    const auto &result = codec->getCodecResult();
+    auto begResult = reinterpret_cast<const char *>(result.data());
+    std::string resultStr { begResult, begResult + result.size() };
+    BOOST_REQUIRE(resultStr == testData);
 }

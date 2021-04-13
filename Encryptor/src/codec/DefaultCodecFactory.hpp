@@ -11,5 +11,6 @@ class DefaultCodecFactory : public ICodecFactory
 {
 public:
     std::unique_ptr<ICodec> createDefaultB2TEncoder(CodecDataStream data) override;
+    std::unique_ptr<ICodec> createDefaultB2TDecoder(CodecDataStream data) override;
 };
 }

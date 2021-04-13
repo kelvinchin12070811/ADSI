@@ -31,5 +31,11 @@ struct ICodecFactory
      * @throw std::invalid_argument if @p data does not contain valid data or it's empty.
      */
     virtual std::unique_ptr<ICodec> createDefaultB2TEncoder(CodecDataStream data) = 0 { }
+    /**
+     * @brief Create default text to bianry coder.
+     * @param data Data to pass into the coder.
+     * @return Default decoder used to decode text data into binary.
+     */
+    virtual std::unique_ptr<ICodec> createDefaultB2TDecoder(CodecDataStream data) = 0 { }
 };
 }

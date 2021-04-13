@@ -47,7 +47,9 @@ set(PROJECT_UI_FILES
 set(PROJECT_SOURCE_FILES
     "codec/AESDecoderCodec.cpp"
     "codec/AESEncoderCodec.cpp"
+    "codec/Base64DecoderCodec.cpp"
     "codec/Base64EncoderCodec.cpp"
+    "codec/DefaultCodecFactory.cpp"
     "codec/RSASignEncoderCodec.cpp"
     "codec/SHA3EncoderCodec.cpp"
     "components/ImagePreview.cpp"
@@ -65,12 +67,14 @@ set(PROJECT_SOURCE_FILES
     "window/authorinfoeditor/AuthorInfoEditor.cpp"
     "window/mainwindow/MainWindow.cpp"
     "window/setting/Setting.cpp"
- "codec/DefaultCodecFactory.cpp")
+)
 
 set(PROJECT_HEADER_FILES
     "codec/AESDecoderCodec.hpp"
     "codec/AESEncoderCodec.hpp"
+    "codec/Base64DecoderCodec.hpp"
     "codec/Base64EncoderCodec.hpp"
+    "codec/DefaultCodecFactory.hpp"
     "codec/ICodec.hpp"
     "codec/ICodecFactory.hpp"
     "codec/RSASignEncoderCodec.hpp"
@@ -92,7 +96,7 @@ set(PROJECT_HEADER_FILES
     "window/authorinfoeditor/AuthorInfoEditor.hpp"
     "window/mainwindow/MainWindow.hpp"
     "window/setting/Setting.hpp"
- "codec/DefaultCodecFactory.hpp")
+)
 
 if (WIN32)
     add_executable(${PROJECT_NAME} WIN32
