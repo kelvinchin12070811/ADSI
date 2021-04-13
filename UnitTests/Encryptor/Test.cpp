@@ -12,7 +12,6 @@
 #include "codec/AESEncoderCodec.hpp"
 #include "codec/DefaultCodecFactory.hpp"
 #include "codec/RSASignEncoderCodec.hpp"
-#include "codec/SHA3EncoderCodec.hpp"
 #include "generator/AESCryptoKeyGenerator.hpp"
 #include "generator/PrivateRSACryptoKeyGenerator.hpp"
 #include "generator/PublicRSACryptoKeyGenerator.hpp"
@@ -58,7 +57,9 @@ BOOST_AUTO_TEST_CASE(sha3_hasher_test)
         constexpr std::string_view preCalHash {
             "16f043d383269059753569d7ebff1a1d88f4d7a8a508d3814ef2e20891cfbd08"
         };
-        std::unique_ptr<codec::ICodec> encoder = std::make_unique<codec::SHA3EncoderCodec>(text);
+        std::unique_ptr<codec::ICodecFactory> factory =
+                std::make_unique<codec::DefaultCodecFactory>();
+        std::unique_ptr<codec::ICodec> encoder = factory->createDefaultHashEncoder(text);
 
         encoder->execute();
         auto &result = encoder->getCodecResult();
@@ -80,6 +81,8 @@ BOOST_AUTO_TEST_CASE(aes_keygen_test)
         "f220cf02e8e0bf291a08d1bfe53e989dae21f2bf20d919cf8a80bbc866c98c62"
     };
 
+    std::unique_ptr<codec::ICodecFactory> factory = std::make_unique<codec::DefaultCodecFactory>();
+
     std::unique_ptr<key_generator::ICryptoKeyGenerator> keyGen {
         std::make_unique<key_generator::AESCryptoKeyGenerator>(
                 std::string { password.begin(), password.end() })
@@ -87,8 +90,7 @@ BOOST_AUTO_TEST_CASE(aes_keygen_test)
     keyGen->generate();
     auto &aesKey = keyGen->getGeneratedKey();
 
-    std::unique_ptr<codec::ICodec> shaEnc { std::make_unique<codec::SHA3EncoderCodec>() };
-    shaEnc->setCodecData(aesKey);
+    std::unique_ptr<codec::ICodec> shaEnc = factory->createDefaultHashEncoder(aesKey);
     shaEnc->execute();
 
     auto &key = shaEnc->getCodecResult();
