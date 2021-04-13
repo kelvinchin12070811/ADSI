@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "codec/ICodec.hpp"
+#include "generator/ICryptoKeyGenerator.hpp"
 
 namespace codec {
 /**
@@ -53,5 +54,16 @@ struct ICodecFactory
      * @return New hash encoder with provided data.
      */
     virtual std::unique_ptr<ICodec> createDefaultHashEncoder(CodecDataStream data) = 0 { }
+    /**
+     * @brief Create default symmetric encryption encoder.
+     * @param data Data to encrypt.
+     * @param key Key generator to generate default key.
+     * @return Default symmetric encoder to encrypt data.
+     */
+    virtual std::unique_ptr<ICodec>
+    createDefaultSymCryptoEncoder(CodecDataStream data,
+                                   key_generator::ICryptoKeyGenerator *key) = 0
+    {
+    }
 };
 }
