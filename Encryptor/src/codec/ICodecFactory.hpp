@@ -19,16 +19,26 @@ namespace codec {
 struct ICodecFactory
 {
     /**
+     * @brief Represented as the array type of data.
+     */
+    using ArrayDataType = std::vector<std::byte>;
+    /**
+     * @brief Represented as string type of data.
+     */
+    using StringDataType = std::string_view;
+    /**
+     * @brief Represented as C style array type.
+     */
+    using CStyleArrayDataType = std::pair<const std::byte *, std::size_t>;
+    /**
      * @brief Type of data supported by the codec.
      */
-    using CodecDataStream = std::variant<std::vector<std::byte>, std::string_view,
-                                         std::pair<const std::byte *, std::size_t>>;
+    using CodecDataStream = std::variant<ArrayDataType, StringDataType, CStyleArrayDataType>;
 
     /**
      * @brief Create default binary to text encoder.
      * @param data Data to pass into the encoder.
      * @return New encoder consturcted.
-     * @throw std::invalid_argument if @p data does not contain valid data or it's empty.
      */
     virtual std::unique_ptr<ICodec> createDefaultB2TEncoder(CodecDataStream data) = 0 { }
     /**
@@ -37,5 +47,11 @@ struct ICodecFactory
      * @return Default decoder used to decode text data into binary.
      */
     virtual std::unique_ptr<ICodec> createDefaultB2TDecoder(CodecDataStream data) = 0 { }
+    /**
+     * @brief Create default hash encoder.
+     * @param data Data to pass into the encoder.
+     * @return New hash encoder with provided data.
+     */
+    virtual std::unique_ptr<ICodec> createDefaultHashEncoder(CodecDataStream data) = 0 { }
 };
 }
