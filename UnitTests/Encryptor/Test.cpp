@@ -9,7 +9,7 @@
 #include <memory>
 
 #include "codec/DefaultCodecFactory.hpp"
-#include "generator/AESCryptoKeyGenerator.hpp"
+#include "generator/DefaultCryptoKeyGeneratorFactory.hpp"
 #include "generator/PrivateRSACryptoKeyGenerator.hpp"
 #include "generator/PublicRSACryptoKeyGenerator.hpp"
 #include "utils/DCT.hpp"
@@ -79,14 +79,16 @@ BOOST_AUTO_TEST_CASE(aes_keygen_test)
         "f220cf02e8e0bf291a08d1bfe53e989dae21f2bf20d919cf8a80bbc866c98c62"
     };
 
+    std::unique_ptr<key_generator::ICryptoKeyGeneratorFactory> keyFactory {
+        std::make_unique<key_generator::DefaultCryptoKeyGeneratorFactory>()
+    };
     std::unique_ptr<codec::ICodecFactory> factory {
         std::make_unique<codec::DefaultCodecFactory>()
     };
-
     std::unique_ptr<key_generator::ICryptoKeyGenerator> keyGen {
-        std::make_unique<key_generator::AESCryptoKeyGenerator>(
-                std::string { password.begin(), password.end() })
+        keyFactory->createDefaultSymEncryptionKey({ password.data(), password.size() })
     };
+    
     keyGen->generate();
     auto &aesKey = keyGen->getGeneratedKey();
 
@@ -106,24 +108,20 @@ BOOST_AUTO_TEST_CASE(aes_codec_test)
     try {
         constexpr std::string_view data { "A quick brown fox jumps over the lazy dog." };
         constexpr std::string_view password { "ADamnSuperStrongPassword" };
-        std::vector<std::byte> AESKey;
-
-        std::unique_ptr<key_generator::ICryptoKeyGenerator> keyGen {
-            std::make_unique<key_generator::AESCryptoKeyGenerator>(
-                    std::string { password.data(), password.size() })
-        };
         std::unique_ptr<codec::ICodecFactory> factory {
             std::make_unique<codec::DefaultCodecFactory>()
         };
+        std::unique_ptr<key_generator::ICryptoKeyGeneratorFactory> keyFactory {
+            std::make_unique<key_generator::DefaultCryptoKeyGeneratorFactory>()
+        };
+
+        auto keyGen =
+                keyFactory->createDefaultSymEncryptionKey({ password.data(), password.size() });
         auto encryptor = factory->createDefaultSymCryptoEncoder(data, keyGen.get());
-
         encryptor->execute();
-        auto encResult = encryptor->getCodecResult();
 
-        AESKey = keyGen->getGeneratedKey();
-
-        std::unique_ptr<codec::ICodec> decryptor { factory->createDefaultSymCryptoDecoder(
-                encResult, keyGen.get()) };
+        const auto &encResult = encryptor->getCodecResult();
+        auto decryptor = factory->createDefaultSymCryptoDecoder(encResult, keyGen.get());
         decryptor->execute();
         const auto &decResult = decryptor->getCodecResult();
 
