@@ -10,8 +10,11 @@
 #include "codec/Base64DecoderCodec.hpp"
 #include "codec/Base64EncoderCodec.hpp"
 #include "codec/DefaultCodecFactory.hpp"
+#include "codec/RSASignEncoderCodec.hpp"
 #include "codec/SHA3EncoderCodec.hpp"
 #include "generator/AESCryptoKeyGenerator.hpp"
+#include "generator/PrivateRSACryptoKeyGenerator.hpp"
+#include "generator/PublicRSACryptoKeyGenerator.hpp"
 
 namespace codec {
 std::unique_ptr<ICodec> DefaultCodecFactory::createDefaultB2TEncoder(CodecDataStream data)
@@ -59,6 +62,21 @@ DefaultCodecFactory::createDefaultSymCryptoDecoder(CodecDataStream data,
 
     if (key->getGeneratedKey().empty()) key->generate();
     auto codec = std::make_unique<AESDecoderCodec>("", key->getGeneratedKey());
+    setCodecBuffer(std::move(data), codec.get());
+    return codec;
+}
+
+std::unique_ptr<ICodec>
+DefaultCodecFactory::createDefaultASymCryptoEncryptor(CodecDataStream data,
+                                                      key_generator::ICryptoKeyGenerator *key)
+{
+    auto keyGenerator = dynamic_cast<key_generator::PrivateRSACryptoKeyGenerator *>(key);
+    if (keyGenerator == nullptr) {
+        throw std::invalid_argument { "Key parameter is not applicable to RSA Sign Encoder." };
+    }
+
+    if (key->getGeneratedKey().empty()) key->generate();
+    auto codec = std::make_unique<RSASignEncoderCodec>("", keyGenerator->getPrivatekey());
     setCodecBuffer(std::move(data), codec.get());
     return codec;
 }

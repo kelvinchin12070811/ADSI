@@ -8,10 +8,7 @@
 #include <cryptopp/osrng.h>
 #include <memory>
 
-#include "codec/AESDecoderCodec.hpp"
-#include "codec/AESEncoderCodec.hpp"
 #include "codec/DefaultCodecFactory.hpp"
-#include "codec/RSASignEncoderCodec.hpp"
 #include "generator/AESCryptoKeyGenerator.hpp"
 #include "generator/PrivateRSACryptoKeyGenerator.hpp"
 #include "generator/PublicRSACryptoKeyGenerator.hpp"
@@ -148,11 +145,12 @@ BOOST_AUTO_TEST_CASE(rsa_encryption_test)
         std::string signature;
 
         pbKeyGen.generate();
-        prKeyGen.generate();
 
-        std::unique_ptr<codec::ICodec> signer { std::make_unique<codec::RSASignEncoderCodec>(
-                reinterpret_cast<const std::byte *>(data.data()), data.size(),
-                prKeyGen.getPrivatekey()) };
+        std::unique_ptr<codec::ICodecFactory> factory {
+            std::make_unique<codec::DefaultCodecFactory>()
+        };
+        std::unique_ptr<codec::ICodec> signer { factory->createDefaultASymCryptoEncryptor(
+                data, &prKeyGen) };
         signer->execute();
         {
             auto rsltSignature = signer->getCodecResult();
