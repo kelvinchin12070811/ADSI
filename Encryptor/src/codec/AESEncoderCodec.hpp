@@ -16,6 +16,10 @@ class AESEncoderCodec : public ICodec
 {
 public:
     /**
+     * @brief Construct default decoder.
+     */
+    AESEncoderCodec() = default;
+    /**
      * @brief Construct AESEncoder with empty data stream.
      *
      * @param key AES key for encryption, must not be empty.

@@ -57,9 +57,10 @@ BOOST_AUTO_TEST_CASE(sha3_hasher_test)
         constexpr std::string_view preCalHash {
             "16f043d383269059753569d7ebff1a1d88f4d7a8a508d3814ef2e20891cfbd08"
         };
-        std::unique_ptr<codec::ICodecFactory> factory =
-                std::make_unique<codec::DefaultCodecFactory>();
-        std::unique_ptr<codec::ICodec> encoder = factory->createDefaultHashEncoder(text);
+        std::unique_ptr<codec::ICodecFactory> factory {
+            std::make_unique<codec::DefaultCodecFactory>()
+        };
+        std::unique_ptr<codec::ICodec> encoder { factory->createDefaultHashEncoder(text) };
 
         encoder->execute();
         auto &result = encoder->getCodecResult();
@@ -81,7 +82,9 @@ BOOST_AUTO_TEST_CASE(aes_keygen_test)
         "f220cf02e8e0bf291a08d1bfe53e989dae21f2bf20d919cf8a80bbc866c98c62"
     };
 
-    std::unique_ptr<codec::ICodecFactory> factory = std::make_unique<codec::DefaultCodecFactory>();
+    std::unique_ptr<codec::ICodecFactory> factory {
+        std::make_unique<codec::DefaultCodecFactory>()
+    };
 
     std::unique_ptr<key_generator::ICryptoKeyGenerator> keyGen {
         std::make_unique<key_generator::AESCryptoKeyGenerator>(
@@ -90,7 +93,7 @@ BOOST_AUTO_TEST_CASE(aes_keygen_test)
     keyGen->generate();
     auto &aesKey = keyGen->getGeneratedKey();
 
-    std::unique_ptr<codec::ICodec> shaEnc = factory->createDefaultHashEncoder(aesKey);
+    std::unique_ptr<codec::ICodec> shaEnc { factory->createDefaultHashEncoder(aesKey) };
     shaEnc->execute();
 
     auto &key = shaEnc->getCodecResult();
@@ -112,20 +115,22 @@ BOOST_AUTO_TEST_CASE(aes_codec_test)
             std::make_unique<key_generator::AESCryptoKeyGenerator>(
                     std::string { password.data(), password.size() })
         };
-        keyGen->generate();
-        AESKey = keyGen->getGeneratedKey();
+        std::unique_ptr<codec::ICodecFactory> factory {
+            std::make_unique<codec::DefaultCodecFactory>()
+        };
+        auto encryptor = factory->createDefaultSymCryptoEncoder(data, keyGen.get());
 
-        std::unique_ptr<codec::ICodec> encryptor { std::make_unique<codec::AESEncoderCodec>(
-                data, AESKey) };
         encryptor->execute();
         auto encResult = encryptor->getCodecResult();
 
-        std::unique_ptr<codec::ICodec> decryptor { std::make_unique<codec::AESDecoderCodec>(
-                encResult, AESKey) };
-        decryptor->execute();
-        auto decResult = decryptor->getCodecResult();
+        AESKey = keyGen->getGeneratedKey();
 
-        std::string decoded { reinterpret_cast<char *>(decResult.data()), decResult.size() };
+        std::unique_ptr<codec::ICodec> decryptor { factory->createDefaultSymCryptoDecoder(
+                encResult, keyGen.get()) };
+        decryptor->execute();
+        const auto &decResult = decryptor->getCodecResult();
+
+        std::string decoded { reinterpret_cast<const char *>(decResult.data()), decResult.size() };
         BOOST_REQUIRE(decoded == data);
     } catch (const std::exception &e) {
         BOOST_FAIL(e.what());
@@ -145,9 +150,9 @@ BOOST_AUTO_TEST_CASE(rsa_encryption_test)
         pbKeyGen.generate();
         prKeyGen.generate();
 
-        std::unique_ptr<codec::ICodec> signer = std::make_unique<codec::RSASignEncoderCodec>(
+        std::unique_ptr<codec::ICodec> signer { std::make_unique<codec::RSASignEncoderCodec>(
                 reinterpret_cast<const std::byte *>(data.data()), data.size(),
-                prKeyGen.getPrivatekey());
+                prKeyGen.getPrivatekey()) };
         signer->execute();
         {
             auto rsltSignature = signer->getCodecResult();
@@ -174,7 +179,9 @@ BOOST_AUTO_TEST_CASE(base64_encoder_test)
     constexpr std::string_view preCalculated {
         "QSBxdWljayBicm93bmZveCBqdW1wcyBvdmVyIHRoZSBsYXp5IGRvZy4="
     };
-    std::unique_ptr<codec::ICodecFactory> factory = std::make_unique<codec::DefaultCodecFactory>();
+    std::unique_ptr<codec::ICodecFactory> factory {
+        std::make_unique<codec::DefaultCodecFactory>()
+    };
     auto codec = factory->createDefaultB2TEncoder(testData);
     codec->execute();
     
@@ -190,8 +197,10 @@ BOOST_AUTO_TEST_CASE(base64_decoder_test)
     constexpr std::string_view preCalculated {
         "QSBxdWljayBicm93bmZveCBqdW1wcyBvdmVyIHRoZSBsYXp5IGRvZy4="
     };
-    std::unique_ptr<codec::ICodecFactory> factory = std::make_unique<codec::DefaultCodecFactory>();
-    std::unique_ptr<codec::ICodec> codec = factory->createDefaultB2TDecoder(preCalculated);
+    std::unique_ptr<codec::ICodecFactory> factory {
+        std::make_unique<codec::DefaultCodecFactory>()
+    };
+    std::unique_ptr<codec::ICodec> codec { factory->createDefaultB2TDecoder(preCalculated) };
     codec->execute();
 
     const auto &result = codec->getCodecResult();

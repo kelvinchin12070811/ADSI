@@ -93,6 +93,6 @@ void AESEncoderCodec::execute()
 
 void AESEncoderCodec::setKey(std::vector<std::byte> key)
 {
-    key = std::move(key);
+    key_ = std::move(key);
 }
 }

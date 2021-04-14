@@ -59,10 +59,24 @@ struct ICodecFactory
      * @param data Data to encrypt.
      * @param key Key generator to generate default key.
      * @return Default symmetric encoder to encrypt data.
+     * @throw std::invalid_argument if key is not applicable to target codec.
+     * @note If @p key did not generate any key yet then it will generate one or did not generate it.
      */
     virtual std::unique_ptr<ICodec>
     createDefaultSymCryptoEncoder(CodecDataStream data,
                                    key_generator::ICryptoKeyGenerator *key) = 0
+    {
+    }
+    /**
+     * @brief Create default symmetric encyption decoder.
+     * @param data Data to decrypt.
+     * @param key Key generator to generate default key.
+     * @return Default symmetric decoder to decrypt data.
+     * @throw std::invalid_argument if @p key is not applicable to target codec.
+     * @note If @p key did not generate any key yet then it will generate one or did not generate it.
+     */
+    virtual std::unique_ptr<ICodec>
+    createDefaultSymCryptoDecoder(CodecDataStream data, key_generator::ICryptoKeyGenerator *key) = 0
     {
     }
 };

@@ -16,6 +16,10 @@ class AESDecoderCodec : public ICodec
 {
 public:
     /**
+     * @brief Create default decoder.
+     */
+    AESDecoderCodec() = default;
+    /**
      * @brief Create decryptor with empty buffer.
      *
      * Create decryptor with no content in buffer

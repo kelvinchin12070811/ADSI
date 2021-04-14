@@ -13,6 +13,12 @@ public:
     std::unique_ptr<ICodec> createDefaultB2TEncoder(CodecDataStream data) override;
     std::unique_ptr<ICodec> createDefaultB2TDecoder(CodecDataStream data) override;
     std::unique_ptr<ICodec> createDefaultHashEncoder(CodecDataStream data) override;
+    std::unique_ptr<ICodec>
+    createDefaultSymCryptoEncoder(CodecDataStream data,
+                                  key_generator::ICryptoKeyGenerator *key) override;
+    std::unique_ptr<ICodec>
+    createDefaultSymCryptoDecoder(CodecDataStream data,
+                                  key_generator::ICryptoKeyGenerator *key) override;
 
 private:
     /**
@@ -20,6 +26,6 @@ private:
      * @param data Data to apply.
      * @param codec Codec to apply data.
      */
-    void setCodecBuffer(CodecDataStream data, std::unique_ptr<ICodec> &codec);
+    void setCodecBuffer(CodecDataStream data, ICodec *codec);
 };
 }
