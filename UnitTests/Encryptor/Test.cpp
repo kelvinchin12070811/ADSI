@@ -6,11 +6,12 @@
 #include <cryptopp/base64.h>
 #include <cryptopp/hex.h>
 #include <cryptopp/osrng.h>
+#include <cryptopp/rsa.h>
 #include <memory>
 
 #include "codec/DefaultCodecFactory.hpp"
 #include "generator/DefaultCryptoKeyGeneratorFactory.hpp"
-#include "generator/PrivateRSACryptoKeyGenerator.hpp"
+#include "generator/RSACryptoKeyGeneratorBase.hpp"
 #include "generator/PublicRSACryptoKeyGenerator.hpp"
 #include "utils/DCT.hpp"
 
@@ -138,27 +139,28 @@ BOOST_AUTO_TEST_CASE(rsa_encryption_test)
     try {
         auto keyParams = key_generator::RSACryptoKeyGeneratorBase::generateKeyParams();
         CryptoPP::AutoSeededRandomPool rndPool;
-        key_generator::PublicRSACryptoKeyGenerator pbKeyGen { keyParams };
-        key_generator::PrivateRSACryptoKeyGenerator prKeyGen { keyParams };
-        std::string signature;
 
-        pbKeyGen.generate();
+        std::unique_ptr<key_generator::ICryptoKeyGeneratorFactory> keyFactory {
+            std::make_unique<key_generator::DefaultCryptoKeyGeneratorFactory>()
+        };
+
+        auto pbKeyGen = keyFactory->createDefaultPublicASymEncryptionKey(keyParams);
+        auto prKeyGen = keyFactory->createDefaultPrivateASymEncryptionKey(keyParams);
+        std::string signature;
 
         std::unique_ptr<codec::ICodecFactory> factory {
             std::make_unique<codec::DefaultCodecFactory>()
         };
-        std::unique_ptr<codec::ICodec> signer { factory->createDefaultASymCryptoEncryptor(
-                data, &prKeyGen) };
+        auto signer = factory->createDefaultASymCryptoEncryptor(data, prKeyGen.get());
         signer->execute();
-        {
-            auto rsltSignature = signer->getCodecResult();
-            auto begin = reinterpret_cast<char *>(rsltSignature.data());
-            auto end =
-                    reinterpret_cast<decltype(begin)>(rsltSignature.data() + rsltSignature.size());
-            signature = std::string { begin, end };
-        }
+        const auto &rsltSignature = signer->getCodecResult();
+        auto begRsltSignature = reinterpret_cast<const char *>(rsltSignature.data());
+        signature = std::string { begRsltSignature, begRsltSignature + rsltSignature.size() };
 
-        CryptoPP::RSASSA_PKCS1v15_SHA_Verifier verifier { pbKeyGen.getPublicKey() };
+        CryptoPP::RSASSA_PKCS1v15_SHA_Verifier verifier {
+            dynamic_cast<key_generator::PublicRSACryptoKeyGenerator *>(pbKeyGen.get())
+                    ->getPublicKey()
+        };
         auto success = verifier.VerifyMessage(
                 reinterpret_cast<const CryptoPP::byte *>(data.data()), data.length(),
                 reinterpret_cast<const CryptoPP::byte *>(signature.c_str()), signature.length());

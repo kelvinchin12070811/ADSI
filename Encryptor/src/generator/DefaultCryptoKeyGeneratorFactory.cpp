@@ -16,14 +16,26 @@ DefaultCryptoKeyGeneratorFactory::createDefaultSymEncryptionKey(std::string pass
 }
 
 std::unique_ptr<ICryptoKeyGenerator>
-DefaultCryptoKeyGeneratorFactory::createDefaultPublicASymEncryptionKey()
+DefaultCryptoKeyGeneratorFactory::createDefaultPublicASymEncryptionKey(
+        const CryptoPP::RandomizedTrapdoorFunctionInverse &params)
 {
-    return std::make_unique<PublicRSACryptoKeyGenerator>();
+    try {
+        const auto &rsaParams = dynamic_cast<const CryptoPP::InvertibleRSAFunction &>(params);
+        return std::make_unique<PublicRSACryptoKeyGenerator>(rsaParams);
+    } catch (const std::bad_cast &) {
+        throw std::invalid_argument { "Params function passed must be InvertibleRSAFunction." };
+    }
 }
 
 std::unique_ptr<ICryptoKeyGenerator>
-DefaultCryptoKeyGeneratorFactory::createDefaultPrivateASymEncryptionKey()
+DefaultCryptoKeyGeneratorFactory::createDefaultPrivateASymEncryptionKey(
+        const CryptoPP::RandomizedTrapdoorFunctionInverse &params)
 {
-    return std::make_unique<PrivateRSACryptoKeyGenerator>();
+    try {
+        const auto &rsaParams = dynamic_cast<const CryptoPP::InvertibleRSAFunction &>(params);
+        return std::make_unique<PrivateRSACryptoKeyGenerator>(rsaParams);
+    } catch (const std::bad_cast &) {
+        throw std::invalid_argument { "Params function passed must be InvertibleRSAFunction." };
+    }
 }
 }

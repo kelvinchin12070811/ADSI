@@ -15,7 +15,9 @@ class DefaultCryptoKeyGeneratorFactory : public ICryptoKeyGeneratorFactory
 public:
     std::unique_ptr<ICryptoKeyGenerator>
     createDefaultSymEncryptionKey(std::string password) override;
-    std::unique_ptr<ICryptoKeyGenerator> createDefaultPublicASymEncryptionKey() override;
-    std::unique_ptr<ICryptoKeyGenerator> createDefaultPrivateASymEncryptionKey() override;
+    std::unique_ptr<ICryptoKeyGenerator> createDefaultPublicASymEncryptionKey(
+            const CryptoPP::RandomizedTrapdoorFunctionInverse &params) override;
+    std::unique_ptr<ICryptoKeyGenerator> createDefaultPrivateASymEncryptionKey(
+            const CryptoPP::RandomizedTrapdoorFunctionInverse &params) override;
 };
 }
