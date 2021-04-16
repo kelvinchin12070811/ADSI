@@ -19,5 +19,10 @@ public:
             const CryptoPP::RandomizedTrapdoorFunctionInverse &params) override;
     std::unique_ptr<ICryptoKeyGenerator> createDefaultPrivateASymEncryptionKey(
             const CryptoPP::RandomizedTrapdoorFunctionInverse &params) override;
+    std::unique_ptr<CryptoPP::RandomizedTrapdoorFunctionInverse> generateASymParams() override;
+    std::string
+    serializeKeyParams(const CryptoPP::RandomizedTrapdoorFunctionInverse &params) override;
+    std::unique_ptr<CryptoPP::RandomizedTrapdoorFunctionInverse>
+    deserializeKeyParams(std::string_view params);
 };
 }

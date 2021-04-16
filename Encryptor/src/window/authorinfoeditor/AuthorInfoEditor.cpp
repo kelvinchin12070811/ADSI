@@ -13,6 +13,7 @@
 #include <fmt/format.h>
 
 #include "codec/DefaultCodecFactory.hpp"
+#include "generator/DefaultCryptoKeyGeneratorFactory.hpp"
 #include "db/DBManager.hpp"
 #include "utils/StylesManager.hpp"
 #include "window/authorinfoeditor/AuthorDetailsEditor.hpp"
@@ -105,14 +106,25 @@ void AuthorInfoEditor::onChangedTab(int index)
 
 void AuthorInfoEditor::onNewKeyClicked()
 {
-    std::string data { "A quick brown fox jumps over the lazy dog" };
-    std::unique_ptr<codec::ICodecFactory> factory = std::make_unique<codec::DefaultCodecFactory>();
-    auto encoBase64 = factory->createDefaultB2TEncoder({ data });
-    encoBase64->execute();
-    auto &result = encoBase64->getCodecResult();
-    auto begResult = reinterpret_cast<const char *>(result.data());
-    std::string str = { begResult, begResult + result.size() };
-    qDebug() << QString::fromStdString(str);
+    if (ui_->authorList->currentItem() < 0) {
+        QMessageBox::critical(this, this->windowTitle(), "No author selected!");
+        return;
+    }
+
+    std::unique_ptr<codec::ICodecFactory> codecFactory {
+        std::make_unique<codec::DefaultCodecFactory>()
+    };
+    std::unique_ptr<key_generator::ICryptoKeyGeneratorFactory> keyFactory {
+        std::make_unique<key_generator::DefaultCryptoKeyGeneratorFactory>()
+    };
+
+    auto params = keyFactory->generateASymParams();
+    auto encoder = codecFactory->createDefaultB2TEncoder(keyFactory->serializeKeyParams(*params));
+    encoder->execute();
+    const auto &data = encoder->getCodecResult();
+    auto begData = reinterpret_cast<const char *>(data.data());
+    qDebug() << QString::fromStdString(
+            fmt::format("key params: {}", std::string { begData, begData + data.size() }));
 }
 
 void AuthorInfoEditor::onRemoveKey()
@@ -175,7 +187,7 @@ void AuthorInfoEditor::switchedToKeyListTab()
     if (!author.has_value()) return;
 
     for (const auto &key : dbManager->iterateKeysByAuthor(author->authorID)) {
-        ui_->lsvwKeys->addItem(QString::fromStdString(key.keyPrivate));
+        ui_->lsvwKeys->addItem(QString::fromStdString(key.keyParams));
     }
 }
 }

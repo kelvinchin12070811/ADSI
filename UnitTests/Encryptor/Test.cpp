@@ -11,7 +11,6 @@
 
 #include "codec/DefaultCodecFactory.hpp"
 #include "generator/DefaultCryptoKeyGeneratorFactory.hpp"
-#include "generator/RSACryptoKeyGeneratorBase.hpp"
 #include "generator/PublicRSACryptoKeyGenerator.hpp"
 #include "utils/DCT.hpp"
 
@@ -137,14 +136,13 @@ BOOST_AUTO_TEST_CASE(rsa_encryption_test)
 {
     constexpr std::string_view data { "A quick brown fox jumps over the lazy dog." };
     try {
-        auto keyParams = key_generator::RSACryptoKeyGeneratorBase::generateKeyParams();
         CryptoPP::AutoSeededRandomPool rndPool;
 
         std::unique_ptr<key_generator::ICryptoKeyGeneratorFactory> keyFactory {
             std::make_unique<key_generator::DefaultCryptoKeyGeneratorFactory>()
         };
-
-        auto prKeyGen = keyFactory->createDefaultPrivateASymEncryptionKey(keyParams);
+        auto keyParams = keyFactory->generateASymParams();
+        auto prKeyGen = keyFactory->createDefaultPrivateASymEncryptionKey(*keyParams);
         std::string signature;
 
         std::unique_ptr<codec::ICodecFactory> factory {
@@ -156,7 +154,7 @@ BOOST_AUTO_TEST_CASE(rsa_encryption_test)
         auto begRsltSignature = reinterpret_cast<const char *>(rsltSignature.data());
         signature = std::string { begRsltSignature, begRsltSignature + rsltSignature.size() };
 
-        auto pbKeyGen = keyFactory->createDefaultPublicASymEncryptionKey(keyParams);
+        auto pbKeyGen = keyFactory->createDefaultPublicASymEncryptionKey(*keyParams);
         pbKeyGen->generate();
         CryptoPP::RSASSA_PKCS1v15_SHA_Verifier verifier {
             dynamic_cast<key_generator::PublicRSACryptoKeyGenerator *>(pbKeyGen.get())

@@ -43,8 +43,7 @@ public:
                            make_column("keyID", &data::KeyStore::keyID, primary_key(),
                                        autoincrement()),
                            make_column("authorID", &data::KeyStore::authorID),
-                           make_column("keyPublic", &data::KeyStore::keyPublic),
-                           make_column("keyPrivate", &data::KeyStore::keyPrivate),
+                           make_column("keyParams", &data::KeyStore::keyParams),
                            make_column("keyPasswordHash", &data::KeyStore::keyPasswordHash),
                            foreign_key(&data::KeyStore::authorID)
                                    .references(&data::Author::authorID)));
@@ -85,19 +84,19 @@ public:
     /**
      * @brief Get author by it's unique id.
      * @param id ID of the author to retrieve.
-     * @return Author with at the corresponded id.
+     * @return Author with at the corresponded id, std::nullopt if author with @p id not found in database.
      */
     std::optional<data::Author> getAuthorByID(std::uint32_t id);
     /**
      * @brief Get author by it's name.
      * @param name Name of the author to get.
-     * @return Author with name of @p name.
+     * @return Author with name of @p name, std::nullopt if author with @p name not found in database.
      */
     std::optional<data::Author> getAuthorByName(std::string_view name);
     /**
      * @brief Get author at the specified distance.
      * @param distance Dinstance of the entry from begin.
-     * @return Author at specified distance.
+     * @return Author at specified distance, std::nullopt if author with @p distance not found in database.
      */
     std::optional<data::Author> getAuthorByDistance(std::uint32_t distance);
     /**

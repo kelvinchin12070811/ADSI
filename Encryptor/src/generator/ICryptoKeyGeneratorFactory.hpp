@@ -45,5 +45,31 @@ struct ICryptoKeyGeneratorFactory
             const CryptoPP::RandomizedTrapdoorFunctionInverse &params) = 0
     {
     }
+    /**
+     * @brief Generate default parameters that will be used by key generator of asymmetric encryption.
+     * @return Parameters to generate asymmetric encryption keys.
+     */
+    virtual std::unique_ptr<CryptoPP::RandomizedTrapdoorFunctionInverse> generateASymParams() = 0 {
+    }
+    /**
+     * @brief Serialize key params to string.
+     * @param params Key params to serialize
+     * @return Serialized key params.
+     * @throw std::invalid_argument if @p params does not fit with the targeted asymmetric keys generator.
+     */
+    virtual std::string
+    serializeKeyParams(const CryptoPP::RandomizedTrapdoorFunctionInverse &params) = 0
+    {
+    }
+    /**
+     * @brief Deserialize key params to RandomizedTrapdoorFunction.
+     * @param params Serialized key params to deserialize.
+     * @return Deserialized key params function to generate asymmetric encryption's keys.
+     * @throw std::invalid_argument if @p params does not fit with the targeted asymmetric keys generator.
+     */
+    virtual std::unique_ptr<CryptoPP::RandomizedTrapdoorFunctionInverse>
+    deserializeKeyParams(std::string_view params) = 0
+    {
+    }
 };
 }
