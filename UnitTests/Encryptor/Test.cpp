@@ -144,7 +144,6 @@ BOOST_AUTO_TEST_CASE(rsa_encryption_test)
             std::make_unique<key_generator::DefaultCryptoKeyGeneratorFactory>()
         };
 
-        auto pbKeyGen = keyFactory->createDefaultPublicASymEncryptionKey(keyParams);
         auto prKeyGen = keyFactory->createDefaultPrivateASymEncryptionKey(keyParams);
         std::string signature;
 
@@ -157,6 +156,8 @@ BOOST_AUTO_TEST_CASE(rsa_encryption_test)
         auto begRsltSignature = reinterpret_cast<const char *>(rsltSignature.data());
         signature = std::string { begRsltSignature, begRsltSignature + rsltSignature.size() };
 
+        auto pbKeyGen = keyFactory->createDefaultPublicASymEncryptionKey(keyParams);
+        pbKeyGen->generate();
         CryptoPP::RSASSA_PKCS1v15_SHA_Verifier verifier {
             dynamic_cast<key_generator::PublicRSACryptoKeyGenerator *>(pbKeyGen.get())
                     ->getPublicKey()
