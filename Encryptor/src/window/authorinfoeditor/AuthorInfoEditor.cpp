@@ -12,12 +12,11 @@
 
 #include <fmt/format.h>
 
-#include "codec/DefaultCodecFactory.hpp"
-#include "generator/DefaultCryptoKeyGeneratorFactory.hpp"
 #include "db/DBManager.hpp"
 #include "utils/StylesManager.hpp"
 #include "window/authorinfoeditor/AuthorDetailsEditor.hpp"
 #include "window/authorinfoeditor/AuthorInfoEditor.hpp"
+#include "window/passwordfield/NewPasswordField.hpp"
 
 namespace window {
 AuthorInfoEditor::AuthorInfoEditor(QWidget *parent)
@@ -111,20 +110,8 @@ void AuthorInfoEditor::onNewKeyClicked()
         return;
     }
 
-    std::unique_ptr<codec::ICodecFactory> codecFactory {
-        std::make_unique<codec::DefaultCodecFactory>()
-    };
-    std::unique_ptr<key_generator::ICryptoKeyGeneratorFactory> keyFactory {
-        std::make_unique<key_generator::DefaultCryptoKeyGeneratorFactory>()
-    };
-
-    auto params = keyFactory->generateASymParams();
-    auto encoder = codecFactory->createDefaultB2TEncoder(keyFactory->serializeKeyParams(*params));
-    encoder->execute();
-    const auto &data = encoder->getCodecResult();
-    auto begData = reinterpret_cast<const char *>(data.data());
-    qDebug() << QString::fromStdString(
-            fmt::format("key params: {}", std::string { begData, begData + data.size() }));
+    auto pwDialog = std::make_unique<window::NewPasswordField>(this);
+    pwDialog->exec();
 }
 
 void AuthorInfoEditor::onRemoveKey()

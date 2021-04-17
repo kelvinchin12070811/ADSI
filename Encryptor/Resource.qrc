@@ -3,5 +3,6 @@
         <file alias="Themes/Default/Master.qss">Resources/Themes/Default/Master.qss</file>
         <file alias="Themes/Default/SettingWindow.qss">Resources/Themes/Default/SettingWindow.qss</file>
         <file alias="Themes/Default/AuthorInfoEditor.qss">Resources/Themes/Default/AuthorInfoEditor.qss</file>
+        <file alias="Themes/Default/NewPasswordField.qss">Resources/Themes/Default/NewPasswordField.qss</file>
     </qresource>
 </RCC>
