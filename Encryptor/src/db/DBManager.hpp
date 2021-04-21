@@ -9,8 +9,8 @@
 
 #include <sqlite_orm/sqlite_orm.h>
 
-#include "db/data/KeyStore.hpp"
 #include "db/data/Author.hpp"
+#include "db/data/KeyStore.hpp"
 
 namespace db {
 /**
