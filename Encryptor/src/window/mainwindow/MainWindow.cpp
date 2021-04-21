@@ -13,10 +13,16 @@
 
 #include <stdexcept>
 
+#include <fmt/format.h>
+
+#include "window/mainwindow/MainWindow.hpp"
+#include "codec/DefaultCodecFactory.hpp"
 #include "db/DBManager.hpp"
+#include "generator/DefaultCryptoKeyGeneratorFactory.hpp"
+#include "generator/PrivateRSACryptoKeyGenerator.hpp"
+#include "generator/PublicRSACryptoKeyGenerator.hpp"
 #include "utils/StylesManager.hpp"
 #include "window/authorinfoeditor/AuthorInfoEditor.hpp"
-#include "window/mainwindow/MainWindow.hpp"
 #include "window/setting/Setting.hpp"
 
 namespace window {
@@ -52,7 +58,49 @@ void MainWindow::onBtnLoadKeyClicked()
     auto key = dialog->getSelectedKey();
     if (key == nullptr) return;
 
-    QMessageBox::information(this, "selected key", "key is selected");
+    std::unique_ptr<key_generator::ICryptoKeyGeneratorFactory> facKey {
+        std::make_unique<key_generator::DefaultCryptoKeyGeneratorFactory>()
+    };
+    auto pbKey = facKey->createDefaultPublicASymEncryptionKey(*key);
+    auto prKey = facKey->createDefaultPrivateASymEncryptionKey(*key);
+
+    pbKey->generate();
+    prKey->generate();
+
+    std::unique_ptr<codec::ICodecFactory> facCodec {
+        std::make_unique<codec::DefaultCodecFactory>()
+    };
+    auto hashCodec = facCodec->createDefaultHashEncoder({});
+
+    auto rawPbKey = reinterpret_cast<key_generator::PublicRSACryptoKeyGenerator *>(pbKey.get())->getPublicKey();
+    auto rawPrKey = reinterpret_cast<key_generator::PrivateRSACryptoKeyGenerator *>(prKey.get())->getPrivatekey();
+    std::string strPbKey;
+    std::string strPrKey;
+
+    CryptoPP::StringSink pbKeySerializer { strPbKey };
+    CryptoPP::StringSink prKeySerializer { strPrKey };
+
+    rawPbKey.DEREncode(pbKeySerializer);
+    rawPrKey.DEREncode(prKeySerializer);
+
+    auto hashArray = [](const std::vector<std::byte> &data) {
+        using namespace std::string_literals;
+        return std::accumulate(
+                data.begin(), data.end(), ""s,
+                [](const auto &prev, const auto &cur) {
+            return fmt::format("{}{:X}", prev, cur); });
+    };
+
+    hashCodec->setCodecData(strPbKey);
+    hashCodec->execute();
+    auto pbHash = hashArray(hashCodec->getCodecResult());
+
+    hashCodec->setCodecData(strPrKey);
+    hashCodec->execute();
+    auto prHash = hashArray(hashCodec->getCodecResult());
+
+    ui_->labPublicKeyDsp->setText(QString::fromStdString(pbHash));
+    ui_->labPrivateKeyDsp->setText(QString::fromStdString(prHash));
 }
 
 void MainWindow::loadStylesheet()
