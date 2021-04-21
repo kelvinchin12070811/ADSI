@@ -28,17 +28,6 @@ MainWindow::MainWindow(QWidget *parent)
     loadStylesheet();
     auto *storage = &db::DBManager::getInstance();
     storage->initDB();
-
-    try {
-        using namespace sqlite_orm;
-        auto author = storage->getAuthorByName("Sakura Miyamoto");
-        if (!author.has_value()) throw std::out_of_range { "No entries found." };
-        qDebug() << author->authorID;
-        qDebug() << QString::fromStdString(author->authorName);
-        qDebug() << QString::fromStdString(author->authorEmail);
-    } catch (const std::exception &e) {
-        qDebug() << e.what();
-    }
 }
 
 void MainWindow::onBtnLoadImgClicked()
@@ -52,14 +41,18 @@ void MainWindow::onBtnLoadImgClicked()
 
 void MainWindow::onBtnSettingClicked()
 {
-    std::unique_ptr<QDialog> dilSetting = std::make_unique<window::Setting>();
+    auto dilSetting = std::make_unique<window::Setting>();
     dilSetting->exec();
 }
 
 void MainWindow::onBtnLoadKeyClicked()
 {
-    std::unique_ptr<QDialog> dialog = std::make_unique<window::AuthorInfoEditor>(this);
+    auto dialog = std::make_unique<window::AuthorInfoEditor>(this);
     dialog->exec();
+    auto key = dialog->getSelectedKey();
+    if (key == nullptr) return;
+
+    QMessageBox::information(this, "selected key", "key is selected");
 }
 
 void MainWindow::loadStylesheet()

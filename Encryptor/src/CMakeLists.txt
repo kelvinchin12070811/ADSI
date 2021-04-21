@@ -43,6 +43,7 @@ set(PROJECT_UI_FILES
     "window/mainwindow/MainWindow.ui"
     "window/setting/Setting.ui"
     "window/passwordfield/NewPasswordField.ui"
+    "window/passwordfield/EnterPasswordField.ui"
 )
 
 set(PROJECT_SOURCE_FILES
@@ -68,6 +69,7 @@ set(PROJECT_SOURCE_FILES
     "window/authorinfoeditor/AuthorDetailsEditor.cpp"
     "window/authorinfoeditor/AuthorInfoEditor.cpp"
     "window/mainwindow/MainWindow.cpp"
+    "window/passwordfield/EnterPasswordField.cpp"
     "window/passwordfield/NewPasswordField.cpp"
     "window/setting/Setting.cpp"
 )
@@ -100,6 +102,7 @@ set(PROJECT_HEADER_FILES
     "window/authorinfoeditor/AuthorDetailsEditor.hpp"
     "window/authorinfoeditor/AuthorInfoEditor.hpp"
     "window/mainwindow/MainWindow.hpp"
+    "window/passwordfield/EnterPasswordField.hpp"
     "window/passwordfield/NewPasswordField.hpp"
     "window/setting/Setting.hpp"
 )

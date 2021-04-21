@@ -8,6 +8,8 @@
 
 #include <memory>
 
+#include <cryptopp/pubkey.h>
+
 #include "ui_AuthorInfoEditor.h"
 #include "db/data/Author.hpp"
 
@@ -24,6 +26,11 @@ public:
      * @param parent parent of the dialog, nullptr for no parent.
      */
     explicit AuthorInfoEditor(QWidget *parent = nullptr);
+    /**
+     * @brief Get selected key from the dialog.
+     * @return Selected key for asymmetric encryption, nullptr if not confirmed yet.
+     */
+    std::unique_ptr<CryptoPP::RandomizedTrapdoorFunctionInverse> getSelectedKey();
 
 private slots:
     /**
@@ -66,6 +73,10 @@ private slots:
      * @brief Triggered when user tend to remove selected key.
      */
     void onRemoveKey();
+    /**
+     * @brief Triggered when user selected and confirm a key.
+     */
+    void onConfirmKey();
 
 private:
     /**
@@ -109,5 +120,13 @@ private:
      * @brief Counter that keep tracking last amunt of author entries.
      */
     std::uint32_t lastAuthorCount_;
+    /**
+     * @brief Determine if key is confirmed by author.
+     */
+    bool confirmed_ { false };
+    /**
+     * @brief Key confirmed by the user.
+     */
+    std::unique_ptr<CryptoPP::RandomizedTrapdoorFunctionInverse> confirmedKey_;
 };
 }

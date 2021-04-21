@@ -262,8 +262,8 @@
    <slot>onNewKeyClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>356</x>
-     <y>41</y>
+     <x>154</x>
+     <y>56</y>
     </hint>
     <hint type="destinationlabel">
      <x>621</x>
@@ -278,12 +278,28 @@
    <slot>onRemoveKey()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>341</x>
-     <y>71</y>
+     <x>154</x>
+     <y>56</y>
     </hint>
     <hint type="destinationlabel">
      <x>573</x>
      <y>227</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>btnOk</sender>
+   <signal>clicked()</signal>
+   <receiver>AuthorInfoEditor</receiver>
+   <slot>onConfirmKey()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>282</x>
+     <y>284</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>362</x>
+     <y>472</y>
     </hint>
    </hints>
   </connection>
@@ -293,5 +309,6 @@
   <slot>onChangedTab(int)</slot>
   <slot>onNewKeyClicked()</slot>
   <slot>onRemoveKey()</slot>
+  <slot>onConfirmKey()</slot>
  </slots>
 </ui>

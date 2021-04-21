@@ -19,6 +19,7 @@
 #include "generator/DefaultCryptoKeyGeneratorFactory.hpp"
 #include "utils/StylesManager.hpp"
 #include "window/authorinfoeditor/AuthorDetailsEditor.hpp"
+#include "window/passwordfield/EnterPasswordField.hpp"
 #include "window/passwordfield/NewPasswordField.hpp"
 
 namespace window {
@@ -33,6 +34,11 @@ AuthorInfoEditor::AuthorInfoEditor(QWidget *parent)
     setupUI();
     loadData();
     initConnections();
+}
+
+std::unique_ptr<CryptoPP::RandomizedTrapdoorFunctionInverse> AuthorInfoEditor::getSelectedKey()
+{
+    return confirmed_ ? std::move(confirmedKey_) : nullptr;
 }
 
 void AuthorInfoEditor::onBtnCancelClicked()
@@ -179,6 +185,60 @@ void AuthorInfoEditor::onRemoveKey()
 
     ui_->lsvwKeys->clear();
     loadKeyData(*author);
+}
+
+void AuthorInfoEditor::onConfirmKey()
+{
+    auto idxAuthor = ui_->authorList->currentItem();
+    auto idxKey = ui_->lsvwKeys->currentIndex();
+
+    if (idxAuthor < 0) {
+        QMessageBox::information(
+                this, "Please Select An Author",
+                "Select an author first or we don't know the artwork belongs to who");
+        return;
+    }
+
+    if (idxKey.row() < 0) {
+        QMessageBox::information(this, "Please Select A Key",
+                                 "Select a key or we don't know what sign to put");
+        return;
+    }
+
+    auto dbManager = &db::DBManager::getInstance();
+    auto author = dbManager->getAuthorByDistance(idxAuthor);
+    auto key = dbManager->getAuthorKeyByDistance(author->authorID, idxKey.row());
+
+    if (key == std::nullopt) return;
+
+    auto pwInput = std::make_unique<window::EnterPasswordField>(this);
+    pwInput->exec();
+    auto rsltPwInput = pwInput->getPassword();
+    if (rsltPwInput == std::nullopt) return;
+
+    auto rawPwInput = rsltPwInput->toStdString();
+    if (!BCrypt::validatePassword(rawPwInput, key->keyPasswordHash)) {
+        QMessageBox::critical(this, "Wrong Password", "Wrong password has been entered!");
+        return;
+    }
+
+    std::unique_ptr<codec::ICodecFactory> facCodec {
+        std::make_unique<codec::DefaultCodecFactory>()
+    };
+    std::unique_ptr<key_generator::ICryptoKeyGeneratorFactory> facKey {
+        std::make_unique<key_generator::DefaultCryptoKeyGeneratorFactory>()
+    };
+
+    auto symKey = facKey->createDefaultSymEncryptionKey(rawPwInput);
+    auto binary2TextCodec = facCodec->createDefaultB2TDecoder(key->keyParams);
+    binary2TextCodec->execute();
+
+    auto symCodec = facCodec->createDefaultSymCryptoDecoder(binary2TextCodec->getCodecResult(),
+                                                            symKey.get());
+    symCodec->execute();
+    auto &decryptedKey = symCodec->getCodecResult();
+    confirmedKey_ = facKey->deserializeKeyParams(
+            { reinterpret_cast<const char *>(decryptedKey.data()), decryptedKey.size() });
 }
 
 void AuthorInfoEditor::setupUI()
