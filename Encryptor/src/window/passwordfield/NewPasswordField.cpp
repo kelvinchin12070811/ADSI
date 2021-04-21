@@ -3,6 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *********************************************************************************************************************/
+#include <QMessageBox>
 #include <QStyle>
 
 #include "window/passwordfield/NewPasswordField.hpp"
@@ -15,6 +16,11 @@ NewPasswordField::NewPasswordField(QWidget *parent) : QDialog(parent)
 
     utils::StylesManager::getInstance().applyStylesheets(
             this, { ":/Themes/Default/NewPasswordField.qss" });
+}
+
+std::optional<std::reference_wrapper<const QString>> NewPasswordField::getPassword() const
+{
+    return confirmed_ ? std::nullopt : std::make_optional(std::cref(password_));
 }
 
 void NewPasswordField::onReenterPasswordChanged(QString value)
@@ -30,5 +36,17 @@ void NewPasswordField::onReenterPasswordChanged(QString value)
     ui_->labErrorMessage->setText("Password did not match");
     ui_->labErrorMessage->setProperty("isError", true);
     ui_->labErrorMessage->style()->polish(ui_->labErrorMessage);
+}
+
+void NewPasswordField::onConfirmPassword()
+{
+    if (ui_->labErrorMessage->property("isError").toBool() == true) {
+        QMessageBox::critical(this, "Passwords did not match",
+                              "Passwords entered in both of the password field does not match");
+        return;
+    }
+
+    password_ = ui_->lnedPassword->text();
+    this->close();
 }
 }

@@ -12,10 +12,12 @@
 
 #include <fmt/format.h>
 
+#include "window/authorinfoeditor/AuthorInfoEditor.hpp"
+#include "codec/DefaultCodecFactory.hpp"
 #include "db/DBManager.hpp"
+#include "generator/DefaultCryptoKeyGeneratorFactory.hpp"
 #include "utils/StylesManager.hpp"
 #include "window/authorinfoeditor/AuthorDetailsEditor.hpp"
-#include "window/authorinfoeditor/AuthorInfoEditor.hpp"
 #include "window/passwordfield/NewPasswordField.hpp"
 
 namespace window {
@@ -112,6 +114,21 @@ void AuthorInfoEditor::onNewKeyClicked()
 
     auto pwDialog = std::make_unique<window::NewPasswordField>(this);
     pwDialog->exec();
+    auto password = pwDialog->getPassword();
+    if (password == std::nullopt) return;
+
+    std::unique_ptr<key_generator::ICryptoKeyGeneratorFactory> facKey {
+        std::make_unique<key_generator::DefaultCryptoKeyGeneratorFactory>()
+    };
+    std::unique_ptr<codec::ICodecFactory> facCodec {
+        std::make_unique<codec::DefaultCodecFactory>()
+    };
+    auto symKey = facKey->createDefaultSymEncryptionKey(password->get().toStdString());
+    auto asymKey = facKey->generateASymParams();
+    auto base64Codec = facCodec->createDefaultB2TEncoder(facKey->serializeKeyParams(*asymKey));
+    base64Codec->execute();
+    auto result = base64Codec->getCodecResult();
+    qDebug() << result;
 }
 
 void AuthorInfoEditor::onRemoveKey()

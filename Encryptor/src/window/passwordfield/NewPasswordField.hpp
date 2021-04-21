@@ -7,6 +7,7 @@
 #include <QDialog>
 
 #include <memory>
+#include <optional>
 
 #include "ui_NewPasswordField.h"
 
@@ -23,6 +24,11 @@ public:
      * @param parent Parent of the dialog, nullptr if no parent assigned.
      */
     explicit NewPasswordField(QWidget *parent = nullptr);
+    /**
+     * @brief Get user entered password.
+     * @return Password entered by the user, std::nullopt if password not confirmed.
+     */
+    std::optional<std::reference_wrapper<const QString>> getPassword() const;
 
 private slots:
     /**
@@ -30,11 +36,23 @@ private slots:
      * @param value New value entered by user.
      */
     void onReenterPasswordChanged(QString value);
+    /**
+     * @brief Triggered when user press ok on the form.
+     */
+    void onConfirmPassword();
 
 private:
     /**
      * @brief Ui elements of the dialog.
      */
     std::unique_ptr<Ui::NewPasswordField> ui_ { std::make_unique<Ui::NewPasswordField>() };
+    /**
+     * @brief Password that entered by user.
+     */
+    QString password_;
+    /**
+     * @brief Determine if password has been confirmed.
+     */
+    bool confirmed_ { false };
 };
 }
