@@ -11,6 +11,7 @@
 #include <algorithm>
 
 #include <fmt/format.h>
+#include <bcrypt/BCrypt.hpp>
 
 #include "window/authorinfoeditor/AuthorInfoEditor.hpp"
 #include "codec/DefaultCodecFactory.hpp"
@@ -117,26 +118,67 @@ void AuthorInfoEditor::onNewKeyClicked()
     auto password = pwDialog->getPassword();
     if (password == std::nullopt) return;
 
+    ui_->btnNewRSA->setDisabled(true);
+    ui_->btnRemoveRSA->setDisabled(true);
+
     std::unique_ptr<key_generator::ICryptoKeyGeneratorFactory> facKey {
         std::make_unique<key_generator::DefaultCryptoKeyGeneratorFactory>()
     };
     std::unique_ptr<codec::ICodecFactory> facCodec {
         std::make_unique<codec::DefaultCodecFactory>()
     };
+    auto dbManager = &db::DBManager::getInstance();
     auto symKey = facKey->createDefaultSymEncryptionKey(password->get().toStdString());
     auto asymKey = facKey->generateASymParams();
-    auto base64Codec = facCodec->createDefaultB2TEncoder(facKey->serializeKeyParams(*asymKey));
-    base64Codec->execute();
-    auto result = base64Codec->getCodecResult();
-    qDebug() << result;
+    auto curAuthor = dbManager->getAuthorByName(ui_->authorList->currentText().toStdString());
+    
+    db::data::KeyStore keyStore;
+    keyStore.keyID = std::numeric_limits<uint32_t>::max();
+    keyStore.authorID = curAuthor->authorID;
+    keyStore.keyPasswordHash = BCrypt::generateHash(password->get().toStdString());
+    
+    auto symCodec = facCodec->createDefaultSymCryptoEncoder(facKey->serializeKeyParams(*asymKey),
+                                                            symKey.get());
+    symCodec->execute();
+
+    auto binary2TextEncoder = facCodec->createDefaultB2TEncoder(symCodec->getCodecResult());    
+    binary2TextEncoder->execute();
+
+    const auto &encAsymKey = binary2TextEncoder->getCodecResult();
+    keyStore.keyParams.reserve(encAsymKey.size());
+    std::transform(encAsymKey.begin(), encAsymKey.end(), std::back_inserter(keyStore.keyParams),
+                   [](const auto &itr) { return static_cast<char>(itr); });
+    dbManager->insertNewKeyForAuthor(keyStore);
+
+    ui_->btnNewRSA->setDisabled(false);
+    ui_->btnRemoveRSA->setDisabled(false);
+
+    ui_->lsvwKeys->clear();
+    loadKeyData(*curAuthor);
 }
 
 void AuthorInfoEditor::onRemoveKey()
 {
     auto idx = ui_->lsvwKeys->currentIndex();
-    if (idx.column() < 0) return;
+    if (idx.row() < 0) return;
 
-    qDebug() << "Removing" << idx.column();
+    auto usrConfirm = QMessageBox::warning(
+            this, "Are you sure to continue?", "The deleted key is not recoverable and hence lost.",
+            QMessageBox::StandardButton::Yes | QMessageBox::StandardButton::No);
+
+    if (usrConfirm == QMessageBox::StandardButton::No) return;
+
+    auto dbManager = &db::DBManager::getInstance();
+    auto author = dbManager->getAuthorByName(ui_->authorList->currentText().toStdString());
+    if (author == std::nullopt) return;
+
+    auto key = dbManager->getAuthorKeyByDistance(author->authorID, idx.row());
+    if (key == std::nullopt) return;
+
+    dbManager->removeKeyByID(key->keyID);
+
+    ui_->lsvwKeys->clear();
+    loadKeyData(*author);
 }
 
 void AuthorInfoEditor::setupUI()
@@ -190,8 +232,30 @@ void AuthorInfoEditor::switchedToKeyListTab()
     auto author = dbManager->getAuthorByName(curText.toStdString());
     if (!author.has_value()) return;
 
-    for (const auto &key : dbManager->iterateKeysByAuthor(author->authorID)) {
-        ui_->lsvwKeys->addItem(QString::fromStdString(key.keyParams));
-    }
+    loadKeyData(*author);
+}
+
+void AuthorInfoEditor::loadKeyData(const db::data::Author &author)
+{
+    auto dbManager = &db::DBManager::getInstance();
+    
+    for (const auto &key : dbManager->iterateKeysByAuthor(author.authorID))
+        ui_->lsvwKeys->addItem(QString::fromStdString(hashRSAKey(key.keyParams)));
+}
+
+std::string AuthorInfoEditor::hashRSAKey(std::string_view key)
+{
+    std::unique_ptr<codec::ICodecFactory> facCodec {
+        std::make_unique<codec::DefaultCodecFactory>()
+    };
+    auto hashCodec = facCodec->createDefaultHashEncoder({});
+    hashCodec->setCodecData(key);
+    hashCodec->execute();
+    const auto &hash = hashCodec->getCodecResult();
+    std::string strHash { std::accumulate(
+            hash.begin(), hash.end(), std::string {}, [](auto prev, auto cur) {
+                return fmt::format("{}{:X}", prev, static_cast<int>(cur));
+            }) };
+    return strHash;
 }
 }

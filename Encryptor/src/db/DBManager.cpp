@@ -1,3 +1,4 @@
+#include "DBManager.hpp"
 /**********************************************************************************************************************
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -66,4 +67,20 @@ void DBManager::insertNewKeyForAuthor(const data::KeyStore &key)
 {
     storage_.insert(key);
 }
+
+void DBManager::removeKeyByID(std::uint32_t id)
+{
+    storage_.remove<data::KeyStore>(id);
 }
+
+std::optional<data::KeyStore> DBManager::getAuthorKeyByDistance(std::uint32_t authorID,
+                                                                uint32_t distance)
+{
+    using namespace sqlite_orm;
+    auto key = storage_.get_all<data::KeyStore>(where(c(&data::KeyStore::authorID) == authorID),
+                                                order_by(&data::KeyStore::keyID),
+                                                limit(1, distance));
+    return key.empty() ? std::nullopt : std::make_optional(*key.begin());
+}
+}
+

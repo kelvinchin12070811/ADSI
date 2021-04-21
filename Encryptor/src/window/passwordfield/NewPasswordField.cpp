@@ -20,11 +20,17 @@ NewPasswordField::NewPasswordField(QWidget *parent) : QDialog(parent)
 
 std::optional<std::reference_wrapper<const QString>> NewPasswordField::getPassword() const
 {
-    return confirmed_ ? std::nullopt : std::make_optional(std::cref(password_));
+    return confirmed_ ? std::make_optional(std::cref(password_)) : std::nullopt;
 }
 
 void NewPasswordField::onReenterPasswordChanged(QString value)
 {
+    if (ui_->lnedPassword->text().isEmpty() || ui_->lnedConfirmPassword->text().isEmpty()) {
+        ui_->labErrorMessage->setProperty("isError", true);
+        ui_->labErrorMessage->setText("Password field must not be empty");
+        return;
+    }
+
     if (ui_->lnedPassword->text() == ui_->lnedConfirmPassword->text()) {
         
         ui_->labErrorMessage->setText("Ok");
@@ -47,6 +53,7 @@ void NewPasswordField::onConfirmPassword()
     }
 
     password_ = ui_->lnedPassword->text();
+    confirmed_ = true;
     this->close();
 }
 }

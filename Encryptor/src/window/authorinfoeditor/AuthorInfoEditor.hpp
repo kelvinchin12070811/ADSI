@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "ui_AuthorInfoEditor.h"
+#include "db/data/Author.hpp"
 
 namespace window {
 /**
@@ -83,6 +84,17 @@ private:
      * @brief Initialize RSA key list tab when user switched to it.
      */
     void switchedToKeyListTab();
+    /**
+     * @brief Load key data into the ui.
+     * @param author Author's key to load.
+     */
+    void loadKeyData(const db::data::Author &author);
+    /**
+     * @brief Hash RSA key.
+     * @param key Key to hash.
+     * @return Digest of @p key.
+     */
+    std::string hashRSAKey(std::string_view key);
 
 private:
     /**

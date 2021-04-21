@@ -62,7 +62,7 @@ public:
     {
         using namespace sqlite_orm;
         return storage_.iterate<data::KeyStore>(where(c(&data::KeyStore::authorID) == authorID),
-                                                order_by(&data::KeyStore::authorID).desc());
+                                                order_by(&data::KeyStore::keyID));
     }
 
 public:
@@ -125,6 +125,13 @@ public:
      * @param id Key object to remove.
      */
     void removeKeyByID(std::uint32_t id);
+    /**
+     * @brief Get key of author at the specified distance.
+     * @param authorID ID of the author to query.
+     * @param distance Distance of the entry from begin.
+     * @return Author's key at specified distance, std::nullopt if no key found.
+     */
+    std::optional<data::KeyStore> getAuthorKeyByDistance(std::uint32_t authorID, std::uint32_t distance);
 
 private:
     DBManager() {};
