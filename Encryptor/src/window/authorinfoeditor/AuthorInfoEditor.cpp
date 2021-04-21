@@ -126,6 +126,7 @@ void AuthorInfoEditor::onNewKeyClicked()
 
     ui_->btnNewRSA->setDisabled(true);
     ui_->btnRemoveRSA->setDisabled(true);
+    QApplication::setOverrideCursor(Qt::CursorShape::WaitCursor);
 
     std::unique_ptr<key_generator::ICryptoKeyGeneratorFactory> facKey {
         std::make_unique<key_generator::DefaultCryptoKeyGeneratorFactory>()
@@ -161,6 +162,7 @@ void AuthorInfoEditor::onNewKeyClicked()
 
     ui_->lsvwKeys->clear();
     loadKeyData(*curAuthor);
+    QApplication::restoreOverrideCursor();
 }
 
 void AuthorInfoEditor::onRemoveKey()
