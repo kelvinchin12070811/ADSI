@@ -312,7 +312,7 @@ std::string AuthorInfoEditor::hashRSAKey(std::string_view key)
     std::unique_ptr<codec::ICodecFactory> facCodec {
         std::make_unique<codec::DefaultCodecFactory>()
     };
-    auto hashCodec = facCodec->createDefaultHashEncoder({});
+    auto hashCodec = facCodec->createDefaultHashEncoder();
     hashCodec->setCodecData(key);
     hashCodec->execute();
     const auto &hash = hashCodec->getCodecResult();

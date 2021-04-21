@@ -41,19 +41,19 @@ struct ICodecFactory
      * @param data Data to pass into the encoder.
      * @return New encoder consturcted.
      */
-    virtual std::unique_ptr<ICodec> createDefaultB2TEncoder(CodecDataStream data) = 0 { }
+    virtual std::unique_ptr<ICodec> createDefaultB2TEncoder(CodecDataStream data = {}) = 0 { }
     /**
      * @brief Create default text to bianry coder.
      * @param data Data to pass into the coder.
      * @return Default decoder used to decode text data into binary.
      */
-    virtual std::unique_ptr<ICodec> createDefaultB2TDecoder(CodecDataStream data) = 0 { }
+    virtual std::unique_ptr<ICodec> createDefaultB2TDecoder(CodecDataStream data = {}) = 0 { }
     /**
      * @brief Create default hash encoder.
      * @param data Data to pass into the encoder.
      * @return New hash encoder with provided data.
      */
-    virtual std::unique_ptr<ICodec> createDefaultHashEncoder(CodecDataStream data) = 0 { }
+    virtual std::unique_ptr<ICodec> createDefaultHashEncoder(CodecDataStream data = {}) = 0 { }
     /**
      * @brief Create default symmetric encryption encoder.
      * @param data Data to encrypt.

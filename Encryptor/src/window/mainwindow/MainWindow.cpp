@@ -70,7 +70,7 @@ void MainWindow::onBtnLoadKeyClicked()
     std::unique_ptr<codec::ICodecFactory> facCodec {
         std::make_unique<codec::DefaultCodecFactory>()
     };
-    auto hashCodec = facCodec->createDefaultHashEncoder({});
+    auto hashCodec = facCodec->createDefaultHashEncoder();
 
     auto rawPbKey = reinterpret_cast<key_generator::PublicRSACryptoKeyGenerator *>(pbKey.get())->getPublicKey();
     auto rawPrKey = reinterpret_cast<key_generator::PrivateRSACryptoKeyGenerator *>(prKey.get())->getPrivatekey();
