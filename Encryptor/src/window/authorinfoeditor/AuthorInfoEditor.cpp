@@ -239,6 +239,8 @@ void AuthorInfoEditor::onConfirmKey()
     auto &decryptedKey = symCodec->getCodecResult();
     confirmedKey_ = facKey->deserializeKeyParams(
             { reinterpret_cast<const char *>(decryptedKey.data()), decryptedKey.size() });
+    confirmed_ = true;
+    this->close();
 }
 
 void AuthorInfoEditor::setupUI()

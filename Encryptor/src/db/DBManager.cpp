@@ -79,7 +79,7 @@ std::optional<data::KeyStore> DBManager::getAuthorKeyByDistance(std::uint32_t au
     using namespace sqlite_orm;
     auto key = storage_.get_all<data::KeyStore>(where(c(&data::KeyStore::authorID) == authorID),
                                                 order_by(&data::KeyStore::keyID),
-                                                limit(1, distance));
+                                                limit(1, offset(distance)));
     return key.empty() ? std::nullopt : std::make_optional(*key.begin());
 }
 }
