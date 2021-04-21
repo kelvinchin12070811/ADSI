@@ -24,6 +24,13 @@ public:
      */
     explicit NewPasswordField(QWidget *parent = nullptr);
 
+private slots:
+    /**
+     * @brief Triggered when user enter text in re-enter password field.
+     * @param value New value entered by user.
+     */
+    void onReenterPasswordChanged(QString value);
+
 private:
     /**
      * @brief Ui elements of the dialog.

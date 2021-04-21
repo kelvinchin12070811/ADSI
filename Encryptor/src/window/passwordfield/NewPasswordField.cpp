@@ -14,4 +14,16 @@ NewPasswordField::NewPasswordField(QWidget *parent) : QDialog(parent)
     utils::StylesManager::getInstance().applyStylesheets(
             this, { ":/Themes/Default/NewPasswordField.qss" });
 }
+
+void NewPasswordField::onReenterPasswordChanged(QString value)
+{
+    if (ui_->lnedPassword->text() == ui_->lnedConfirmPassword->text()) {
+        
+        ui_->labErrorMessage->setText("Ok");
+        ui_->labErrorMessage->setStyleSheet("color: green;");
+        return;
+    }
+    ui_->labErrorMessage->setText("Password does not match");
+    ui_->labErrorMessage->setStyleSheet("color: red");
+}
 }
