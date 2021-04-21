@@ -95,6 +95,9 @@
        <property name="text">
         <string>Ok</string>
        </property>
+       <property name="shortcut">
+        <string>Return</string>
+       </property>
       </widget>
      </item>
      <item>
@@ -107,6 +110,9 @@
        </property>
        <property name="text">
         <string>Cancel</string>
+       </property>
+       <property name="shortcut">
+        <string>Esc</string>
        </property>
       </widget>
      </item>
