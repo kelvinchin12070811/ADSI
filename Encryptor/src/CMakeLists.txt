@@ -24,11 +24,12 @@ REQUIRED)
 
 find_package(Boost COMPONENTS REQUIRED)
 find_package(cryptopp CONFIG REQUIRED)
-find_package(yaml-cpp CONFIG REQUIRED)
-find_package(unofficial-sqlite3 CONFIG REQUIRED)
-find_package(SqliteOrm CONFIG REQUIRED)
-find_package(KF5WidgetsAddons CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
+find_package(KF5WidgetsAddons CONFIG REQUIRED)
+find_package(SqliteOrm CONFIG REQUIRED)
+find_package(unofficial-sqlite3 CONFIG REQUIRED)
+find_package(yaml-cpp CONFIG REQUIRED)
+find_package(ZLIB REQUIRED)
 
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${LIB_LIBBCRYPT_INC_PATH})
@@ -52,6 +53,7 @@ set(PROJECT_SOURCE_FILES
     "codec/Base64DecoderCodec.cpp"
     "codec/Base64EncoderCodec.cpp"
     "codec/DefaultCodecFactory.cpp"
+    "codec/DeflateCodec.cpp"
     "codec/RSASignEncoderCodec.cpp"
     "codec/SHA3EncoderCodec.cpp"
     "components/ImagePreview.cpp"
@@ -80,6 +82,7 @@ set(PROJECT_HEADER_FILES
     "codec/Base64DecoderCodec.hpp"
     "codec/Base64EncoderCodec.hpp"
     "codec/DefaultCodecFactory.hpp"
+    "codec/DeflateCodec.hpp"
     "codec/ICodec.hpp"
     "codec/ICodecFactory.hpp"
     "codec/RSASignEncoderCodec.hpp"
@@ -137,4 +140,5 @@ target_link_libraries(
      sqlite_orm::sqlite_orm
      unofficial::sqlite3::sqlite3
      yaml-cpp
+     ZLIB::ZLIB
 )
