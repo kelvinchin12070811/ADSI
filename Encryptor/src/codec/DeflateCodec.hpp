@@ -38,6 +38,11 @@ public:
     void setCodecData(std::string_view data) override;
     void setCodecData(const std::byte *data, size_t length) override;
 
+    /**
+     * @copydoc codec::ICodec::execute()
+     * @throw std::length_error if buffer not large enough.
+     * @throw std::runtime_error if not enough memory.
+     */
     void execute() override;
 
     const std::vector<std::byte> &getCodecResult() const override;

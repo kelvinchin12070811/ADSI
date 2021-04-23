@@ -3,11 +3,13 @@
 
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
+#include <boost/range/irange.hpp>
 #include <cryptopp/base64.h>
 #include <cryptopp/hex.h>
 #include <cryptopp/osrng.h>
 #include <cryptopp/rsa.h>
 #include <memory>
+#include <string_view>
 
 #include "codec/DefaultCodecFactory.hpp"
 #include "generator/DefaultCryptoKeyGeneratorFactory.hpp"
@@ -204,4 +206,26 @@ BOOST_AUTO_TEST_CASE(base64_decoder_test)
     auto begResult = reinterpret_cast<const char *>(result.data());
     std::string resultStr { begResult, begResult + result.size() };
     BOOST_REQUIRE(resultStr == testData);
+}
+
+BOOST_AUTO_TEST_CASE(zlib_compression_test)
+{
+    using namespace std::string_view_literals;
+    constexpr auto data = "A quick brown fox jumps over the lazy dog."sv;
+
+    std::unique_ptr<codec::ICodecFactory> facCodec {
+        std::make_unique<codec::DefaultCodecFactory>()
+    };
+    
+    auto compressor = facCodec->createDefaultCompresssCoder(data);
+    compressor->execute();
+    
+    auto decompressor = facCodec->createDefaultDecompressCoder(compressor->getCodecResult());
+    decompressor->execute();
+
+    auto rsltDecompress = decompressor->getCodecResult();
+    for (auto idx : boost::irange(rsltDecompress.size())) {
+        if (static_cast<std::byte>(data[idx]) != rsltDecompress[idx]) BOOST_REQUIRE(false);
+    }
+    BOOST_REQUIRE(true);
 }

@@ -42,20 +42,29 @@ void codec::DeflatCodec::setCodecData(const std::byte *data, size_t length)
 
 void codec::DeflatCodec::execute()
 {
+    auto lenDest = compressBound(buffer_.size());
     std::vector<Byte> dest;
-    dest.resize(buffer_.size());
-    uLongf lenDest { dest.size() };
+    dest.resize(lenDest);
     auto result = compress(dest.data(), &lenDest, reinterpret_cast<const Bytef *>(buffer_.data()),
                            static_cast<uLong>(buffer_.size()));
 
-    if (result != Z_OK) throw std::runtime_error { "Error on compressing data." };
+    switch (result) {
+    case Z_BUF_ERROR:
+        throw std::length_error { "Buffer not large enough to hold compressed data." };
+        break;
+    case Z_MEM_ERROR:
+        throw std::runtime_error { "Not enough memory allocated to the encoder." };
+        break;
+    }
 
-    encoded_.reserve(lenDest + sizeof(std::uint32_t));
-    auto szData = static_cast<std::uint32_t>(lenDest);
-    auto szBytes = reinterpret_cast<std::byte *>(&szData);
-    for (auto idx : boost::irange(sizeof(std::uint32_t))) encoded_.emplace_back(szBytes[idx]);
+    auto szData = static_cast<std::uint32_t>(buffer_.size());
+    encoded_ = {};
+    encoded_.reserve(lenDest + sizeof(szData));
+    for (auto idx : boost::irange(sizeof(szData)))
+        encoded_.emplace_back(reinterpret_cast<const std::byte *>(&szData)[idx]);
 
-    std::move(dest.begin(), dest.begin() + lenDest, std::back_inserter(encoded_));
+    std::transform(dest.begin(), dest.begin() + szData, std::back_inserter(encoded_),
+                   [](const auto &item) { return static_cast<std::byte>(item); });
 }
 
 const std::vector<std::byte> &codec::DeflatCodec::getCodecResult() const

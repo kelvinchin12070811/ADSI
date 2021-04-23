@@ -5,11 +5,13 @@
  *********************************************************************************************************************/
 #include <stdexcept>
 
+#include "codec/DefaultCodecFactory.hpp"
 #include "codec/AESDecoderCodec.hpp"
 #include "codec/AESEncoderCodec.hpp"
 #include "codec/Base64DecoderCodec.hpp"
 #include "codec/Base64EncoderCodec.hpp"
-#include "codec/DefaultCodecFactory.hpp"
+#include "codec/DeflateCodec.hpp"
+#include "codec/InflateCodec.hpp"
 #include "codec/RSASignEncoderCodec.hpp"
 #include "codec/SHA3EncoderCodec.hpp"
 #include "generator/AESCryptoKeyGenerator.hpp"
@@ -77,6 +79,20 @@ DefaultCodecFactory::createDefaultASymCryptoEncryptor(CodecDataStream data,
 
     if (key->getGeneratedKey().empty()) key->generate();
     auto codec = std::make_unique<RSASignEncoderCodec>("", keyGenerator->getPrivatekey());
+    setCodecBuffer(std::move(data), codec.get());
+    return codec;
+}
+
+std::unique_ptr<ICodec> DefaultCodecFactory::createDefaultCompresssCoder(CodecDataStream data)
+{
+    auto codec = std::make_unique<DeflatCodec>();
+    setCodecBuffer(std::move(data), codec.get());
+    return codec;
+}
+
+std::unique_ptr<ICodec> DefaultCodecFactory::createDefaultDecompressCoder(CodecDataStream data)
+{
+    auto codec = std::make_unique<InflateCodec>();
     setCodecBuffer(std::move(data), codec.get());
     return codec;
 }

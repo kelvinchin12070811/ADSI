@@ -92,5 +92,17 @@ struct ICodecFactory
                                      key_generator::ICryptoKeyGenerator *key) = 0
     {
     }
+    /**
+     * @brief Create default compression codec.
+     * @param data Data to compress.
+     * @return Default compression codec.
+     */
+    virtual std::unique_ptr<ICodec> createDefaultCompresssCoder(CodecDataStream data = {}) = 0 { }
+    /**
+     * @brief Create default decompression codec.
+     * @param data Data to uncompress.
+     * @return Default decompression codec.
+     */
+    virtual std::unique_ptr<ICodec> createDefaultDecompressCoder(CodecDataStream data = {}) = 0 { }
 };
 }

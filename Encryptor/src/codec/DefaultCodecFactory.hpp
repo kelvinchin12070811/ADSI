@@ -22,6 +22,8 @@ public:
     std::unique_ptr<ICodec>
     createDefaultASymCryptoEncryptor(CodecDataStream data,
                                      key_generator::ICryptoKeyGenerator *key) override;
+    std::unique_ptr<ICodec> createDefaultCompresssCoder(CodecDataStream data) override;
+    std::unique_ptr<ICodec> createDefaultDecompressCoder(CodecDataStream data) override;
 
 private:
     /**
