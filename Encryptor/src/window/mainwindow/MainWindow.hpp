@@ -11,6 +11,8 @@
 #include <string_view>
 
 #include "ui_MainWindow.h"
+#include "generator/ICryptoKeyGenerator.hpp"
+#include "db/data/Author.hpp"
 
 namespace window {
 /**
@@ -53,5 +55,17 @@ private:
      * @brief Image to sign.
      */
     QImage targetImage_;
+    /**
+     * @brief Selected author's public key.
+     */
+    std::unique_ptr<key_generator::ICryptoKeyGenerator> pbKey;
+    /**
+     * @brief Selected author's private key.
+     */
+    std::unique_ptr<key_generator::ICryptoKeyGenerator> prKey;
+    /**
+     * @brief Author information to sign.
+     */
+    db::data::Author author;
 };
 }

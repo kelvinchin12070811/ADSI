@@ -36,9 +36,16 @@ AuthorInfoEditor::AuthorInfoEditor(QWidget *parent)
     initConnections();
 }
 
-std::unique_ptr<CryptoPP::RandomizedTrapdoorFunctionInverse> AuthorInfoEditor::getSelectedKey()
+std::optional<std::pair<db::data::Author, std::unique_ptr<CryptoPP::RandomizedTrapdoorFunctionInverse>>>
+AuthorInfoEditor::getSelectedKey()
 {
-    return confirmed_ ? std::move(confirmedKey_) : nullptr;
+    if (confirmed_ == false) return std::nullopt;
+
+    auto dbManager = &db::DBManager::getInstance();
+    auto author = dbManager->getAuthorByDistance(ui_->authorList->currentItem());
+    if (author == std::nullopt) return std::nullopt;
+
+    return std::make_pair(std::move(*author), std::move(confirmedKey_));
 }
 
 void AuthorInfoEditor::onBtnCancelClicked()

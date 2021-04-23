@@ -7,6 +7,7 @@
 #include <QDialog>
 
 #include <memory>
+#include <optional>
 
 #include <cryptopp/pubkey.h>
 
@@ -28,9 +29,10 @@ public:
     explicit AuthorInfoEditor(QWidget *parent = nullptr);
     /**
      * @brief Get selected key from the dialog.
-     * @return Selected key for asymmetric encryption, nullptr if not confirmed yet.
+     * @return Selected author and key for asymmetric encryption, std::nullopt if not confirmed yet.
      */
-    std::unique_ptr<CryptoPP::RandomizedTrapdoorFunctionInverse> getSelectedKey();
+    std::optional<std::pair<db::data::Author, std::unique_ptr<CryptoPP::RandomizedTrapdoorFunctionInverse>>>
+    getSelectedKey();
 
 private slots:
     /**

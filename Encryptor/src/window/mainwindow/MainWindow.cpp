@@ -55,15 +55,17 @@ void MainWindow::onBtnLoadKeyClicked()
 {
     auto dialog = std::make_unique<window::AuthorInfoEditor>(this);
     dialog->exec();
-    auto key = dialog->getSelectedKey();
-    if (key == nullptr) return;
+    auto result = dialog->getSelectedKey();
+    if (result == std::nullopt) return;
 
+    auto &[author, key] = *result;
+    this->author = std::move(author);
     std::unique_ptr<key_generator::ICryptoKeyGeneratorFactory> facKey {
         std::make_unique<key_generator::DefaultCryptoKeyGeneratorFactory>()
     };
-    auto pbKey = facKey->createDefaultPublicASymEncryptionKey(*key);
-    auto prKey = facKey->createDefaultPrivateASymEncryptionKey(*key);
 
+    pbKey = facKey->createDefaultPublicASymEncryptionKey(*key);
+    prKey = facKey->createDefaultPrivateASymEncryptionKey(*key);
     pbKey->generate();
     prKey->generate();
 
@@ -101,6 +103,9 @@ void MainWindow::onBtnLoadKeyClicked()
 
     ui_->labPublicKeyDsp->setText(QString::fromStdString(pbHash));
     ui_->labPrivateKeyDsp->setText(QString::fromStdString(prHash));
+
+    qDebug() << QString::fromStdString(
+            fmt::format("Selected author's name: {}", this->author.authorName));
 }
 
 void MainWindow::loadStylesheet()
