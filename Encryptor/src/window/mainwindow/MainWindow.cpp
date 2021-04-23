@@ -59,23 +59,23 @@ void MainWindow::onBtnLoadKeyClicked()
     if (result == std::nullopt) return;
 
     auto &[author, key] = *result;
-    this->author = std::move(author);
+    this->author_ = std::move(author);
     std::unique_ptr<key_generator::ICryptoKeyGeneratorFactory> facKey {
         std::make_unique<key_generator::DefaultCryptoKeyGeneratorFactory>()
     };
 
-    pbKey = facKey->createDefaultPublicASymEncryptionKey(*key);
-    prKey = facKey->createDefaultPrivateASymEncryptionKey(*key);
-    pbKey->generate();
-    prKey->generate();
+    pbKey_ = facKey->createDefaultPublicASymEncryptionKey(*key);
+    prKey_ = facKey->createDefaultPrivateASymEncryptionKey(*key);
+    pbKey_->generate();
+    prKey_->generate();
 
     std::unique_ptr<codec::ICodecFactory> facCodec {
         std::make_unique<codec::DefaultCodecFactory>()
     };
     auto hashCodec = facCodec->createDefaultHashEncoder();
 
-    auto rawPbKey = reinterpret_cast<key_generator::PublicRSACryptoKeyGenerator *>(pbKey.get())->getPublicKey();
-    auto rawPrKey = reinterpret_cast<key_generator::PrivateRSACryptoKeyGenerator *>(prKey.get())->getPrivatekey();
+    auto rawPbKey = reinterpret_cast<key_generator::PublicRSACryptoKeyGenerator *>(pbKey_.get())->getPublicKey();
+    auto rawPrKey = reinterpret_cast<key_generator::PrivateRSACryptoKeyGenerator *>(prKey_.get())->getPrivatekey();
     std::string strPbKey;
     std::string strPrKey;
 
@@ -105,7 +105,16 @@ void MainWindow::onBtnLoadKeyClicked()
     ui_->labPrivateKeyDsp->setText(QString::fromStdString(prHash));
 
     qDebug() << QString::fromStdString(
-            fmt::format("Selected author's name: {}", this->author.authorName));
+            fmt::format("Selected author's name: {}", this->author_.authorName));
+}
+
+void MainWindow::onBtnSignAndExport()
+{
+    std::unique_ptr<codec::ICodecFactory> facCodec {
+        std::make_unique<codec::DefaultCodecFactory>()
+    };
+    auto signer =
+            facCodec->createDefaultImageSigner(targetImage_, pbKey_.get(), prKey_.get(), &author_);
 }
 
 void MainWindow::loadStylesheet()

@@ -56,7 +56,18 @@ public:
      */
     const std::vector<std::byte> &getCodecResult() const override;
     
+    /**
+     * @brief Get encoded image from the codec.
+     * @return Image encoded by the codec.
+     * @note This member function will not keep the copy of encoded image.
+     */
     virtual QImage getEncodedImage();
+    /**
+     * @brief Get signing receipt which as prove for author have signed the image.
+     * @return Raw singing receipt text encoded with base64.
+     * @note This member function will not keep the copy of encoded image.
+     */
+    virtual std::string getSigningReceipt();
 
 private:
     /**
@@ -67,6 +78,10 @@ private:
      * @brief Signed image.
      */
     QImage encoded_;
+    /**
+     * @brief Signing receipt of the signed image
+     */
+    std::string signingReceipt_;
     /**
      * @brief Observer pointer to author's public key.
      */

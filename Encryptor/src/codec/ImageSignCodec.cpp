@@ -3,7 +3,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *********************************************************************************************************************/
+#include <QColor>
+#include <QDebug>
+
 #include <stdexcept>
+
+#include <boost/range/irange.hpp>
 
 #include "codec/ImageSignCodec.hpp"
 #include "codec/ICodecFactory.hpp"
@@ -43,7 +48,30 @@ void ImageSignCodec::setCodecData(const std::byte *, std::size_t)
 
 void ImageSignCodec::execute()
 {
+    encoded_ = buffer_;
+    int col = encoded_.width() / 8 + (encoded_.width() % 8 == 0 ? 0 : 1);
+    int row = encoded_.height() / 8 + (encoded_.height() % 8 == 0 ? 0 : 1);
 
+    for (auto grpY : boost::irange(col)) {
+        for (auto grpX : boost::irange(row)) {
+            std::vector<std::vector<float>> block;
+            block.resize(8);
+            for (auto &&itr : block) itr.resize(8);
+
+            for (auto itrJ = block.begin(); itrJ != block.end(); itrJ++) {
+                for (auto itrI = itrJ->begin(); itrI != itrJ->end(); itrI++) {
+                    *itrI = encoded_.pixelColor(std::distance(itrJ->begin(), itrI),
+                                                std::distance(block.begin(), itrJ))
+                                    .blue();
+                }
+            }
+
+            utils::DCT dct;
+            auto dctedBlock = dct.transfrom(block);
+
+            qDebug() << dctedBlock;
+        }
+    }
 }
 
 const std::vector<std::byte> &ImageSignCodec::getCodecResult() const
@@ -54,5 +82,10 @@ const std::vector<std::byte> &ImageSignCodec::getCodecResult() const
 QImage ImageSignCodec::getEncodedImage()
 {
     return std::move(encoded_);
+}
+
+std::string ImageSignCodec::getSigningReceipt()
+{
+    return std::move(signingReceipt_);
 }
 }

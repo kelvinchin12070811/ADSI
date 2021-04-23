@@ -97,6 +97,13 @@ std::unique_ptr<ICodec> DefaultCodecFactory::createDefaultDecompressCoder(CodecD
     return codec;
 }
 
+std::unique_ptr<ImageSignCodec> DefaultCodecFactory::createDefaultImageSigner(
+        QImage image, const key_generator::ICryptoKeyGenerator *pbKey,
+        const key_generator::ICryptoKeyGenerator *prKey, const db::data::Author *author)
+{
+    return std::make_unique<ImageSignCodec>(std::move(image), pbKey, prKey, author);
+}
+
 void DefaultCodecFactory::setCodecBuffer(CodecDataStream data, ICodec *codec)
 {
     if (std::holds_alternative<ArrayDataType>(data)) {

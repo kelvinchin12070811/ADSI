@@ -24,6 +24,10 @@ public:
                                      key_generator::ICryptoKeyGenerator *key) override;
     std::unique_ptr<ICodec> createDefaultCompresssCoder(CodecDataStream data) override;
     std::unique_ptr<ICodec> createDefaultDecompressCoder(CodecDataStream data) override;
+    std::unique_ptr<ImageSignCodec>
+    createDefaultImageSigner(QImage image, const key_generator::ICryptoKeyGenerator *pbKey,
+                             const key_generator::ICryptoKeyGenerator *prKey,
+                             const db::data::Author *author);
 
 private:
     /**

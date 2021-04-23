@@ -284,10 +284,27 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>btnImageExport</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>onBtnSignAndExport()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>193</x>
+     <y>180</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>436</x>
+     <y>599</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>onBtnSettingClicked()</slot>
   <slot>onBtnLoadImgClicked()</slot>
   <slot>onBtnLoadKeyClicked()</slot>
+  <slot>onBtnSignAndExport()</slot>
  </slots>
 </ui>

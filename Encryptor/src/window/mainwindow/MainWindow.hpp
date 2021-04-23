@@ -32,9 +32,22 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
 
 private slots:
+    /**
+     * @brief Triggered when load image button is clicked.
+     */
     void onBtnLoadImgClicked();
+    /**
+     * @brief Triggered when setting button is clicked.
+     */
     void onBtnSettingClicked();
+    /**
+     * @brief Triggered when load key button is clicked.
+     */
     void onBtnLoadKeyClicked();
+    /**
+     * @brief Triggered when sign image button is clicked.
+     */
+    void onBtnSignAndExport();
 
 private:
     /**
@@ -58,14 +71,14 @@ private:
     /**
      * @brief Selected author's public key.
      */
-    std::unique_ptr<key_generator::ICryptoKeyGenerator> pbKey;
+    std::unique_ptr<key_generator::ICryptoKeyGenerator> pbKey_;
     /**
      * @brief Selected author's private key.
      */
-    std::unique_ptr<key_generator::ICryptoKeyGenerator> prKey;
+    std::unique_ptr<key_generator::ICryptoKeyGenerator> prKey_;
     /**
      * @brief Author information to sign.
      */
-    db::data::Author author;
+    db::data::Author author_;
 };
 }
