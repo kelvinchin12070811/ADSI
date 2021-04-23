@@ -57,11 +57,12 @@ void codec::DeflatCodec::execute()
         break;
     }
 
-    auto szData = static_cast<std::uint32_t>(buffer_.size());
+    auto szData = static_cast<std::uint32_t>(lenDest);
+    auto szOriData = static_cast<std::uint32_t>(buffer_.size());
     encoded_ = {};
-    encoded_.reserve(lenDest + sizeof(szData));
-    for (auto idx : boost::irange(sizeof(szData)))
-        encoded_.emplace_back(reinterpret_cast<const std::byte *>(&szData)[idx]);
+    encoded_.reserve(szData + sizeof(szOriData));
+    for (auto idx : boost::irange(sizeof(szOriData)))
+        encoded_.emplace_back(reinterpret_cast<const std::byte *>(&szOriData)[idx]);
 
     std::transform(dest.begin(), dest.begin() + szData, std::back_inserter(encoded_),
                    [](const auto &item) { return static_cast<std::byte>(item); });
