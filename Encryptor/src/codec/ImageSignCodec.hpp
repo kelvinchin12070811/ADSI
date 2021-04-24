@@ -65,13 +65,11 @@ public:
     /**
      * @brief Get encoded image from the codec.
      * @return Image encoded by the codec.
-     * @note This member function will not keep the copy of encoded image.
      */
     virtual QImage getEncodedImage();
     /**
      * @brief Get signing receipt which as prove for author have signed the image.
      * @return Raw singing receipt text.
-     * @note This member function will not keep the copy of encoded image.
      */
     virtual std::string getSigningReceipt();
 
@@ -87,7 +85,7 @@ private:
     /**
      * @brief Signing receipt of the signed image
      */
-    std::string signingReceipt_;
+    std::vector<std::byte> signingReceipt_;
     /**
      * @brief Observer pointer to author's public key.
      */

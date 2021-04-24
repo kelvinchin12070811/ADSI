@@ -127,6 +127,10 @@ void MainWindow::onBtnSignAndExport()
     auto signer =
             facCodec->createDefaultImageSigner(targetImage_, pbKey_.get(), prKey_.get(), &author_);
     signer->execute();
+    auto signingReceipt = signer->getSigningReceipt();
+    auto signedImage = signer->getEncodedImage();
+
+    qDebug() << QString::fromStdString(signingReceipt);
 
     this->setWindowTitle(prevWindowTitle);
     QApplication::restoreOverrideCursor();

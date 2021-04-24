@@ -100,8 +100,8 @@ void ImageSignCodec::execute()
                 }
 
                 auto &&[posX, posY] = posMidFreqCoefficients[idx];
-                std::bitset<sizeof(float)> dctElmBits { *reinterpret_cast<int *>(
-                        &dctedBlock[posY][posX]) };
+                std::bitset<sizeof(float)> dctElmBits { static_cast<std::uint64_t>(
+                        dctedBlock[posY][posX]) };
                 dctElmBits[0] = bufSignatureBits[static_cast<size_t>(8) - bitsRemain];
                 bitsRemain--;
             }
@@ -117,6 +117,10 @@ void ImageSignCodec::execute()
                     if (pixColor.isValid()) pixColor.setBlueF(std::roundf(*itrI));
                 }
             }
+
+            auto rawProgress = static_cast<float>(grpY * grpX) / static_cast<float>(col * row);
+            auto percentProgress = rawProgress * 100.f;
+            qDebug() << QStringLiteral("Progress: %1").arg(percentProgress);
         }
     }
 }
@@ -172,16 +176,26 @@ std::vector<std::byte> ImageSignCodec::buildSignatureText()
                    std::back_inserter(dataBuffer),
                    [](const auto &elm) { return static_cast<std::byte>(elm); });
 
-    return dataBuffer;
+    auto compressCodec = facCodec->createDefaultCompresssCoder(std::move(dataBuffer));
+    compressCodec->execute();
+    return compressCodec->getCodecResult();
 }
 
 QImage ImageSignCodec::getEncodedImage()
 {
-    return std::move(encoded_);
+    return encoded_;
 }
 
 std::string ImageSignCodec::getSigningReceipt()
 {
-    return std::move(signingReceipt_);
+    std::unique_ptr<codec::ICodecFactory> facCodec {
+        std::make_unique<codec::DefaultCodecFactory>()
+    };
+    auto b2tEncoder = facCodec->createDefaultB2TEncoder(signingReceipt_);
+    b2tEncoder->execute();
+    const auto &result = b2tEncoder->getCodecResult();
+    auto begResult = reinterpret_cast<const char *>(result.data());
+    std::string receipt { begResult, begResult + result.size() };
+    return receipt;
 }
 }
