@@ -123,7 +123,7 @@ void ImageSignCodec::execute()
             auto rawProgress = static_cast<float>(std::distance(signingReceipt_.begin(), itrSignature))
                     / static_cast<float>(signingReceipt_.size());
             auto percentProgress = rawProgress * 100.f;
-            qDebug() << QStringLiteral("Progress: %1").arg(percentProgress);
+            emit progressUpdated(percentProgress);
         }
     }
 }

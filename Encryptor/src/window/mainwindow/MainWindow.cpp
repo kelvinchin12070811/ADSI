@@ -118,7 +118,7 @@ void MainWindow::onBtnSignAndExport()
     if (result != QMessageBox::Button::Yes) return;
 
     auto prevWindowTitle = this->windowTitle();
-    this->setWindowTitle(QStringLiteral("%1 - Signing Image").arg(prevWindowTitle));
+    const auto titleTemplate = fmt::format("{} - {{}}", prevWindowTitle.toStdString());
     QApplication::setOverrideCursor(Qt::CursorShape::WaitCursor);
 
     std::unique_ptr<codec::ICodecFactory> facCodec {
@@ -126,12 +126,18 @@ void MainWindow::onBtnSignAndExport()
     };
     auto signer =
             facCodec->createDefaultImageSigner(targetImage_, pbKey_.get(), prKey_.get(), &author_);
+    auto connection = connect(
+            signer.get(), &codec::ImageSignCodec::progressUpdated,
+            [this, &titleTemplate](float progress) {
+                auto percent = fmt::format("Signing... (Progress: {:.{}f}%)", progress, 2);
+                this->setWindowTitle(QString::fromStdString(fmt::format(titleTemplate, percent)));
+            });
     signer->execute();
     auto signingReceipt = signer->getSigningReceipt();
     auto signedImage = signer->getEncodedImage();
 
     qDebug() << QString::fromStdString(signingReceipt);
-
+    disconnect(connection);
     this->setWindowTitle(prevWindowTitle);
     QApplication::restoreOverrideCursor();
 }

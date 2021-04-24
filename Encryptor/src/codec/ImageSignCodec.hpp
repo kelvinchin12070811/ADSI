@@ -14,8 +14,9 @@ namespace codec {
 /**
  * @brief Codec to sign image.
  */
-class ImageSignCodec : public ICodec
+class ImageSignCodec : public QObject, public ICodec
 {
+    Q_OBJECT
 public:
     /**
      * @brief Create codec and assign required data to the codec.
@@ -72,6 +73,12 @@ public:
      * @return Raw singing receipt text.
      */
     virtual std::string getSigningReceipt();
+
+signals:
+    /**
+     * @brief Get progress update of the encoder in percentage.
+     */
+    void progressUpdated(float progress);
 
 private:
     /**
