@@ -8,10 +8,11 @@
 
 #include <stdexcept>
 
+#include <boost/assert.hpp>
 #include <boost/range/irange.hpp>
 
 #include "codec/ImageSignCodec.hpp"
-#include "codec/ICodecFactory.hpp"
+#include "codec/DefaultCodecFactory.hpp"
 #include "generator/PublicRSACryptoKeyGenerator.hpp"
 #include "utils/DCT.hpp"
 
@@ -52,24 +53,35 @@ void ImageSignCodec::execute()
     int col = encoded_.width() / 8 + (encoded_.width() % 8 == 0 ? 0 : 1);
     int row = encoded_.height() / 8 + (encoded_.height() % 8 == 0 ? 0 : 1);
 
-    for (auto grpY : boost::irange(col)) {
-        for (auto grpX : boost::irange(row)) {
+    auto signature = buildSignatureText();
+    QString output;
+    for (const auto &itr : signature)
+        output = QStringLiteral("%1 %2").arg(output, static_cast<int>(itr));
+    qDebug() << output;
+
+    for (auto grpY : boost::irange(row)) {
+        for (auto grpX : boost::irange(col)) {
             std::vector<std::vector<float>> block;
             block.resize(8);
             for (auto &&itr : block) itr.resize(8);
 
             for (auto itrJ = block.begin(); itrJ != block.end(); itrJ++) {
                 for (auto itrI = itrJ->begin(); itrI != itrJ->end(); itrI++) {
-                    *itrI = encoded_.pixelColor(std::distance(itrJ->begin(), itrI),
-                                                std::distance(block.begin(), itrJ))
-                                    .blue();
+                    QPoint pos { static_cast<int>(std::distance(itrJ->begin(), itrI) * grpX),
+                                 static_cast<int>(std::distance(block.begin(), itrJ) * grpY) };
+                    auto pixColor = encoded_.pixelColor(pos);
+
+                    if (pixColor.isValid()) {
+                        *itrI = pixColor.blueF();
+                        continue;
+                    }
+
+                    *itrI = 0;
                 }
             }
 
             utils::DCT dct;
             auto dctedBlock = dct.transfrom(block);
-
-            qDebug() << dctedBlock;
         }
     }
 }
@@ -77,6 +89,28 @@ void ImageSignCodec::execute()
 const std::vector<std::byte> &ImageSignCodec::getCodecResult() const
 {
     throw std::logic_error { "codec::ImageSignCodec does not support this operation" };
+}
+
+std::vector<std::byte> ImageSignCodec::buildSignatureText()
+{
+    std::vector<std::byte> dataBuffer;
+    std::unique_ptr<codec::ICodecFactory> facCodec {
+        std::make_unique<codec::DefaultCodecFactory>()
+    };
+
+    std::string dmpPbKey;
+    auto pbKey = dynamic_cast<const key_generator::PublicRSACryptoKeyGenerator *>(pbKey_);
+    pbKey->getPublicKey().DEREncode(CryptoPP::StringSink { dmpPbKey });
+    BOOST_ASSERT(dmpPbKey.length() < std::numeric_limits<std::uint16_t>::max());
+
+    auto szData = static_cast<std::uint16_t>(dmpPbKey.length());
+    dataBuffer.resize(sizeof(std::uint16_t) + dmpPbKey.length());
+    for (auto idx : boost::irange(sizeof(std::uint16_t)))
+        dataBuffer.emplace_back(reinterpret_cast<const std::byte *>(szData)[idx]);
+    std::transform(dmpPbKey.begin(), dmpPbKey.end(), std::back_inserter(dataBuffer),
+                   [](const auto &elm) { return static_cast<std::byte>(elm); });
+
+    return dataBuffer;
 }
 
 QImage ImageSignCodec::getEncodedImage()

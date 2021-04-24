@@ -57,6 +57,12 @@ public:
     const std::vector<std::byte> &getCodecResult() const override;
     
     /**
+     * @brief Construct signature text which compressed with zlib.
+     * @return Zlib compressed signature text.
+    */
+    std::vector<std::byte> buildSignatureText();
+
+    /**
      * @brief Get encoded image from the codec.
      * @return Image encoded by the codec.
      * @note This member function will not keep the copy of encoded image.
@@ -64,7 +70,7 @@ public:
     virtual QImage getEncodedImage();
     /**
      * @brief Get signing receipt which as prove for author have signed the image.
-     * @return Raw singing receipt text encoded with base64.
+     * @return Raw singing receipt text.
      * @note This member function will not keep the copy of encoded image.
      */
     virtual std::string getSigningReceipt();

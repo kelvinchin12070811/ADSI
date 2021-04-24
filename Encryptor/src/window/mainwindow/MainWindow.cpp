@@ -115,6 +115,7 @@ void MainWindow::onBtnSignAndExport()
     };
     auto signer =
             facCodec->createDefaultImageSigner(targetImage_, pbKey_.get(), prKey_.get(), &author_);
+    signer->execute();
 }
 
 void MainWindow::loadStylesheet()
