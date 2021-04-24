@@ -110,6 +110,13 @@ void MainWindow::onBtnLoadKeyClicked()
 
 void MainWindow::onBtnSignAndExport()
 {
+    auto result = QMessageBox::warning(this, "Operation will take very long time!",
+                                       "This operation will take minutes to complete according to "
+                                       "the size of the image, are you sure to continue?",
+                                       QMessageBox::Button::Yes | QMessageBox::Button::No);
+
+    if (result != QMessageBox::Button::Yes) return;
+
     auto prevWindowTitle = this->windowTitle();
     this->setWindowTitle(QStringLiteral("%1 - Signing Image").arg(prevWindowTitle));
     QApplication::setOverrideCursor(Qt::CursorShape::WaitCursor);

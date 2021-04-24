@@ -6,6 +6,9 @@
 #include <QColor>
 #include <QDebug>
 
+#include <array>
+#include <bitset>
+#include <cmath>
 #include <stdexcept>
 
 #include <boost/assert.hpp>
@@ -54,10 +57,9 @@ void ImageSignCodec::execute()
     int row = encoded_.height() / 8 + (encoded_.height() % 8 == 0 ? 0 : 1);
 
     auto signature = buildSignatureText();
-    QString output;
-    for (const auto &itr : signature)
-        output = QStringLiteral("%1 %2").arg(output, static_cast<int>(itr));
-    qDebug() << output;
+    auto itrSignature = signature.begin();
+    if (signature.size() >= (static_cast<std::size_t>(col) * row) * 4)
+        throw std::length_error { "Image not large enough to hold the signature." };
 
     for (auto grpY : boost::irange(row)) {
         for (auto grpX : boost::irange(col)) {
@@ -82,6 +84,39 @@ void ImageSignCodec::execute()
 
             utils::DCT dct;
             auto dctedBlock = dct.transfrom(block);
+            std::bitset<8> bufSignatureBits {};
+            unsigned short bitsRemain { 0 };
+            std::array<std::array<int, 2>, 4> posMidFreqCoefficients {
+                { { 1, 4 }, { 2, 3 }, { 3, 2 }, { 4, 1 } }
+            };
+            for (auto idx : boost::irange(4)) {
+                if (bitsRemain == 0) {
+                    if (itrSignature == signature.end()) break;
+
+                    auto next = static_cast<std::uint8_t>(*itrSignature);
+                    bufSignatureBits = { *reinterpret_cast<std::uint8_t *>(&next) };
+                    bitsRemain = 8;
+                    itrSignature++;
+                }
+
+                auto &&[posX, posY] = posMidFreqCoefficients[idx];
+                std::bitset<sizeof(float)> dctElmBits { *reinterpret_cast<int *>(
+                        &dctedBlock[posY][posX]) };
+                dctElmBits[0] = bufSignatureBits[static_cast<size_t>(8) - bitsRemain];
+                bitsRemain--;
+            }
+
+            block = dct.itransform(dctedBlock);
+
+            for (auto itrJ = block.begin(); itrJ != block.end(); itrJ++) {
+                for (auto itrI = itrJ->begin(); itrI != itrJ->end(); itrI++) {
+                    QPoint pos { static_cast<int>(std::distance(itrJ->begin(), itrI) * grpX),
+                                 static_cast<int>(std::distance(block.begin(), itrJ) * grpY) };
+                    auto pixColor = encoded_.pixelColor(pos);
+
+                    if (pixColor.isValid()) pixColor.setBlueF(std::roundf(*itrI));
+                }
+            }
         }
     }
 }
@@ -104,10 +139,37 @@ std::vector<std::byte> ImageSignCodec::buildSignatureText()
     BOOST_ASSERT(dmpPbKey.length() < std::numeric_limits<std::uint16_t>::max());
 
     auto szData = static_cast<std::uint16_t>(dmpPbKey.length());
-    dataBuffer.resize(sizeof(std::uint16_t) + dmpPbKey.length());
+    dataBuffer.reserve(sizeof(szData) + dmpPbKey.length());
     for (auto idx : boost::irange(sizeof(std::uint16_t)))
         dataBuffer.push_back(reinterpret_cast<const std::byte *>(&szData)[idx]);
     std::transform(dmpPbKey.begin(), dmpPbKey.end(), std::back_inserter(dataBuffer),
+                   [](const auto &elm) { return static_cast<std::byte>(elm); });
+
+    szData = static_cast<decltype(szData)>(author_->authorName.length());
+    BOOST_ASSERT(szData < std::numeric_limits<decltype(szData)>::max());
+    dataBuffer.reserve(dataBuffer.size() + sizeof(szData) + szData);
+    for (auto idx : boost::irange(sizeof(szData)))
+        dataBuffer.emplace_back(reinterpret_cast<const std::byte *>(&szData)[idx]);
+    std::transform(author_->authorName.begin(), author_->authorName.end(),
+                   std::back_inserter(dataBuffer),
+                   [](const auto &elm) { return static_cast<std::byte>(elm); });
+
+    szData = static_cast<decltype(szData)>(author_->authorEmail.length());
+    BOOST_ASSERT(szData < std::numeric_limits<decltype(szData)>::max());
+    dataBuffer.reserve(dataBuffer.size() + sizeof(szData) + szData);
+    for (auto idx : boost::irange(sizeof(szData)))
+        dataBuffer.emplace_back(reinterpret_cast<const std::byte *>(&szData)[idx]);
+    std::transform(author_->authorEmail.begin(), author_->authorEmail.end(),
+                   std::back_inserter(dataBuffer),
+                   [](const auto &elm) { return static_cast<std::byte>(elm); });
+
+    szData = static_cast<decltype(szData)>(author_->authorPortFolioURL.length());
+    BOOST_ASSERT(szData < std::numeric_limits<decltype(szData)>::max());
+    dataBuffer.reserve(dataBuffer.size() + sizeof(szData) + szData);
+    for (auto idx : boost::irange(sizeof(szData)))
+        dataBuffer.emplace_back(reinterpret_cast<const std::byte *>(&szData)[idx]);
+    std::transform(author_->authorPortFolioURL.begin(), author_->authorPortFolioURL.end(),
+                   std::back_inserter(dataBuffer),
                    [](const auto &elm) { return static_cast<std::byte>(elm); });
 
     return dataBuffer;
