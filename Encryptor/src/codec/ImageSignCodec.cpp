@@ -106,7 +106,7 @@ std::vector<std::byte> ImageSignCodec::buildSignatureText()
     auto szData = static_cast<std::uint16_t>(dmpPbKey.length());
     dataBuffer.resize(sizeof(std::uint16_t) + dmpPbKey.length());
     for (auto idx : boost::irange(sizeof(std::uint16_t)))
-        dataBuffer.emplace_back(reinterpret_cast<const std::byte *>(szData)[idx]);
+        dataBuffer.push_back(reinterpret_cast<const std::byte *>(&szData)[idx]);
     std::transform(dmpPbKey.begin(), dmpPbKey.end(), std::back_inserter(dataBuffer),
                    [](const auto &elm) { return static_cast<std::byte>(elm); });
 

@@ -110,12 +110,19 @@ void MainWindow::onBtnLoadKeyClicked()
 
 void MainWindow::onBtnSignAndExport()
 {
+    auto prevWindowTitle = this->windowTitle();
+    this->setWindowTitle(QStringLiteral("%1 - Signing Image").arg(prevWindowTitle));
+    QApplication::setOverrideCursor(Qt::CursorShape::WaitCursor);
+
     std::unique_ptr<codec::ICodecFactory> facCodec {
         std::make_unique<codec::DefaultCodecFactory>()
     };
     auto signer =
             facCodec->createDefaultImageSigner(targetImage_, pbKey_.get(), prKey_.get(), &author_);
     signer->execute();
+
+    this->setWindowTitle(prevWindowTitle);
+    QApplication::restoreOverrideCursor();
 }
 
 void MainWindow::loadStylesheet()
