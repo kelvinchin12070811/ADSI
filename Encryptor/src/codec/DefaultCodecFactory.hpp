@@ -7,6 +7,9 @@
 #include "codec/ICodecFactory.hpp"
 
 namespace codec {
+/**
+ * @brief Default factory implementation to create codec::ICodec objects.
+ */
 class DefaultCodecFactory : public ICodecFactory
 {
 public:
