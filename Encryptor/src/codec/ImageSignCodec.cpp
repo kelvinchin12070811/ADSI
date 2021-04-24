@@ -56,13 +56,15 @@ void ImageSignCodec::execute()
     int col = encoded_.width() / 8 + (encoded_.width() % 8 == 0 ? 0 : 1);
     int row = encoded_.height() / 8 + (encoded_.height() % 8 == 0 ? 0 : 1);
 
-    auto signature = buildSignatureText();
-    auto itrSignature = signature.begin();
-    if (signature.size() >= (static_cast<std::size_t>(col) * row) * 4)
+    signingReceipt_ = buildSignatureText();
+    auto itrSignature = signingReceipt_.begin();
+    if (signingReceipt_.size() >= (static_cast<std::size_t>(col) * row) * 4 * 8)
         throw std::length_error { "Image not large enough to hold the signature." };
 
     for (auto grpY : boost::irange(row)) {
         for (auto grpX : boost::irange(col)) {
+            if (itrSignature == signingReceipt_.end()) return;
+
             std::vector<std::vector<float>> block;
             block.resize(8);
             for (auto &&itr : block) itr.resize(8);
@@ -91,7 +93,7 @@ void ImageSignCodec::execute()
             };
             for (auto idx : boost::irange(4)) {
                 if (bitsRemain == 0) {
-                    if (itrSignature == signature.end()) break;
+                    if (itrSignature == signingReceipt_.end()) break;
 
                     auto next = static_cast<std::uint8_t>(*itrSignature);
                     bufSignatureBits = { *reinterpret_cast<std::uint8_t *>(&next) };
@@ -118,7 +120,8 @@ void ImageSignCodec::execute()
                 }
             }
 
-            auto rawProgress = static_cast<float>(grpY * grpX) / static_cast<float>(col * row);
+            auto rawProgress = static_cast<float>(std::distance(signingReceipt_.begin(), itrSignature))
+                    / static_cast<float>(signingReceipt_.size());
             auto percentProgress = rawProgress * 100.f;
             qDebug() << QStringLiteral("Progress: %1").arg(percentProgress);
         }
