@@ -3,14 +3,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *********************************************************************************************************************/
+#include <QDateTime>
 #include <QDebug>
-#include <QFile>
 #include <QFileDialog>
 #include <QGuiApplication>
 #include <QMessageBox>
 #include <QPixmap>
 #include <QScreen>
 
+#include <fstream>
 #include <stdexcept>
 
 #include <fmt/format.h>
@@ -110,6 +111,11 @@ void MainWindow::onBtnLoadKeyClicked()
 
 void MainWindow::onBtnSignAndExport()
 {
+    auto outPath = QFileDialog::getSaveFileName(this, "Save file to...", QString {},
+                                                "Supported Image file(.png),*.png");
+    if (outPath.isEmpty()) return;
+    qDebug() << outPath;
+
     auto result = QMessageBox::warning(this, "Operation will take very long time!",
                                        "This operation will take minutes to complete according to "
                                        "the size of the image, are you sure to continue?",
@@ -135,6 +141,19 @@ void MainWindow::onBtnSignAndExport()
     signer->execute();
     auto signingReceipt = signer->getSigningReceipt();
     auto signedImage = signer->getEncodedImage();
+
+    signedImage.save(outPath);
+    std::ofstream fileSigningReceipt;
+    fileSigningReceipt.open(fmt::format("{}.sign", outPath.toStdString()));
+    if (fileSigningReceipt.is_open()) {
+        auto time = QDateTime::currentDateTimeUtc();
+        std::string iso8601 { fmt::format(
+                "{}-{}-{}T{}:{}:{}Z", time.date().year(), time.date().month(), time.date().day(),
+                time.time().hour(), time.time().minute(), time.time().second()) };
+        fileSigningReceipt << iso8601 << std::endl;
+        fileSigningReceipt << signingReceipt << std::endl;
+        fileSigningReceipt.close();
+    }
 
     qDebug() << QString::fromStdString(signingReceipt);
     disconnect(connection);
