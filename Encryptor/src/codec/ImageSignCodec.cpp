@@ -19,6 +19,12 @@
 #include "generator/PublicRSACryptoKeyGenerator.hpp"
 #include "utils/DCT.hpp"
 
+#ifdef DEBUG
+#include <fstream>
+#include <iterator>
+#endif // DEBUG
+
+
 namespace codec {
 ImageSignCodec::ImageSignCodec(QImage image, const key_generator::ICryptoKeyGenerator *pbKey,
                                const key_generator::ICryptoKeyGenerator *prKey,
@@ -190,6 +196,17 @@ std::vector<std::byte> ImageSignCodec::buildSignatureText()
     for (auto idx : boost::irange(sizeof(szData)))
         dataBuffer.emplace_back(reinterpret_cast<const std::byte *>(&szData)[idx]);
     std::move(result.begin(), result.end(), std::back_inserter(dataBuffer));
+
+#ifdef DEBUG
+    std::ofstream outDebug;
+    outDebug.open("_debug.dat", std::ios::out);
+    if (outDebug.is_open()) {
+        std::transform(dataBuffer.begin(), dataBuffer.end(),
+                       std::ostream_iterator<std::uint8_t>(outDebug),
+                       [](const auto &elm) { return static_cast<std::uint8_t>(elm); });
+        outDebug.close();
+    }
+#endif // DEBUG
 
     auto compressCodec = facCodec->createDefaultCompresssCoder(std::move(dataBuffer));
     compressCodec->execute();
