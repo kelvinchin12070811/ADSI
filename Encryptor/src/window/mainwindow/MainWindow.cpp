@@ -125,6 +125,11 @@ void MainWindow::onBtnSignAndExport()
         return;
     }
 
+    if (prKey_ == nullptr) {
+        QMessageBox::information(this, "No key selected", "Select a key first before sign");
+        return;
+    }
+
     auto outPath = QFileDialog::getSaveFileName(this, "Save file to...", QString {}, "*.png");
     if (outPath.isEmpty()) return;
     qDebug() << outPath;
