@@ -9,12 +9,12 @@ import imagehash
 from PIL import Image
 
 def hash_image(path):
-    hash = str(imagehash.average_hash(Image.open(path))).upper()
+    hash = str(imagehash.phash(Image.open(path))).upper()
     print(hash)
 
 def compare_image(hash, path):
     hash = imagehash.hex_to_hash(hash)
-    print(hash - imagehash.average_hash(Image.open(path)))
+    print(hash - imagehash.phash(Image.open(path)))
 
 parser = argparse.ArgumentParser()
 parser.add_argument('image_path', help = 'Path to image to hash')
