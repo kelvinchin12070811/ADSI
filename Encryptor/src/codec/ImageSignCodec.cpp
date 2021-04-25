@@ -179,6 +179,18 @@ std::vector<std::byte> ImageSignCodec::buildSignatureText()
                    std::back_inserter(dataBuffer),
                    [](const auto &elm) { return static_cast<std::byte>(elm); });
 
+    auto signer = facCodec->createDefaultASymCryptoEncryptor(
+            dataBuffer, const_cast<key_generator::ICryptoKeyGenerator *>(prKey_));
+    signer->execute();
+    auto &&result = signer->getCodecResult();
+    BOOST_ASSERT(result.size() <= std::numeric_limits<std::uint16_t>::max());
+    szData = static_cast<std::uint16_t>(result.size());
+    dataBuffer.reserve(dataBuffer.size() + (sizeof(std::uint8_t) * 3) + result.size());
+    dataBuffer.emplace_back(static_cast<std::byte>(HashType::SHA256));
+    for (auto idx : boost::irange(sizeof(szData)))
+        dataBuffer.emplace_back(reinterpret_cast<const std::byte *>(&szData)[idx]);
+    std::move(result.begin(), result.end(), std::back_inserter(dataBuffer));
+
     auto compressCodec = facCodec->createDefaultCompresssCoder(std::move(dataBuffer));
     compressCodec->execute();
     return compressCodec->getCodecResult();

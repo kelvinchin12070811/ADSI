@@ -6,6 +6,8 @@
 #pragma once
 #include <QImage>
 
+#include <bitset>
+
 #include "codec/ICodec.hpp"
 #include "db/data/Author.hpp"
 #include "generator/ICryptoKeyGenerator.hpp"
@@ -17,6 +19,22 @@ namespace codec {
 class ImageSignCodec : public QObject, public ICodec
 {
     Q_OBJECT
+public:
+    /**
+     * @brief Defined as the type of the hash used in signature.
+     */
+    struct HashType
+    {
+        /**
+         * @brief Flag width.
+         */
+        static constexpr std::size_t size { 1 };
+        /**
+         * @brief Type of hash indexed with value.
+         */
+        enum { SHA256 = 0 /**< Determined as SHA265 hash. */ };
+    };
+
 public:
     /**
      * @brief Create codec and assign required data to the codec.
