@@ -120,8 +120,12 @@ void MainWindow::onBtnLoadKeyClicked()
 
 void MainWindow::onBtnSignAndExport()
 {
-    auto outPath = QFileDialog::getSaveFileName(this, "Save file to...", QString {},
-                                                "Supported Image file(.png),*.png");
+    if (targetImage_.isNull()) {
+        QMessageBox::information(this, "No image selected", "Select an image first to sign");
+        return;
+    }
+
+    auto outPath = QFileDialog::getSaveFileName(this, "Save file to...", QString {}, "*.png");
     if (outPath.isEmpty()) return;
     qDebug() << outPath;
 
