@@ -22,7 +22,7 @@ find_package(Qt5 COMPONENTS
     Widgets
 REQUIRED)
 
-find_package(Boost COMPONENTS REQUIRED)
+find_package(Boost COMPONENTS filesystem REQUIRED)
 find_package(cryptopp CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(KF5WidgetsAddons CONFIG REQUIRED)
@@ -37,6 +37,11 @@ include_directories(${LIB_LIBBCRYPT_INC_PATH})
 get_target_property(QMAKE_BIN Qt5::qmake IMPORTED_LOCATION)
 get_filename_component(QMAKE_BIN_DIR "${QMAKE_BIN}" DIRECTORY)
 find_program(DEPLOYQT_BIN NAMES windeployqt HINTS "${QMAKE_BIN_DIR}")
+
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../PerceptualHashModule/perceptual_hash.py
+    ${CMAKE_CURRENT_BINARY_DIR}/.scripts/perceptual_hash.py
+)
 
 set(PROJECT_UI_FILES
     "window/authorinfoeditor/AuthorDetailsEditor.ui"
@@ -125,6 +130,10 @@ if (WIN32)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND
         ${DEPLOYQT_BIN} "$<TARGET_FILE:${PROJECT_NAME}>" --qmldir "${CMAKE_SOURCE_DIR}" --no-translations
     )
+
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND
+        pyinstaller --onefile --distpath "${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/.scripts/perceptual_hash.py"
+    )
 endif ()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
@@ -135,6 +144,8 @@ endif()
 target_link_libraries(
      ${PROJECT_NAME}
      ${LIB_LIBBCRYPT_LIB_PATH}
+     Boost::boost
+     Boost::filesystem
      cryptopp-static
      fmt::fmt
      KF5::WidgetsAddons

@@ -13,6 +13,9 @@
 
 #include <fstream>
 #include <stdexcept>
+#include <string>
+
+#include <boost/process.hpp>
 
 #include <fmt/format.h>
 
@@ -35,6 +38,12 @@ MainWindow::MainWindow(QWidget *parent)
     loadStylesheet();
     auto *storage = &db::DBManager::getInstance();
     storage->initDB();
+
+#ifdef DEBUG
+    std::fstream test;
+    test.open("./perceptual_hash.exe", std::ios::in);
+    if (test.is_open()) qDebug() << "Found hash executable";
+#endif // DEBUG
 }
 
 void MainWindow::onBtnLoadImgClicked()
@@ -139,6 +148,7 @@ void MainWindow::onBtnSignAndExport()
                 this->setWindowTitle(QString::fromStdString(fmt::format(titleTemplate, percent)));
             });
     signer->execute();
+    this->setWindowTitle(QString::fromStdString(fmt::format(titleTemplate, "Generating receipt")));
     auto signingReceipt = signer->getSigningReceipt();
     auto signedImage = signer->getEncodedImage();
 
@@ -146,12 +156,23 @@ void MainWindow::onBtnSignAndExport()
     std::ofstream fileSigningReceipt;
     fileSigningReceipt.open(fmt::format("{}.sign", outPath.toStdString()));
     if (fileSigningReceipt.is_open()) {
+        namespace bp = boost::process;
+
         auto time = QDateTime::currentDateTimeUtc();
         std::string iso8601 { fmt::format(
                 "{}-{}-{}T{}:{}:{}Z", time.date().year(), time.date().month(), time.date().day(),
                 time.time().hour(), time.time().minute(), time.time().second()) };
         fileSigningReceipt << iso8601 << std::endl;
         fileSigningReceipt << signingReceipt << std::endl;
+
+        bp::ipstream outHasher;
+        bp::child hasher { fmt::format("./perceptual_hash.exe --hash \"{}\"", outPath.toStdString()),
+                           bp::std_out > outHasher };
+        hasher.wait();
+        std::string pHash;
+        std::getline(outHasher, pHash);
+        qDebug() << QString::fromStdString(pHash);
+        fileSigningReceipt << pHash;
         fileSigningReceipt.close();
     }
 
