@@ -67,8 +67,14 @@ void MainWindow::onVerifyImage()
         return;
     }
 
-    auto signature = loadDataFromImage();
-    signature = decodeSignature(signature);
+    std::vector<std::byte> signature;
+
+    try {
+        signature = loadDataFromImage();
+        signature = decodeSignature(signature);
+    } catch (const std::exception &e) {
+        qDebug() << e.what();
+    }
 
 #ifdef DEBUG
     std::ofstream outDebug;
@@ -146,6 +152,7 @@ std::vector<std::byte> MainWindow::loadDataFromImage()
 
                 if (signature.size() == 4) {
                     auto szData = *reinterpret_cast<std::uint32_t *>(signature.data());
+                    if (szData <= 0) throw std::runtime_error { "Invalid length" };
                     if (szData > (row * col)) throw std::runtime_error { "Length overflow" };
                 }
 
