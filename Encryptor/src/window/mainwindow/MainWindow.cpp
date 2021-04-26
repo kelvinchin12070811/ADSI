@@ -42,7 +42,10 @@ MainWindow::MainWindow(QWidget *parent)
 #ifdef DEBUG
     std::fstream test;
     test.open("./perceptual_hash.exe", std::ios::in);
-    if (test.is_open()) qDebug() << "Found hash executable";
+    if (test.is_open()) {
+        qDebug() << "Found hash executable";
+        test.close();
+    }
 #endif // DEBUG
 }
 
