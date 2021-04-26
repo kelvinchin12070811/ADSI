@@ -126,6 +126,10 @@ void AuthorInfoEditor::onNewKeyClicked()
         return;
     }
 
+    const auto prevTitle = this->windowTitle();
+    this->setWindowTitle(QString::fromStdString(
+            fmt::format("{} - {}", prevTitle.toStdString(), "Generating Key")));
+
     auto pwDialog = std::make_unique<window::NewPasswordField>(this);
     pwDialog->exec();
     auto password = pwDialog->getPassword();
@@ -170,6 +174,7 @@ void AuthorInfoEditor::onNewKeyClicked()
     ui_->lsvwKeys->clear();
     loadKeyData(*curAuthor);
     QApplication::restoreOverrideCursor();
+    this->setWindowTitle(prevTitle);
 }
 
 void AuthorInfoEditor::onRemoveKey()
