@@ -81,24 +81,20 @@
        <property name="frameShadow">
         <enum>QFrame::Raised</enum>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_5">
+       <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
-          <item>
-           <widget class="QPushButton" name="btnImageLoad">
-            <property name="text">
-             <string>Load Image</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="btnImageExport">
-            <property name="text">
-             <string>Verify</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
+         <widget class="QPushButton" name="btnImageLoad">
+          <property name="text">
+           <string>Load Image</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnImageExport">
+          <property name="text">
+           <string>Verify</string>
+          </property>
+         </widget>
         </item>
         <item>
          <spacer name="verticalSpacer">
@@ -181,23 +177,20 @@
    <sender>btnSetting</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>onBtnSettingClicked()</slot>
+   <slot>onSettingClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>119</x>
-     <y>479</y>
+     <x>139</x>
+     <y>487</y>
     </hint>
     <hint type="destinationlabel">
-     <x>186</x>
-     <y>544</y>
+     <x>289</x>
+     <y>652</y>
     </hint>
    </hints>
   </connection>
  </connections>
  <slots>
-  <slot>onBtnSettingClicked()</slot>
-  <slot>onBtnLoadImgClicked()</slot>
-  <slot>onBtnLoadKeyClicked()</slot>
-  <slot>onBtnSignAndExport()</slot>
+  <slot>onSettingClicked()</slot>
  </slots>
 </ui>

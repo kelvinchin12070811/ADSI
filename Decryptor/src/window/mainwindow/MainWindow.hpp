@@ -32,6 +32,10 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
 
 private slots:
+    /**
+     * @brief Triggered when setting button is clicked.
+     */
+    void onSettingClicked();
 
 private:
     /**

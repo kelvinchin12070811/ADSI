@@ -39,6 +39,12 @@ MainWindow::MainWindow(QWidget *parent)
 #endif // DEBUG
 }
 
+void MainWindow::onSettingClicked()
+{
+    auto dialog = std::make_unique<window::Setting>();
+    dialog->exec();
+}
+
 void MainWindow::loadStylesheet()
 {
     utils::StylesManager::getInstance().applyStylesheets(ui_->centralwidget);
