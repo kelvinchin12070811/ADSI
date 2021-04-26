@@ -54,6 +54,18 @@ private:
      * @brief Extra steps to initialize the UI.
      */
     void initUI();
+    /**
+     * @brief Extract signature from image.
+     * @return Extracted signature from image.
+     */
+    std::vector<std::byte> loadDataFromImage();
+    /**
+     * @brief Decode signature extracted.
+     * @param signature Signature to decode.
+     * @return Decoded signature in bytes.
+     * @throw std::exception if any error occurred in the byte stream such as invalid or corrupted.
+    */
+    std::vector<std::byte> decodeSignature(const std::vector<std::byte> &signature);
 
 private:
     /**

@@ -11,13 +11,18 @@
 #include <QPixmap>
 #include <QScreen>
 
+#include <array>
+#include <bitset>
 #include <fstream>
 #include <stdexcept>
 #include <string>
 
+#include <boost/range/irange.hpp>
 #include <fmt/format.h>
 
-#include "window/mainwindow/MainWindow.hpp"
+#include "MainWindow.hpp"
+#include "codec/DefaultCodecFactory.hpp"
+#include "utils/DCT.hpp"
 #include "utils/StylesManager.hpp"
 #include "window/setting/Setting.hpp"
 
@@ -62,7 +67,17 @@ void MainWindow::onVerifyImage()
         return;
     }
 
-    qDebug() << "Hello from verify team";
+    auto signature = loadDataFromImage();
+    signature = decodeSignature(signature);
+
+#ifdef DEBUG
+    std::ofstream outDebug;
+    outDebug.open("_debug.dat", std::ios::binary | std::ios::out);
+    if (outDebug.is_open()) {
+        outDebug.write(reinterpret_cast<const char *>(signature.data()), signature.size());
+        outDebug.close();
+    }
+#endif
 }
 
 void MainWindow::loadStylesheet()
@@ -79,5 +94,78 @@ void MainWindow::initUI()
     ui_->splitSidebar->setStretchFactor(ui_->splitSidebar->indexOf(ui_->clientAreaPanel), 1);
     ui_->sidebarPanel->resize(ui_->sidebarPanel->maximumWidth(), ui_->sidebarPanel->height());
     ui_->sidebarPanel->setMaximumWidth(maxSize);
+}
+
+std::vector<std::byte> MainWindow::loadDataFromImage()
+{
+    std::vector<std::byte> signature;
+    signature.resize(sizeof(std::uint32_t));
+
+    auto row = (targetImage_.height() / 8) + ((targetImage_.height() % 8) == 0 ? 0 : 1);
+    auto col = (targetImage_.width() / 8) + ((targetImage_.width() % 8) == 0 ? 0 : 1);
+    constexpr std::array<std::array<int, 2>, 4> posMidFreqCoefficients {
+        { { 1, 4 }, { 2, 3 }, { 3, 2 }, { 4, 1 } }
+    };
+    std::bitset<8> buffer;
+    int remainBits { 8 };
+    std::uint32_t szData { 0 };
+
+    for (auto grpY : boost::irange(row)) {
+        for (auto grpX : boost::irange(col)) {
+            std::vector<std::vector<float>> block;
+            block.resize(8);
+            for (auto &itr : block) {
+                itr.resize(8);
+                std::fill(itr.begin(), itr.end(), 0.f);
+            }
+
+            for (auto itrJ = block.begin(); itrJ != block.end(); itrJ++) {
+                for (auto itrI = itrJ->begin(); itrI != itrJ->end(); itrI++) {
+                    QPoint pos { static_cast<int>(std::distance(itrJ->begin(), itrI) * grpX),
+                                 static_cast<int>(std::distance(block.begin(), itrJ) * grpY) };
+                    auto pixColor = targetImage_.pixelColor(pos);
+
+                    if (pixColor.isValid()) {
+                        *itrI = pixColor.blueF();
+                        continue;
+                    }
+                }
+            }
+
+            utils::DCT dct;
+            auto dcted = dct.transfrom(block);
+
+            for (auto idxCoefficient : boost::irange(posMidFreqCoefficients.size())) {
+                if (remainBits == 0) {
+                    signature.push_back(static_cast<std::byte>(buffer.to_ulong()));
+                    buffer = { 0 };
+                    remainBits = 8;
+
+                    if (signature.size() == szData + 4ull) return signature;
+                }
+
+                if (signature.size() == 4) {
+                    auto szData = *reinterpret_cast<std::uint32_t *>(signature.data());
+                    if (szData > (row * col)) throw std::runtime_error { "Length overflow" };
+                }
+
+                const auto &[posX, posY] = posMidFreqCoefficients[idxCoefficient];
+                std::bitset<sizeof(float)> coeficientBits { static_cast<std::uint64_t>(
+                        dcted[posY][posX]) };
+                buffer[8 - static_cast<size_t>(remainBits)] = coeficientBits[0];
+                remainBits--;
+            }
+        }
+    }
+}
+
+std::vector<std::byte> MainWindow::decodeSignature(const std::vector<std::byte> &signature)
+{
+    std::unique_ptr<codec::ICodecFactory> facCodec {
+        std::make_unique<codec::DefaultCodecFactory>()
+    };
+    auto decompressor = facCodec->createDefaultDecompressCoder(signature);
+    decompressor->execute();
+    return decompressor->getCodecResult();
 }
 }
