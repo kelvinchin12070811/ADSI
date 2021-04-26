@@ -17,6 +17,7 @@
 #include <fstream>
 #include <stdexcept>
 #include <string>
+#include <sstream>
 
 #include <boost/range/irange.hpp>
 #include <boost/process.hpp>
@@ -79,7 +80,55 @@ void MainWindow::onVerifyImage()
         signature = decodeSignature(signature);
     } catch (const std::exception &e) {
         qDebug() << e.what();
+        QMessageBox::information(this, "No valid signature found",
+                                 "Image seems not been signed with ADSI or has been corrupted");
+        return;
     }
+
+    std::uint16_t szData { 0 };
+    int szTotal { 0 };
+    std::string pbKeyData;
+    auto begSignature = reinterpret_cast<const char *>(signature.data());
+    std::istringstream signatureReader{ { begSignature, begSignature + signature.size() } };
+
+    signatureReader.read(reinterpret_cast<char *>(&szData), 2);
+    szTotal += szData + 2;
+    pbKeyData.resize(szData);
+    signatureReader.read(pbKeyData.data(), szData);
+    CryptoPP::StringSource source { pbKeyData, true };
+    pbKey_.BERDecode(source);
+    
+    signatureReader.read(reinterpret_cast<char *>(&szData), 2);
+    szTotal += szData + 2;
+    author_.authorName.resize(szData);
+    signatureReader.read(author_.authorName.data(), szData);
+
+    signatureReader.read(reinterpret_cast<char *>(&szData), 2);
+    szTotal += szData + 2;
+    author_.authorEmail.resize(szData);
+    signatureReader.read(author_.authorEmail.data(), szData);
+    
+    signatureReader.read(reinterpret_cast<char *>(&szData), 2);
+    szTotal += szData + 2;
+    author_.authorPortFolioURL.resize(szData);
+    signatureReader.read(author_.authorPortFolioURL.data(), szData);
+    
+    std::vector<CryptoPP::byte> sign;
+    signatureReader.read(reinterpret_cast<char *>(&szData), 2);
+    sign.resize(szData);
+    signatureReader.read(reinterpret_cast<char *>(sign.data()), sign.size());
+
+    CryptoPP::RSASSA_PKCS1v15_SHA_Verifier verifier { pbKey_ };
+    auto match = verifier.VerifyMessage(reinterpret_cast<CryptoPP::byte *>(signature.data()),
+                                        szTotal, sign.data(), sign.size());
+
+    std::string message { fmt::format("Name: {}<br>Email: <a href='mailto:{}'>{}</a><br>Portfolio: <a "
+                                      "href={}>{}</a><br>Verified: {}",
+                                      author_.authorName, author_.authorEmail, author_.authorEmail,
+                                      author_.authorPortFolioURL, author_.authorPortFolioURL,
+                                      match ? "Yes" : "No") };
+
+    ui_->labAuthorInfo->setText(QString::fromStdString(message));
 
 #ifdef DEBUG
     std::ofstream outDebug;
@@ -121,6 +170,11 @@ std::vector<std::byte> MainWindow::loadDataFromImage()
     std::string buffer;
     std::getline(reader, buffer);
     std::getline(reader, buffer);
+
+    reader.close();
+    QFile tempFile { QString::fromStdString(
+            fmt::format("{}.reveal.txt", imagePath_.toStdString())) };
+    tempFile.remove();
 
     std::unique_ptr<codec::ICodecFactory> facCodec {
         std::make_unique<codec::DefaultCodecFactory>()

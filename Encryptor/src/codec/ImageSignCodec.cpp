@@ -237,7 +237,9 @@ std::string ImageSignCodec::getSigningReceipt()
     std::unique_ptr<codec::ICodecFactory> facCodec {
         std::make_unique<codec::DefaultCodecFactory>()
     };
-    auto b2tEncoder = facCodec->createDefaultB2TEncoder(signingReceipt_);
+    auto compressCoder = facCodec->createDefaultCompresssCoder(signingReceipt_);
+    compressCoder->execute();
+    auto b2tEncoder = facCodec->createDefaultB2TEncoder(compressCoder->getCodecResult());
     b2tEncoder->execute();
     const auto &result = b2tEncoder->getCodecResult();
     auto begResult = reinterpret_cast<const char *>(result.data());
