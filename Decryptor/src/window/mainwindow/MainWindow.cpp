@@ -19,6 +19,7 @@
 #include <string>
 
 #include <boost/range/irange.hpp>
+#include <boost/process.hpp>
 #include <fmt/format.h>
 
 #include "MainWindow.hpp"
@@ -42,6 +43,7 @@ MainWindow::MainWindow(QWidget *parent)
         qDebug() << "Found hash executable";
         test.close();
     }
+    if (QFileInfo::exists("./jsteg.exe")) qDebug() << QStringLiteral("Found jsteg executable");
 #endif // DEBUG
 }
 
@@ -54,7 +56,9 @@ void MainWindow::onSettingClicked()
 void MainWindow::onLoadImage()
 {
     imagePath_ = QFileDialog::getOpenFileName(this, "Select image to verify", QString {},
-                                                  QStringLiteral("*.png"));
+                                                  QStringLiteral("*.jpg"));
+    if (imagePath_.isEmpty()) return;
+
     qDebug() << imagePath_;
     targetImage_.load(imagePath_);
     ui_->labImagePreview->setImage(&targetImage_);
@@ -105,68 +109,26 @@ void MainWindow::initUI()
 
 std::vector<std::byte> MainWindow::loadDataFromImage()
 {
-    std::vector<std::byte> signature;
-    signature.reserve(sizeof(std::uint32_t));
+    namespace bp = boost::process;
+    bp::child signExtractor { fmt::format("jsteg.exe reveal \"{}\" \"{}.reveal.txt\"",
+                                          imagePath_.toStdString(), imagePath_.toStdString()) };
+    signExtractor.wait();
 
-    auto row = (targetImage_.height() / 8) + ((targetImage_.height() % 8) == 0 ? 0 : 1);
-    auto col = (targetImage_.width() / 8) + ((targetImage_.width() % 8) == 0 ? 0 : 1);
-    constexpr std::array<std::array<int, 2>, 4> posMidFreqCoefficients {
-        { { 1, 4 }, { 2, 3 }, { 3, 2 }, { 4, 1 } }
+    std::ifstream reader;
+    reader.open(fmt::format("{}.reveal.txt", imagePath_.toStdString()), std::ios::in);
+    if (!reader.is_open()) throw std::runtime_error { "Invalid file" };
+
+    std::string buffer;
+    std::getline(reader, buffer);
+    std::getline(reader, buffer);
+
+    std::unique_ptr<codec::ICodecFactory> facCodec {
+        std::make_unique<codec::DefaultCodecFactory>()
     };
-    std::bitset<8> buffer;
-    int remainBits { 8 };
-    std::uint32_t szData { 0 };
 
-    for (auto grpY : boost::irange(row)) {
-        for (auto grpX : boost::irange(col)) {
-            std::vector<std::vector<float>> block;
-            block.resize(8);
-            for (auto &itr : block) {
-                itr.resize(8);
-                std::fill(itr.begin(), itr.end(), 0.f);
-            }
-
-            for (auto itrJ = block.begin(); itrJ != block.end(); itrJ++) {
-                for (auto itrI = itrJ->begin(); itrI != itrJ->end(); itrI++) {
-                    QPoint pos { static_cast<int>(std::distance(itrJ->begin(), itrI) * grpX),
-                                 static_cast<int>(std::distance(block.begin(), itrJ) * grpY) };
-                    auto pixColor = targetImage_.pixelColor(pos);
-
-                    if (pixColor.isValid()) {
-                        *itrI = pixColor.blueF();
-                        continue;
-                    }
-                }
-            }
-
-            utils::DCT dct;
-            auto dcted = dct.transfrom(block);
-
-            for (auto idxCoefficient : boost::irange(posMidFreqCoefficients.size())) {
-                if (remainBits == 0) {
-                    signature.push_back(static_cast<std::byte>(buffer.to_ulong()));
-                    buffer = { 0 };
-                    remainBits = 8;
-
-                    if (signature.size() == (szData == 0 ? 1 : szData) + 4ull) return signature;
-                }
-
-                if (signature.size() == 4) {
-                    auto szData = *reinterpret_cast<std::uint32_t *>(signature.data());
-                    if (szData <= 0) throw std::runtime_error { "Invalid length" };
-                    if (szData > (row * col)) throw std::runtime_error { "Length overflow" };
-                }
-
-                const auto &[posX, posY] = posMidFreqCoefficients[idxCoefficient];
-                auto left = static_cast<std::uint64_t>(dcted[posY][posX]);
-                if (left >= 1)
-                    buffer.set(8 - remainBits);
-                else
-                    buffer.reset(8 - remainBits);
-                remainBits--;
-            }
-        }
-    }
+    auto base64Dec = facCodec->createDefaultB2TDecoder(buffer);
+    base64Dec->execute();
+    return base64Dec->getCodecResult();
 }
 
 std::vector<std::byte> MainWindow::decodeSignature(const std::vector<std::byte> &signature)
@@ -179,3 +141,12 @@ std::vector<std::byte> MainWindow::decodeSignature(const std::vector<std::byte> 
     return decompressor->getCodecResult();
 }
 }
+
+namespace boost {
+#ifdef BOOST_NO_EXCEPTIONS
+void throw_exception(std::exception const &e)
+{
+    throw 11; // or whatever
+};
+#endif
+} // namespace boost

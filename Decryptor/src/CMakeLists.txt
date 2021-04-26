@@ -18,7 +18,7 @@ find_package(Qt5 COMPONENTS
     Widgets
 REQUIRED)
 
-find_package(Boost COMPONENTS filesystem REQUIRED)
+find_package(Boost COMPONENTS system filesystem REQUIRED)
 find_package(cryptopp CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(KF5WidgetsAddons CONFIG REQUIRED)
@@ -28,7 +28,6 @@ find_package(yaml-cpp CONFIG REQUIRED)
 find_package(ZLIB REQUIRED)
 
 include_directories(${Boost_INCLUDE_DIR})
-include_directories("../../Encryptor/src")
 
 get_target_property(QMAKE_BIN Qt5::qmake IMPORTED_LOCATION)
 get_filename_component(QMAKE_BIN_DIR "${QMAKE_BIN}" DIRECTORY)
@@ -50,32 +49,58 @@ set(PROJECT_UI_FILES
 )
 
 set(PROJECT_SOURCE_FILES
-    "../../Encryptor/src/codec/AESDecoderCodec.cpp"
-    "../../Encryptor/src/codec/AESEncoderCodec.cpp"
-    "../../Encryptor/src/codec/Base64DecoderCodec.cpp"
-    "../../Encryptor/src/codec/Base64EncoderCodec.cpp"
-    "../../Encryptor/src/codec/DefaultCodecFactory.cpp"
-    "../../Encryptor/src/codec/DeflateCodec.cpp"
-    "../../Encryptor/src/codec/ImageSignCodec.cpp"
-    "../../Encryptor/src/codec/InflateCodec.cpp"
-    "../../Encryptor/src/codec/RSASignEncoderCodec.cpp"
-    "../../Encryptor/src/codec/SHA3EncoderCodec.cpp"
-    "../../Encryptor/src/components/ImagePreview.cpp"
-    "../../Encryptor/src/components/Switch.cpp"
-    "../../Encryptor/src/generator/AESCryptoKeyGenerator.cpp"
-    "../../Encryptor/src/generator/DefaultCryptoKeyGeneratorFactory.cpp"
-    "../../Encryptor/src/generator/PrivateRSACryptoKeyGenerator.cpp"
-    "../../Encryptor/src/generator/PublicRSACryptoKeyGenerator.cpp"
-    "../../Encryptor/src/generator/RSACryptoKeyGeneratorBase.cpp"
-    "../../Encryptor/src/utils/ConfigManager.cpp"
-    "../../Encryptor/src/utils/DCT.cpp"
-    "../../Encryptor/src/utils/StylesManager.cpp"
-    "../../Encryptor/src/window/setting/Setting.cpp"
+    "codec/AESDecoderCodec.cpp"
+    "codec/AESEncoderCodec.cpp"
+    "codec/Base64DecoderCodec.cpp"
+    "codec/Base64EncoderCodec.cpp"
+    "codec/DefaultCodecFactory.cpp"
+    "codec/DeflateCodec.cpp"
+    "codec/ImageSignCodec.cpp"
+    "codec/InflateCodec.cpp"
+    "codec/RSASignEncoderCodec.cpp"
+    "codec/SHA3EncoderCodec.cpp"
+    "components/ImagePreview.cpp"
+    "components/Switch.cpp"
+    "generator/AESCryptoKeyGenerator.cpp"
+    "generator/DefaultCryptoKeyGeneratorFactory.cpp"
+    "generator/PrivateRSACryptoKeyGenerator.cpp"
+    "generator/PublicRSACryptoKeyGenerator.cpp"
+    "generator/RSACryptoKeyGeneratorBase.cpp"
+    "utils/ConfigManager.cpp"
+    "utils/DCT.cpp"
+    "utils/StylesManager.cpp"
+    "window/setting/Setting.cpp"
     "Main.cpp"
     "window/mainwindow/MainWindow.cpp"
 )
 
 set(PROJECT_HEADER_FILES
+    "codec/AESDecoderCodec.hpp"
+    "codec/AESEncoderCodec.hpp"
+    "codec/Base64DecoderCodec.hpp"
+    "codec/Base64EncoderCodec.hpp"
+    "codec/DefaultCodecFactory.hpp"
+    "codec/DeflateCodec.hpp"
+    "codec/ImageSignCodec.hpp"
+    "codec/InflateCodec.hpp"
+    "codec/RSASignEncoderCodec.hpp"
+    "codec/SHA3EncoderCodec.hpp"
+    "components/ImagePreview.hpp"
+    "components/Switch.hpp"
+    "db/data/Author.hpp"
+    "generator/AESCryptoKeyGenerator.hpp"
+    "generator/DefaultCryptoKeyGeneratorFactory.hpp"
+    "generator/PrivateRSACryptoKeyGenerator.hpp"
+    "generator/PublicRSACryptoKeyGenerator.hpp"
+    "generator/RSACryptoKeyGeneratorBase.hpp"
+    "codec/ICodec.hpp"
+    "codec/ICodecFactory.hpp"
+    "generator/ICryptoKeyGenerator.hpp"
+    "generator/ICryptoKeyGeneratorFactory.hpp"
+    "utils/ConfigManager.hpp"
+    "utils/DCT.hpp"
+    "utils/StylesManager.hpp"
+    "window/setting/Setting.hpp"
     "window/mainwindow/MainWindow.hpp"
 )
 
@@ -106,6 +131,7 @@ target_link_libraries(
      ${LIB_LIBBCRYPT_LIB_PATH}
      Boost::boost
      Boost::filesystem
+     Boost::system
      cryptopp-static
      fmt::fmt
      KF5::WidgetsAddons
