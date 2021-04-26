@@ -189,8 +189,42 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>btnImageLoad</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>onLoadImage()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>124</x>
+     <y>23</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>360</x>
+     <y>595</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>btnImageExport</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>onVerifyImage()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>194</x>
+     <y>48</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>242</x>
+     <y>572</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>onSettingClicked()</slot>
+  <slot>onLoadImage()</slot>
+  <slot>onVerifyImage()</slot>
  </slots>
 </ui>

@@ -45,6 +45,26 @@ void MainWindow::onSettingClicked()
     dialog->exec();
 }
 
+void MainWindow::onLoadImage()
+{
+    imagePath_ = QFileDialog::getOpenFileName(this, "Select image to verify", QString {},
+                                                  QStringLiteral("*.png"));
+    qDebug() << imagePath_;
+    targetImage_.load(imagePath_);
+    ui_->labImagePreview->setImage(&targetImage_);
+}
+
+void MainWindow::onVerifyImage()
+{
+    if (targetImage_.isNull()) {
+        QMessageBox::information(this, "Select an image first.",
+                                 "You need to load an image in first in order to verify anything.");
+        return;
+    }
+
+    qDebug() << "Hello from verify team";
+}
+
 void MainWindow::loadStylesheet()
 {
     utils::StylesManager::getInstance().applyStylesheets(ui_->centralwidget);

@@ -36,6 +36,14 @@ private slots:
      * @brief Triggered when setting button is clicked.
      */
     void onSettingClicked();
+    /**
+     * @brief Triggered when user try to load image.
+     */
+    void onLoadImage();
+    /**
+     * @brief Triggered when user try to verify the image.
+     */
+    void onVerifyImage();
 
 private:
     /**
@@ -56,6 +64,10 @@ private:
      * @brief Image to sign.
      */
     QImage targetImage_;
+    /**
+     * @brief Path to the image.
+     */
+    QString imagePath_;
     /**
      * @brief Selected author's public key.
      */
