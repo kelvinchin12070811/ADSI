@@ -22,7 +22,7 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 private:
-    static constexpr std::string_view SelectImageFormatFilter { "*.jpg;*.png" };
+    static constexpr std::string_view SelectImageFormatFilter { "*.jpg" };
 
 public:
     /**
@@ -68,6 +68,10 @@ private:
      * @brief Image to sign.
      */
     QImage targetImage_;
+    /**
+     * @brief Original image path.
+     */
+    QString oriImagePath_;
     /**
      * @brief Selected author's public key.
      */

@@ -64,7 +64,7 @@ void ImageSignCodec::execute()
     int row = encoded_.height() / 8 + (encoded_.height() % 8 == 0 ? 0 : 1);
 
     signingReceipt_ = buildSignatureText();
-    auto itrSignature = signingReceipt_.begin();
+    /*auto itrSignature = signingReceipt_.begin();
     if (signingReceipt_.size() >= (static_cast<std::size_t>(col) * row) * 4 * 8)
         throw std::length_error { "Image not large enough to hold the signature." };
 
@@ -134,7 +134,7 @@ void ImageSignCodec::execute()
             auto percentProgress = rawProgress * 100.f;
             emit progressUpdated(percentProgress);
         }
-    }
+    }*/
 }
 
 const std::vector<std::byte> &ImageSignCodec::getCodecResult() const

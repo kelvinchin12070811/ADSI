@@ -6,6 +6,7 @@
 #include <QDateTime>
 #include <QDebug>
 #include <QFileDialog>
+#include <QFileInfo>
 #include <QGuiApplication>
 #include <QMessageBox>
 #include <QPixmap>
@@ -46,6 +47,7 @@ MainWindow::MainWindow(QWidget *parent)
         qDebug() << "Found hash executable";
         test.close();
     }
+    if (QFileInfo::exists(QStringLiteral("./jsteg.exe"))) qDebug() << "Found jsteg executable";
 #endif // DEBUG
 }
 
@@ -53,6 +55,7 @@ void MainWindow::onBtnLoadImgClicked()
 {
     auto imgPath = QFileDialog::getOpenFileName(this, tr("Select Image"), {},
                                                 { SelectImageFormatFilter.data() });
+    oriImagePath_ = imgPath;
     if (imgPath.isEmpty()) return;
     targetImage_.load(imgPath);
     ui_->labImagePreview->setImage(&targetImage_);
@@ -123,6 +126,8 @@ void MainWindow::onBtnLoadKeyClicked()
 
 void MainWindow::onBtnSignAndExport()
 {
+    namespace bp = boost::process;
+
     if (targetImage_.isNull()) {
         QMessageBox::information(this, "No image selected", "Select an image first to sign");
         return;
@@ -133,7 +138,7 @@ void MainWindow::onBtnSignAndExport()
         return;
     }
 
-    auto outPath = QFileDialog::getSaveFileName(this, "Save file to...", QString {}, "*.png");
+    auto outPath = QFileDialog::getSaveFileName(this, "Save file to...", QString {}, "*.jpg");
     if (outPath.isEmpty()) return;
     qDebug() << outPath;
 
@@ -151,45 +156,41 @@ void MainWindow::onBtnSignAndExport()
     std::unique_ptr<codec::ICodecFactory> facCodec {
         std::make_unique<codec::DefaultCodecFactory>()
     };
+
     auto signer =
             facCodec->createDefaultImageSigner(targetImage_, pbKey_.get(), prKey_.get(), &author_);
-    auto connection = connect(
-            signer.get(), &codec::ImageSignCodec::progressUpdated,
-            [this, &titleTemplate](float progress) {
-                auto percent = fmt::format("Signing... (Progress: {:.{}f}%)", progress, 2);
-                this->setWindowTitle(QString::fromStdString(fmt::format(titleTemplate, percent)));
-            });
     signer->execute();
     this->setWindowTitle(QString::fromStdString(fmt::format(titleTemplate, "Generating receipt")));
     auto signingReceipt = signer->getSigningReceipt();
-    auto signedImage = signer->getEncodedImage();
 
-    signedImage.save(outPath);
     std::ofstream fileSigningReceipt;
     fileSigningReceipt.open(fmt::format("{}.sign", outPath.toStdString()));
-    if (fileSigningReceipt.is_open()) {
-        namespace bp = boost::process;
+    if (!fileSigningReceipt.is_open()) return;
 
-        auto time = QDateTime::currentDateTimeUtc();
-        std::string iso8601 { fmt::format(
-                "{}-{}-{}T{}:{}:{}Z", time.date().year(), time.date().month(), time.date().day(),
-                time.time().hour(), time.time().minute(), time.time().second()) };
-        fileSigningReceipt << iso8601 << std::endl;
-        fileSigningReceipt << signingReceipt << std::endl;
+    auto time = QDateTime::currentDateTimeUtc();
+    std::string iso8601 { fmt::format(
+            "{}-{}-{}T{}:{}:{}Z", time.date().year(), time.date().month(), time.date().day(),
+            time.time().hour(), time.time().minute(), time.time().second()) };
+    fileSigningReceipt << iso8601 << std::endl;
+    fileSigningReceipt << signingReceipt << std::endl;
 
-        bp::ipstream outHasher;
-        bp::child hasher { fmt::format("./perceptual_hash.exe --hash \"{}\"", outPath.toStdString()),
-                           bp::std_out > outHasher };
-        hasher.wait();
-        std::string pHash;
-        std::getline(outHasher, pHash);
-        qDebug() << QString::fromStdString(pHash);
-        fileSigningReceipt << pHash;
-        fileSigningReceipt.close();
-    }
+    bp::ipstream outHasher;
+    bp::child hasher { fmt::format("./perceptual_hash.exe --hash \"{}\"", oriImagePath_.toStdString()),
+                        bp::std_out > outHasher };
+    hasher.wait();
+    std::string pHash;
+    std::getline(outHasher, pHash);
+    qDebug() << QString::fromStdString(pHash);
+    fileSigningReceipt << pHash;
+    fileSigningReceipt.close();
+
+    this->setWindowTitle(QString::fromStdString(fmt::format(titleTemplate, "Signing...")));
+    bp::child imgSigner { fmt::format("jsteg.exe hide \"{}\" \"{}.sign\" \"{}\"",
+                                      oriImagePath_.toStdString(), outPath.toStdString(),
+                                      outPath.toStdString()) };
+    imgSigner.wait();
 
     qDebug() << QString::fromStdString(signingReceipt);
-    disconnect(connection);
     this->setWindowTitle(prevWindowTitle);
     QApplication::restoreOverrideCursor();
 }

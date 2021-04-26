@@ -39,6 +39,11 @@ configure_file(
     ${CMAKE_CURRENT_BINARY_DIR}/.scripts/perceptual_hash.py
 )
 
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../jsteg/jsteg.exe
+    ${CMAKE_CURRENT_BINARY_DIR}/jsteg.exe
+)
+
 set(PROJECT_UI_FILES
     "window/mainwindow/MainWindow.ui"
     "../../Encryptor/src/window/setting/Setting.ui"

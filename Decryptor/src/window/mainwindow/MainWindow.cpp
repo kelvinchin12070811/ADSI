@@ -6,6 +6,7 @@
 #include <QDateTime>
 #include <QDebug>
 #include <QFileDialog>
+#include <QFileInfo>
 #include <QGuiApplication>
 #include <QMessageBox>
 #include <QPixmap>
