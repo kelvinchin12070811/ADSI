@@ -105,7 +105,7 @@ void MainWindow::initUI()
 std::vector<std::byte> MainWindow::loadDataFromImage()
 {
     std::vector<std::byte> signature;
-    signature.resize(sizeof(std::uint32_t));
+    signature.reserve(sizeof(std::uint32_t));
 
     auto row = (targetImage_.height() / 8) + ((targetImage_.height() % 8) == 0 ? 0 : 1);
     auto col = (targetImage_.width() / 8) + ((targetImage_.width() % 8) == 0 ? 0 : 1);
@@ -147,7 +147,7 @@ std::vector<std::byte> MainWindow::loadDataFromImage()
                     buffer = { 0 };
                     remainBits = 8;
 
-                    if (signature.size() == szData + 4ull) return signature;
+                    if (signature.size() == (szData == 0 ? 1 : szData) + 4ull) return signature;
                 }
 
                 if (signature.size() == 4) {
@@ -157,9 +157,11 @@ std::vector<std::byte> MainWindow::loadDataFromImage()
                 }
 
                 const auto &[posX, posY] = posMidFreqCoefficients[idxCoefficient];
-                std::bitset<sizeof(float)> coeficientBits { static_cast<std::uint64_t>(
-                        dcted[posY][posX]) };
-                buffer[8 - static_cast<size_t>(remainBits)] = coeficientBits[0];
+                auto left = static_cast<std::uint64_t>(dcted[posY][posX]);
+                if (left >= 1)
+                    buffer.set(8 - remainBits);
+                else
+                    buffer.reset(8 - remainBits);
                 remainBits--;
             }
         }

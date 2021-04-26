@@ -93,6 +93,7 @@ void ImageSignCodec::execute()
 
             utils::DCT dct;
             auto dctedBlock = dct.transfrom(block);
+            auto prevBlock = block;
             std::bitset<8> bufSignatureBits {};
             unsigned short bitsRemain { 0 };
             std::array<std::array<int, 2>, 4> posMidFreqCoefficients {
@@ -109,13 +110,13 @@ void ImageSignCodec::execute()
                 }
 
                 auto &&[posX, posY] = posMidFreqCoefficients[idx];
-                std::bitset<sizeof(float)> dctElmBits { static_cast<std::uint64_t>(
-                        dctedBlock[posY][posX]) };
-                dctElmBits[0] = bufSignatureBits[static_cast<size_t>(8) - bitsRemain];
+                auto &selectedCoefficient = dctedBlock[posY][posX];
+                selectedCoefficient = bufSignatureBits.test(8 - bitsRemain) ? 255.f : 0.f;
                 bitsRemain--;
             }
 
             block = dct.itransform(dctedBlock);
+            assert(block != prevBlock);
 
             for (auto itrJ = block.begin(); itrJ != block.end(); itrJ++) {
                 for (auto itrI = itrJ->begin(); itrI != itrJ->end(); itrI++) {
@@ -124,6 +125,7 @@ void ImageSignCodec::execute()
                     auto pixColor = encoded_.pixelColor(pos);
 
                     if (pixColor.isValid()) pixColor.setBlueF(std::roundf(*itrI));
+                    encoded_.setPixelColor(pos, pixColor);
                 }
             }
 
