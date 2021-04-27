@@ -77,6 +77,9 @@ void MainWindow::onVerifyImage()
 
     try {
         signature = loadDataFromImage();
+
+        if (signature.empty()) throw std::runtime_error { "Invalid file" };
+
         signature = decodeSignature(signature);
     } catch (const std::exception &e) {
         qDebug() << e.what();
