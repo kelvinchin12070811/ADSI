@@ -3,6 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *********************************************************************************************************************/
+#include <QApplication>
 #include <QDateTime>
 #include <QDebug>
 #include <QFileDialog>
@@ -17,6 +18,7 @@
 #include <string>
 
 #include <boost/process.hpp>
+#include <boost/process/windows.hpp>
 
 #include <fmt/format.h>
 
@@ -175,8 +177,15 @@ void MainWindow::onBtnSignAndExport()
     fileSigningReceipt << signingReceipt << std::endl;
 
     bp::ipstream outHasher;
-    bp::child hasher { fmt::format("./perceptual_hash.exe --hash \"{}\"", oriImagePath_.toStdString()),
-                        bp::std_out > outHasher };
+    std::string argsHasher =
+            fmt::format("./perceptual_hash.exe --hash \"{}\"", oriImagePath_.toStdString());
+
+#if defined(WIN32) && !defined(DEBUG)
+    bp::child hasher { argsHasher, bp::std_out > outHasher, bp::windows::create_no_window };
+#else
+    bp::child hasher { argsHasher, bp::std_out > outHasher };
+#endif // defined(WIN32) && !defined(DEBUG)
+
     hasher.wait();
     std::string pHash;
     std::getline(outHasher, pHash);
@@ -185,9 +194,15 @@ void MainWindow::onBtnSignAndExport()
     fileSigningReceipt.close();
 
     this->setWindowTitle(QString::fromStdString(fmt::format(titleTemplate, "Signing...")));
-    bp::child imgSigner { fmt::format("jsteg.exe hide \"{}\" \"{}.sign\" \"{}\"",
-                                      oriImagePath_.toStdString(), outPath.toStdString(),
-                                      outPath.toStdString()) };
+    auto argsImgSigner =
+            fmt::format("jsteg.exe hide \"{}\" \"{}.sign\" \"{}\"", oriImagePath_.toStdString(),
+                        outPath.toStdString(), outPath.toStdString());
+#if defined(WIN32) && !defined(DEBUG)
+    bp::child imgSigner { argsImgSigner, bp::windows::create_no_window };
+#else
+    bp::child imgSigner { argsImgSigner };
+#endif // defined(WIN32) && !defined(DEBUG)
+
     imgSigner.wait();
 
     qDebug() << QString::fromStdString(signingReceipt);

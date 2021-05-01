@@ -21,6 +21,7 @@
 
 #include <boost/range/irange.hpp>
 #include <boost/process.hpp>
+#include <boost/process/windows.hpp>
 #include <fmt/format.h>
 
 #include "MainWindow.hpp"
@@ -163,7 +164,8 @@ std::vector<std::byte> MainWindow::loadDataFromImage()
 {
     namespace bp = boost::process;
     bp::child signExtractor { fmt::format("jsteg.exe reveal \"{}\" \"{}.reveal.txt\"",
-                                          imagePath_.toStdString(), imagePath_.toStdString()) };
+                                          imagePath_.toStdString(), imagePath_.toStdString()),
+                              boost::process::windows::create_no_window };
     signExtractor.wait();
 
     std::ifstream reader;
