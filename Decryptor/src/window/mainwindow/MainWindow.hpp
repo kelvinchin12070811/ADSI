@@ -23,6 +23,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 private:
     static constexpr std::string_view SelectImageFormatFilter { "*.jpg;" };
+    static constexpr int SimilarityThreashold { 30 };
 
 public:
     /**

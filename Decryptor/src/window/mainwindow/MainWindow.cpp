@@ -19,6 +19,8 @@
 #include <string>
 #include <sstream>
 
+#include <boost/algorithm/string.hpp>
+#include <boost/lexical_cast.hpp>
 #include <boost/range/irange.hpp>
 #include <boost/process.hpp>
 #include <boost/process/windows.hpp>
@@ -68,6 +70,19 @@ void MainWindow::onLoadImage()
 
 void MainWindow::onVerifyImage()
 {
+    namespace bp = boost::process;
+
+    auto guardCursorChanger = []() {
+        QApplication::setOverrideCursor(Qt::CursorShape::WaitCursor);
+        return std::unique_ptr<int, std::function<void(int *)>> {
+            new int {},
+            [](int *ptr) {
+                QApplication::restoreOverrideCursor();
+                delete ptr;
+            }
+        };
+    }();
+
     if (targetImage_.isNull()) {
         QMessageBox::information(this, "Select an image first.",
                                  "You need to load an image in first in order to verify anything.");
@@ -126,13 +141,51 @@ void MainWindow::onVerifyImage()
     auto match = verifier.VerifyMessage(reinterpret_cast<CryptoPP::byte *>(signature.data()),
                                         szTotal, sign.data(), sign.size());
 
-    std::string message { fmt::format("Name: {}<br>Email: <a href='mailto:{}'>{}</a><br>Portfolio: <a "
-                                      "href={}>{}</a><br>Verified: {}",
-                                      author_.authorName, author_.authorEmail, author_.authorEmail,
-                                      author_.authorPortFolioURL, author_.authorPortFolioURL,
-                                      match ? "Yes" : "No") };
+    std::string message { fmt::format(
+            "Name: {}<br>Email: <a href='mailto:{}'>{}</a><br>Portfolio: <a "
+            "href={}>{}</a><br>Verified: {}",
+            author_.authorName, author_.authorEmail, author_.authorEmail,
+            author_.authorPortFolioURL, author_.authorPortFolioURL, match ? "Yes" : "No") };
 
-    ui_->labAuthorInfo->setText(QString::fromStdString(message));
+    std::unique_ptr<int, std::function<void(int *)>> guardApplyLabel {
+        new int {},
+        [&message, this](int *ptr) {
+            ui_->labAuthorInfo->setText(QString::fromStdString(message));
+            delete ptr;
+        }
+    };
+
+    if (!QFile::exists(QString::fromStdString(fmt::format("{}.sign", imagePath_.toStdString()))))
+        return;
+
+    std::ifstream readerSignReceipt;
+    readerSignReceipt.open(fmt::format("{}.sign", imagePath_.toStdString()), std::ios::in);
+    std::string hash;
+    std::getline(readerSignReceipt, hash);
+    std::getline(readerSignReceipt, hash);
+    std::getline(readerSignReceipt, hash);
+
+    boost::trim(hash);
+    qDebug() << QString::fromStdString(hash);
+
+    auto argsPHasher = fmt::format("./perceptual_hash.exe \"{}\" --compare \"{}\"",
+                                   imagePath_.toStdString(), hash);
+    bp::ipstream soutPHasher;
+#if defined(WIN32) && !defined(DEBUG)
+    bp::child pHasher { argsPHasher, bp::std_out > soutPHasher, bp::windows::create_no_window };
+#else
+    bp::child pHasher { argsPHasher, bp::std_out > soutPHasher };
+#endif // defined(WIN32) && !defined(DEBUG)
+    pHasher.wait();
+    
+    std::string rsltPHasher;
+    std::getline(soutPHasher, rsltPHasher);
+    boost::trim(rsltPHasher);
+    qDebug() << QString::fromStdString(rsltPHasher);
+
+    message += fmt::format("<br>Modified: {}",
+                           boost::lexical_cast<int>(rsltPHasher) < SimilarityThreashold ? "No"
+                                                                                        : "Yes");
 
 #ifdef DEBUG
     std::ofstream outDebug;
