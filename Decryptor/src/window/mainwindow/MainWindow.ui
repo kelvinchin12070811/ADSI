@@ -142,6 +142,13 @@
          </spacer>
         </item>
         <item>
+         <widget class="QPushButton" name="btnImgCompare">
+          <property name="text">
+           <string>Image Comparison Tool</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="btnSetting">
           <property name="text">
            <string>Setting</string>
