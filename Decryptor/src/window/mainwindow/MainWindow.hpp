@@ -22,7 +22,7 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 private:
-    static constexpr std::string_view SelectImageFormatFilter { "*.jpg;*.png" };
+    static constexpr std::string_view SelectImageFormatFilter { "*.jpg;" };
 
 public:
     /**

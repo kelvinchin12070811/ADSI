@@ -163,9 +163,16 @@ void MainWindow::initUI()
 std::vector<std::byte> MainWindow::loadDataFromImage()
 {
     namespace bp = boost::process;
-    bp::child signExtractor { fmt::format("jsteg.exe reveal \"{}\" \"{}.reveal.txt\"",
-                                          imagePath_.toStdString(), imagePath_.toStdString()),
+
+    auto argsSignExtractor = fmt::format("jsteg.exe reveal \"{}\" \"{}.reveal.txt\"",
+                                         imagePath_.toStdString(), imagePath_.toStdString());
+#if defined(WIN32) && !defined(DEBUG)
+    bp::child signExtractor { argsSignExtractor,
                               boost::process::windows::create_no_window };
+#else
+    bp::child signExtractor { argsSignExtractor };
+#endif // defined(WIN32) && !defined(DEBUG)
+
     signExtractor.wait();
 
     std::ifstream reader;
