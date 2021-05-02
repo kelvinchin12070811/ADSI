@@ -4,5 +4,6 @@
         <file alias="Themes/Default/SettingWindow.qss">Resources/Themes/Default/SettingWindow.qss</file>
         <file alias="Themes/Default/AuthorInfoEditor.qss">Resources/Themes/Default/AuthorInfoEditor.qss</file>
         <file alias="Themes/Default/NewPasswordField.qss">Resources/Themes/Default/NewPasswordField.qss</file>
+        <file alias="Themes/Default/ImgCompareTool.qss">Resources/Themes/Default/ImgCompareTool.qss</file>
     </qresource>
 </RCC>

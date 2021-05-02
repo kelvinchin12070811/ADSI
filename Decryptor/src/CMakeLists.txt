@@ -44,8 +44,9 @@ configure_file(
 )
 
 set(PROJECT_UI_FILES
-    "window/mainwindow/MainWindow.ui"
     "../../Encryptor/src/window/setting/Setting.ui"
+    "window/imgcomparetool/ImgCompareTool.ui"
+    "window/mainwindow/MainWindow.ui"
 )
 
 set(PROJECT_SOURCE_FILES
@@ -66,12 +67,13 @@ set(PROJECT_SOURCE_FILES
     "generator/PrivateRSACryptoKeyGenerator.cpp"
     "generator/PublicRSACryptoKeyGenerator.cpp"
     "generator/RSACryptoKeyGeneratorBase.cpp"
+    "Main.cpp"
     "utils/ConfigManager.cpp"
     "utils/DCT.cpp"
     "utils/StylesManager.cpp"
-    "window/setting/Setting.cpp"
-    "Main.cpp"
+    "window/imgcomparetool/ImgCompareTool.cpp"
     "window/mainwindow/MainWindow.cpp"
+    "window/setting/Setting.cpp"
 )
 
 set(PROJECT_HEADER_FILES
@@ -81,6 +83,8 @@ set(PROJECT_HEADER_FILES
     "codec/Base64EncoderCodec.hpp"
     "codec/DefaultCodecFactory.hpp"
     "codec/DeflateCodec.hpp"
+    "codec/ICodec.hpp"
+    "codec/ICodecFactory.hpp"
     "codec/ImageSignCodec.hpp"
     "codec/InflateCodec.hpp"
     "codec/RSASignEncoderCodec.hpp"
@@ -90,18 +94,17 @@ set(PROJECT_HEADER_FILES
     "db/data/Author.hpp"
     "generator/AESCryptoKeyGenerator.hpp"
     "generator/DefaultCryptoKeyGeneratorFactory.hpp"
+    "generator/ICryptoKeyGenerator.hpp"
+    "generator/ICryptoKeyGeneratorFactory.hpp"
     "generator/PrivateRSACryptoKeyGenerator.hpp"
     "generator/PublicRSACryptoKeyGenerator.hpp"
     "generator/RSACryptoKeyGeneratorBase.hpp"
-    "codec/ICodec.hpp"
-    "codec/ICodecFactory.hpp"
-    "generator/ICryptoKeyGenerator.hpp"
-    "generator/ICryptoKeyGeneratorFactory.hpp"
     "utils/ConfigManager.hpp"
     "utils/DCT.hpp"
     "utils/StylesManager.hpp"
-    "window/setting/Setting.hpp"
+    "window/imgcomparetool/ImgCompareTool.hpp"
     "window/mainwindow/MainWindow.hpp"
+    "window/setting/Setting.hpp"
 )
 
 if (WIN32)

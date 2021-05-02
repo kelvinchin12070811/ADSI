@@ -45,6 +45,10 @@ private slots:
      * @brief Triggered when user try to verify the image.
      */
     void onVerifyImage();
+    /**
+     * @brief Triggered when user tend to launch image compare tool.
+     */
+    void onLaunchImageCompareTool();
 
 private:
     /**

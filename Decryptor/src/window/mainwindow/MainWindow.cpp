@@ -31,6 +31,7 @@
 #include "utils/DCT.hpp"
 #include "utils/StylesManager.hpp"
 #include "window/setting/Setting.hpp"
+#include "window/imgcomparetool/ImgCompareTool.hpp"
 
 namespace window {
 MainWindow::MainWindow(QWidget *parent)
@@ -195,6 +196,12 @@ void MainWindow::onVerifyImage()
         outDebug.close();
     }
 #endif
+}
+
+void MainWindow::onLaunchImageCompareTool()
+{
+    auto dialogue = std::make_unique<window::ImgCompareTool>(this);
+    dialogue->exec();
 }
 
 void MainWindow::loadStylesheet()
