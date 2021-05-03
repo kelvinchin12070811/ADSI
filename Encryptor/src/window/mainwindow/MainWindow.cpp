@@ -19,6 +19,7 @@
 
 #include <boost/process.hpp>
 #include <boost/process/windows.hpp>
+#include <boost/scope_exit.hpp>
 
 #include <fmt/format.h>
 
@@ -152,8 +153,15 @@ void MainWindow::onBtnSignAndExport()
     if (result != QMessageBox::Button::Yes) return;
 
     auto prevWindowTitle = this->windowTitle();
-    const auto titleTemplate = fmt::format("{} - {{}}", prevWindowTitle.toStdString());
     QApplication::setOverrideCursor(Qt::CursorShape::WaitCursor);
+
+    BOOST_SCOPE_EXIT_ALL(&, this)
+    {
+        this->setWindowTitle(prevWindowTitle);
+        QApplication::restoreOverrideCursor();
+    };
+
+    const auto titleTemplate = fmt::format("{} - {{}}", prevWindowTitle.toStdString());
 
     std::unique_ptr<codec::ICodecFactory> facCodec {
         std::make_unique<codec::DefaultCodecFactory>()
@@ -206,8 +214,6 @@ void MainWindow::onBtnSignAndExport()
     imgSigner.wait();
 
     qDebug() << QString::fromStdString(signingReceipt);
-    this->setWindowTitle(prevWindowTitle);
-    QApplication::restoreOverrideCursor();
 }
 
 void MainWindow::loadStylesheet()

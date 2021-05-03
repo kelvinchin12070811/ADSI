@@ -21,9 +21,10 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
-#include <boost/range/irange.hpp>
 #include <boost/process.hpp>
 #include <boost/process/windows.hpp>
+#include <boost/range/irange.hpp>
+#include <boost/scope_exit.hpp>
 #include <fmt/format.h>
 
 #include "MainWindow.hpp"
@@ -73,16 +74,8 @@ void MainWindow::onVerifyImage()
 {
     namespace bp = boost::process;
 
-    auto guardCursorChanger = []() {
-        QApplication::setOverrideCursor(Qt::CursorShape::WaitCursor);
-        return std::unique_ptr<int, std::function<void(int *)>> {
-            new int {},
-            [](int *ptr) {
-                QApplication::restoreOverrideCursor();
-                delete ptr;
-            }
-        };
-    }();
+    QApplication::setOverrideCursor(Qt::CursorShape::WaitCursor);
+    BOOST_SCOPE_EXIT_ALL() { QApplication::restoreOverrideCursor(); };
 
     if (targetImage_.isNull()) {
         QMessageBox::information(this, "Select an image first.",
@@ -148,13 +141,7 @@ void MainWindow::onVerifyImage()
             author_.authorName, author_.authorEmail, author_.authorEmail,
             author_.authorPortFolioURL, author_.authorPortFolioURL, match ? "Yes" : "No") };
 
-    std::unique_ptr<int, std::function<void(int *)>> guardApplyLabel {
-        new int {},
-        [&message, this](int *ptr) {
-            ui_->labAuthorInfo->setText(QString::fromStdString(message));
-            delete ptr;
-        }
-    };
+    BOOST_SCOPE_EXIT_ALL(&, this) { ui_->labAuthorInfo->setText(QString::fromStdString(message)); };
 
     if (!QFile::exists(QString::fromStdString(fmt::format("{}.sign", imagePath_.toStdString()))))
         return;

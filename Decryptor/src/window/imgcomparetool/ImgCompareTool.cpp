@@ -8,10 +8,11 @@
 #include <QFileDialog>
 
 #include <boost/algorithm/string.hpp>
+#include <boost/lexical_cast.hpp>
 #include <boost/process.hpp>
 #include <boost/process/windows.hpp>
+#include <boost/scope_exit.hpp>
 #include <fmt/format.h>
-#include <boost/lexical_cast.hpp>
 
 #include "window/imgcomparetool/ImgCompareTool.hpp"
 #include "utils/StylesManager.hpp"
@@ -54,14 +55,9 @@ void ImgCompareTool::onCompare()
 {
     if (lImgPath.isEmpty() || rImgPath.isEmpty()) return;
 
-    struct
-    {
-        struct Guard
-        {
-            Guard() { QApplication::setOverrideCursor(Qt::CursorShape::WaitCursor); }
-            ~Guard() { QApplication::restoreOverrideCursor(); }
-        } guard;
-    } guardCursorSetter;
+    QApplication::setOverrideCursor(Qt::CursorShape::WaitCursor);
+
+    BOOST_SCOPE_EXIT_ALL(&, this) { QApplication::restoreOverrideCursor(); };
 
     std::string argsHasher { fmt::format("./perceptual_hash.exe \"{}\" --hash",
                                          lImgPath.toStdString()) };

@@ -10,6 +10,7 @@
 
 #include <algorithm>
 
+#include <boost/scope_exit.hpp>
 #include <fmt/format.h>
 #include <bcrypt/BCrypt.hpp>
 
@@ -126,18 +127,24 @@ void AuthorInfoEditor::onNewKeyClicked()
         return;
     }
 
-    const auto prevTitle = this->windowTitle();
-    this->setWindowTitle(QString::fromStdString(
-            fmt::format("{} - {}", prevTitle.toStdString(), "Generating Key")));
-
     auto pwDialog = std::make_unique<window::NewPasswordField>(this);
     pwDialog->exec();
     auto password = pwDialog->getPassword();
     if (password == std::nullopt) return;
 
+    const auto prevTitle = this->windowTitle();
+    QApplication::setOverrideCursor(Qt::CursorShape::WaitCursor);
+    this->setWindowTitle(QString::fromStdString(
+            fmt::format("{} - {}", prevTitle.toStdString(), "Generating Key")));
+
+    BOOST_SCOPE_EXIT_ALL(&, this)
+    {
+        this->setWindowTitle(prevTitle);
+        QApplication::restoreOverrideCursor();
+    };
+
     ui_->btnNewRSA->setDisabled(true);
     ui_->btnRemoveRSA->setDisabled(true);
-    QApplication::setOverrideCursor(Qt::CursorShape::WaitCursor);
 
     std::unique_ptr<key_generator::ICryptoKeyGeneratorFactory> facKey {
         std::make_unique<key_generator::DefaultCryptoKeyGeneratorFactory>()
@@ -173,8 +180,6 @@ void AuthorInfoEditor::onNewKeyClicked()
 
     ui_->lsvwKeys->clear();
     loadKeyData(*curAuthor);
-    QApplication::restoreOverrideCursor();
-    this->setWindowTitle(prevTitle);
 }
 
 void AuthorInfoEditor::onRemoveKey()
