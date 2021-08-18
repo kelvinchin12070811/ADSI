@@ -6,6 +6,9 @@ This project is prepared for Final Year Project for SEGi University
 System Requirements Specification Form:
     [form](https://www.dropbox.com/s/vjlsmh3m7rksrfe/FYP1_RequirementsSpecification%20_Kaiwen-signed.pdf?dl=0)
 
+FYP Report:
+    [report](https://www.dropbox.com/s/fesp098tyc5cfdo/FYP2%20Project%20Report%20-%20Student%20Signed.pdf?dl=0)
+
 ## Installation
 
 The project is configured with cmake and vcpkg.
