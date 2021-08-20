@@ -20,7 +20,7 @@ The project is configured with cmake and vcpkg.
  - [KF5WidgetsAddons](https://api.kde.org/frameworks/kwidgetsaddons/html/index.html)
  - [libbcrypt](https://github.com/trusch/libbcrypt)
  - [Qt5](https://www.qt.io/)
- - [sqite_orm](https://github.com/fnc12/sqlite_orm)
+ - [sqlite_orm](https://github.com/fnc12/sqlite_orm)
  - [SQLite3](https://www.sqlite.org)
 
 ### Setup Qt
